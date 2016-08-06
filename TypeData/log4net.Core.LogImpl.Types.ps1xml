@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Types>
+  <Type> 
+     <Name>log4net.Core.LogImpl</Name> 
+     <Members> 
+       <ScriptMethod> 
+         <!-- Insére au début du message à logger le nom du module courant.
+              Chaque module utilisant Log4Posh déclare une variable privée $Modulename
+              le module Log4Posh déclare une variable public privée LogJobName 
+          -->
+         <Name>PSDebug</Name> 
+         <Script>
+            if ($this.IsDebugEnabled)
+            {  
+              if (Test-Path Variable:lg4n_ModuleName)
+              { $Name=$lg4n_ModuleName }
+              elseif (Test-Path Variable:lg4n_ScriptName)
+              { $Name=$lg4n_ScriptName }
+              else
+              { $Name="Console" }
+              switch ($args.Count) {
+             		 1 { $this.Psbase.Debug("[$Name] $($args[0])") }
+                 2 { $this.Psbase.Debug("[$Name] $($args[0])",$args[1]) }
+  	             default { throw "The method Debug do not contains override with $($args.Count) parameters." }
+              }
+             }
+         </Script> 
+       </ScriptMethod> 
+       <ScriptMethod> 
+         <Name>PSInfo</Name> 
+         <Script>
+            if ($this.IsInfoEnabled)
+            {  
+              if (Test-Path Variable:lg4n_ModuleName)
+              { $Name=$lg4n_ModuleName }
+              elseif (Test-Path Variable:lg4n_ScriptName)
+              { $Name=$lg4n_ScriptName }
+              else
+              { $Name="Console" }
+              switch ($args.Count) {
+             		 1 { $this.Psbase.Info("[$Name] $($args[0])") }
+                 2 { $this.Psbase.Info("[$Name] $($args[0])",$args[1]) }
+  	             default { throw "The method Info do not contains override with $($args.Count) parameters." }
+              }
+             }
+         </Script> 
+       </ScriptMethod> 
+       <ScriptMethod> 
+         <Name>PSError</Name> 
+         <Script>
+            if ($this.IsErrorEnabled)
+            {  
+              if (Test-Path Variable:lg4n_ModuleName)
+              { $Name=$lg4n_ModuleName }
+              elseif (Test-Path Variable:lg4n_ScriptName)
+              { $Name=$lg4n_ScriptName }
+              else
+              { $Name="Console" }
+              switch ($args.Count) {
+             		 1 { $this.Psbase.Error("[$Name] $($args[0])") }
+                 2 { $this.Psbase.Error("[$Name] $($args[0])",$args[1]) }
+                 3 { $this.Psbase.Error("[$Name] $($args[0])",$args[1],$args[2]) }
+  	             default { throw "The method Error do not contains override with $($args.Count) parameters." }
+              }
+             }
+         </Script> 
+       </ScriptMethod> 
+       <ScriptMethod> 
+         <Name>PSFatal</Name> 
+         <Script>
+            if ($this.IsFatalEnabled)
+            {  
+              if (Test-Path Variable:lg4n_ModuleName)
+              { $Name=$lg4n_ModuleName }
+              elseif (Test-Path Variable:lg4n_ScriptName)
+              { $Name=$lg4n_ScriptName }
+              else
+              { $Name="Console" }
+              switch ($args.Count) {
+             		 1 { $this.Psbase.Fatal("[$Name] $($args[0])") }
+                 2 { $this.Psbase.Fatal("[$Name] $($args[0])",$args[1]) }
+  	             default { throw "The method Fatal do not contains override with $($args.Count) parameters." }
+              }
+             }
+         </Script> 
+       </ScriptMethod>        
+     </Members>        
+  </Type>
+</Types> 

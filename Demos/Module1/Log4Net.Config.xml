@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<log4net>
+ <logger name="DebugLogger">
+    <level value="Debug" />
+    <appender-ref ref="Console" />      <!-- Appender partagé -->
+    <appender-ref ref="FileInternal"/>  <!-- Appender unique -->
+    <appender-ref ref="Debugger"/>      <!-- Appender partagé --> 
+  </logger>
+   
+   <logger name="InfoLogger">
+    <level value="Info" />
+    <appender-ref ref="Console" />
+    <appender-ref ref="FileExternal"/>
+    <appender-ref ref="Debugger"/>
+  </logger>
+    
+  <!-- Global Context properties : Owner, RunspaceId, LogJobName -->
+  
+  <appender name="Console" type="log4net.Appender.ManagedColoredConsoleAppender">
+    <layout type="log4net.Layout.PatternLayout">
+      <conversionPattern value="%-4timestamp %-5level - %message%newline" />
+    </layout>
+    <mapping>
+        <level value="INFO" />
+        <foreColor value="Cyan" />
+    </mapping>
+    <mapping>
+        <level value="DEBUG" />
+        <foreColor value="Green" />
+    </mapping>
+    <mapping>
+        <level value="WARN" />
+        <foreColor value="Yellow" />
+    </mapping>
+    <mapping>
+        <level value="ERROR" />
+        <foreColor value="Red" />
+    </mapping>
+    <mapping>
+        <level value="FATAL" />
+        <foreColor value="Black" />
+        <backColor value="Red" />
+    </mapping>  
+    <threshold value="OFF"/>    
+  </appender>
+
+  <appender name="FileInternal" type="log4net.Appender.RollingFileAppender">
+    <file type="log4net.Util.PatternString" value="%env{TEMP}\\PsIonic.log"/>
+    <param name="AppendToFile" value="true"/>
+    <rollingStyle value="Size"/>
+    <maxSizeRollBackups value="5"/>
+    <maximumFileSize value="2MB"/>
+    <staticLogFileName value="true"/>
+    <layout type="log4net.Layout.PatternLayout">
+      <param name="ConversionPattern" value="[PID:%property{Owner}] [%property{LogJobName}] %-5level %d{yyyy-MM-dd hh:mm:ss} – %message%newline"/>
+    </layout>
+    <lockingModel type="log4net.Appender.FileAppender+MinimalLock"/>
+  </appender>
+  
+  <appender name="FileExternal" type="log4net.Appender.RollingFileAppender">
+    <file type="log4net.Util.PatternString" value="%env{TEMP}\\PsIonic.log"/>
+    <param name="AppendToFile" value="true"/>
+    <rollingStyle value="Size"/>
+    <maxSizeRollBackups value="5"/>
+    <maximumFileSize value="2MB"/>
+    <staticLogFileName value="true"/>
+    <layout type="log4net.Layout.PatternLayout">
+      <param name="ConversionPattern" value="[PID:%property{Owner}] [%property{LogJobName}] %-5level %d{yyyy-MM-dd hh:mm:ss} – %message%newline"/>
+    </layout>
+    <lockingModel type="log4net.Appender.FileAppender+MinimalLock"/>
+  </appender>  
+  
+  <appender name="Debugger" type="log4net.Appender.OutputDebugStringAppender">
+    <layout type="log4net.Layout.PatternLayout">
+      <conversionPattern value="%property{LogJobName} %-5level %d{yyyy-MM-dd hh:mm:ss} - %message%newline"/>
+    </layout>
+    <threshold value="OFF"/>      
+  </appender>
+</log4net>
