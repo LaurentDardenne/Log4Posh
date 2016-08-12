@@ -3,17 +3,18 @@
 clone_folder: c:\projects\Log4Posh
 
 install:
-  - ps: Install-PackageProvider Nuget -ForceBootstrap -Force
-  - ps: Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-  - ps: Install-Module Pester -Force
-  - ps: Install-Module PsScriptAnalyzer -force
-  - ps: Install-Module Psake  -force
+  - ps: | 
+        Install-PackageProvider Nuget -ForceBootstrap -Force
+        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+        Install-Module Pester -Force
+        Install-Module PsScriptAnalyzer -force
+        Install-Module Psake  -force
   
 before_build:
-  - ps:" 
+  - ps: | 
        . $env:APPVEYOR_BUILD_FOLDER\Tools\Log4Posh_ProjectProfile.ps1
        Import-Module Psake
-       "
+       
 build_script:
 
 - ps: . $env:APPVEYOR_BUILD_FOLDER\Tools\Build.ps1
