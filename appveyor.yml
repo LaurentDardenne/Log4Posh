@@ -14,9 +14,8 @@ before_build:
   - ps: | 
        . $env:APPVEYOR_BUILD_FOLDER\Tools\Log4Posh_ProjectProfile.ps1
        Import-Module Psake
-       dir Variable:log4posh*
-       "$('-'*40)"
-       dir env:Appveyor*
+       dir Variable:log4posh*||select Name,Value
+       dir env:Appveyor*|Select Key,Value
 build_script:
 
 - ps: . $env:APPVEYOR_BUILD_FOLDER\Tools\Build.ps1
