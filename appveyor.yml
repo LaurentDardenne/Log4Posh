@@ -10,11 +10,10 @@ install:
   - ps: Install-Module Psake  -force
   
 before_build:
-  - ps: 
-      #nuget install platyPS -source https://www.powershellgallery.com/api/v2 -outputDirectory . -ExcludeVersion
-      . $env:APPVEYOR_BUILD_FOLDER\Tools\Log4Posh_ProjectProfile.ps1
-      Import-Module Psake
-      
+  - ps:" 
+       . $env:APPVEYOR_BUILD_FOLDER\Tools\Log4Posh_ProjectProfile.ps1
+       Import-Module Psake
+       "
 build_script:
 
 - ps: . $env:APPVEYOR_BUILD_FOLDER\Tools\Build.ps1
