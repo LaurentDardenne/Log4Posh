@@ -8,7 +8,7 @@ before_build:
       cinst -y pester --version 3.4.2
       cinst -y psake --version 4.6.0
       . $env:APPVEYOR_BUILD_FOLDER\Tools\Log4Posh_ProjectProfile.ps1
-      Import-Module .\Psake
+      Import-Module Psake
       
 build_script:
 
