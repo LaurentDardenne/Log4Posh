@@ -15,7 +15,7 @@ before_build:
        . $env:APPVEYOR_BUILD_FOLDER\Tools\Log4Posh_ProjectProfile.ps1
        Import-Module Psake
        dir Variable:log4posh*|select Name,Value
-       dir env:Appveyor*|Select Key,Value
+       dir env:Appveyor*|Where Name -ne 'APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL'|Select Name,Value
 build_script:
 
 - ps: . $env:APPVEYOR_BUILD_FOLDER\Tools\Build.ps1
