@@ -1,6 +1,7 @@
-﻿
-# clone directory
+﻿# clone directory
 clone_folder: c:\projects\Log4Posh
+
+clone_depth: 0
 
 install:
   - ps: | 
@@ -9,13 +10,50 @@ install:
         Install-Module Pester -Force
         Install-Module PsScriptAnalyzer -force
         Install-Module Psake  -force
-  
-before_build:
-  - ps: | 
-       . $env:APPVEYOR_BUILD_FOLDER\Tools\Log4Posh_ProjectProfile.ps1
-       Import-Module Psake
-       dir Variable:log4posh*|select Name,Value
-       dir env:Appveyor*|Where Name -ne 'APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL'|Select Name,Value
+
+        Register-PSRepository -Name PoshBuildTools -SourceLocation https://ci.appveyor.com/nuget/poshbuildtools
+        Install-Module PoshBuildTools -Scope CurrentUser
+        
+        $ModulePath='c:\projects\Modules'
+        Md "$ModulePath\Plaster" > $null
+        Md "$ModulePath\DTW.PS.FileSystem" > $null
+        
+        $source = 'http://www.dtwconsulting.com/PS/Downloads/DTW.PS.FileSystem.zip'
+        $destination = "$ModulePath\\DTW.PS.FileSystem.zip"
+         Invoke-WebRequest $source -OutFile $destination
+         Expand-Archive -Path $destination  -DestinationPath $ModulePath
+         remove-item "$ModulePath\Tests" -Force -Recurse 
+
+        $source = 'https://github.com/PowerShell/Plaster/archive/master.zip'
+        $destination = "$Env:Temp\Plaster.Zip"
+         Invoke-WebRequest $source -OutFile $destination
+         Microsoft.PowerShell.Archive\Expand-Archive -Path $destination -DestinationPath "$Env:Temp\"
+         Get-ChildItem "$Env:Temp\Plaster-master\src\*"  -Recurse |
+          Move-Item -destination "$ModulePath\Plaster"
+        
+        $env:PSModulePath +=";$ModulePath"
+
+
+
 build_script:
 
-- ps: . $env:APPVEYOR_BUILD_FOLDER\Tools\Build.ps1
+  - ps: |
+       
+        . $env:APPVEYOR_BUILD_FOLDER\Tools\Log4Posh_ProjectProfile.ps1
+        Import-Module Psake
+        . $env:APPVEYOR_BUILD_FOLDER\Tools\Build.ps1
+
+# Upload the project along with TestResults as a zip archive
+on_finish:
+  - ps: |
+        Add-AppveyorTest -Name "Finsih" -Outcome Running
+        dir Variable:log4posh*|select Name,Value
+        
+        $stagingDirectory = (Resolve-Path ..).Path
+        $zipFile = Join-Path  "$env:Log4Posh.zip"
+        Add-Type -assemblyname System.IO.Compression.FileSystem
+        [System.IO.Compression.ZipFile]::CreateFromDirectory($Log4PoshDelivry, $zipFile)
+        @(
+            # You can add other artifacts here
+            (ls $zipFile)
+        ) | % { Push-AppveyorArtifact $_.FullName }

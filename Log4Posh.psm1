@@ -1,12 +1,12 @@
 #Log4Posh.psm1
-# !!! ATTENTION !!! les noms de repository sont sensibles à la casse
+# !!! WARNING !!! Repository names are case sensitive
 
 Import-LocalizedData -BindingVariable Log4PoshMsgs -Filename Log4Posh.Resources.psd1 -EA Stop
 
 # ------------ Initialisation et Finalisation  ----------------------------------------------------------------------------
 
 $ClrVersion=[System.Reflection.Assembly]::Load("mscorlib").GetName().Version.ToString(2)
-Add-Type -Path "$psScriptRoot\$ClrVersion\log4net.dll" #"$psScriptRoot\$($PSVersionTable.PSVersion)\Log4PoshTools.dll"
+Add-Type -Path "$psScriptRoot\$ClrVersion\log4net.dll" #"$psScriptRoot\$ClrVersion\Log4PoshTools.dll"
 
 Function Get-ParentProcess {
 #Permet de retrouver le process parent ayant exécuté 
@@ -92,12 +92,16 @@ Function Start-Log4Net {
    [string]$Message=$Result|Out-String
    throw ( New-Object System.Xml.XmlException $Message) 
  }
- #todo
-# See FAQ To prevent silent failure of log4net as reported as LOG4NET-342, ... 
-# 
-# if(-not [LogManager]::GetRepository().Configured){
-# 	[LogManager]::GetRepository("Repo").ConfigurationMessages
-
+ 
+# prevent silent failure of log4net
+ if(!$Repository.Configured) #Todo test
+ {
+ 	Write-Warning "Log4net repository $($Repository.Name) is not configured"
+ 	foreach($message in $Repository.ConfigurationMessages)
+ 	{
+ 		Write-Warning "`t$Message"
+ 	}
+ }
 }#Start-Log4Net
 
 Function Stop-Log4Net {
