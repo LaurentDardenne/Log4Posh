@@ -12,7 +12,7 @@ install:
         Install-Module Psake  -force
 
         Register-PSRepository -Name PoshBuildTools -SourceLocation https://ci.appveyor.com/nuget/poshbuildtools
-        Install-Module PoshBuildTools -Scope CurrentUser
+        Install-Module PoshBuildTools -Scope CurrentUser -Force
         
         $ModulePath='c:\projects\Modules'
         Md "$ModulePath\Plaster" > $null
@@ -38,7 +38,6 @@ install:
 build_script:
 
   - ps: |
-       
         . $env:APPVEYOR_BUILD_FOLDER\Tools\Log4Posh_ProjectProfile.ps1
         Import-Module Psake
         . $env:APPVEYOR_BUILD_FOLDER\Tools\Build.ps1
@@ -46,11 +45,8 @@ build_script:
 # Upload the project along with TestResults as a zip archive
 on_finish:
   - ps: |
-        Add-AppveyorTest -Name "Finsih" -Outcome Running
-        dir Variable:log4posh*|select Name,Value
-        
-        $stagingDirectory = (Resolve-Path ..).Path
-        $zipFile = Join-Path  "$env:Log4Posh.zip"
+        Add-AppveyorTest -Name "Finish" -Outcome Running
+        $zipFile ="c:\projects\Modules\Log4Posh.zip"
         Add-Type -assemblyname System.IO.Compression.FileSystem
         [System.IO.Compression.ZipFile]::CreateFromDirectory($Log4PoshDelivry, $zipFile)
         @(
