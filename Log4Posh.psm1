@@ -1,4 +1,4 @@
-#Log4Posh.psm1
+ï»¿#Log4Posh.psm1
 # !!! WARNING !!! Repository names are case sensitive
 
 Import-LocalizedData -BindingVariable Log4PoshMsgs -Filename Log4Posh.Resources.psd1 -EA Stop
@@ -9,13 +9,13 @@ $ClrVersion=[System.Reflection.Assembly]::Load("mscorlib").GetName().Version.ToS
 Add-Type -Path "$psScriptRoot\$ClrVersion\log4net.dll" #"$psScriptRoot\$ClrVersion\Log4PoshTools.dll"
 
 Function Get-ParentProcess {
-#Permet de retrouver le process parent ayant exécuté 
-#la session Powershell exécutant ce script/module
+#Permet de retrouver le process parent ayant exÃ©cutÃ© 
+#la session Powershell exÃ©cutant ce script/module
  param( $ID )
  $ParentID=$ID         
  $Result=@(
    Do {
-     $Process=Get-WmiObject Win32_Process -Filter "ProcessID='$parentID'" -property Name,CommandLine,ParentProcessID
+     $Process=Get-CimInstance Win32_Process -Filter "ProcessID='$parentID'" -property Name,CommandLine,ParentProcessID
      $ParentID=$Process.ParentProcessID
      try {
       get-process -ID $ParentID
@@ -38,12 +38,12 @@ Function Get-ParentProcess {
  else
  {$_pid= $pid}
 
-  #Propriété statique, indique le process PowerShell courant
+  #PropriÃ©tÃ© statique, indique le process PowerShell courant
   #Dans un job local ce n'est pas le process courant, mais le parent 
 [log4net.GlobalContext]::Properties.Item("Owner")=$_pid
 [log4net.GlobalContext]::Properties.Item("RunspaceId")=$ExecutionContext.Host.Runspace.InstanceId
 
-  #Propriété dynamique, Log4net appel la méthode ToString de l'objet référencé.
+  #PropriÃ©tÃ© dynamique, Log4net appel la mÃ©thode ToString de l'objet rÃ©fÃ©rencÃ©.
   $Script:LogJobName= new-object System.Management.Automation.PSObject -Property @{Value=$ExecutionContext.Host.Name}
   $Script:LogJobName|Add-Member -Force -MemberType ScriptMethod ToString { $this.Value.toString() }
 [log4net.GlobalContext]::Properties["LogJobName"]=$Script:LogJobName
@@ -61,8 +61,11 @@ $LogShortCut=@{
   LogSmtpAuthentication = [log4net.Appender.SmtpAppender+SmtpAuthentication];
 }
 
+
 Function Start-Log4Net {
-#Configure un repository à l'aide d'un fichier de configuration XML
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+                                                    Justification="Log4net do not change the system state, only the application 'context'")]
+#Configure un repository Ã  l'aide d'un fichier de configuration XML
  [CmdletBinding(DefaultParameterSetName="Path")] 
  param (
     [ValidateNotNullOrEmpty()]
@@ -105,8 +108,10 @@ Function Start-Log4Net {
 }#Start-Log4Net
 
 Function Stop-Log4Net {
-#On arrête proprement les loggers d'un repository,
-#on vide les buffers, puis on réinitialise le repository.
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+                                                    Justification="Log4net do not change the system state, only the application 'context'")]
+#On arrÃªte proprement les loggers d'un repository,
+#on vide les buffers, puis on rÃ©initialise le repository.
  param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$false)]
@@ -117,21 +122,21 @@ Function Stop-Log4Net {
  {throw ($Log4PoshMsgs.RepositoryDoNotExist -F $RepositoryName) } 
   
  [LogManager]::GetRepository($RepositoryName).GetAppenders()|
-  Where {$_ -is  [log4net.Appender.BufferingAppenderSkeleton]}|
-  Foreach {
+  Where-Object {$_ -is  [log4net.Appender.BufferingAppenderSkeleton]}|
+  Foreach-Object {
    Write-Debug "Flush appender $($_.Name)"           
     $_.Flush() 
   }
-   #Shutdown() est appelé en interne, tous les appenders sont fermés proprement,
-   #le repository par défaut n'est plus configuré
+   #Shutdown() est appelÃ© en interne, tous les appenders sont fermÃ©s proprement,
+   #le repository par dÃ©faut n'est plus configurÃ©
  [LogManager]::ResetConfiguration($RepositoryName) 
 }#Stop-Log4Net
 
 # todo : tjr utile ?
 # Function Register-PSObjectRenderer {
-#  #Enregistre le type [PSLog4NET.PSObjectRenderer] implémentant l'interface IObjectRenderer. 
-#  #Le type [PSLog4NET.PSObjectRenderer] appel en interne la méthode tostring() du psobject,
-#  #celle peut être rédéfinie via ETS:
+#  #Enregistre le type [PSLog4NET.PSObjectRenderer] implÃ©mentant l'interface IObjectRenderer. 
+#  #Le type [PSLog4NET.PSObjectRenderer] appel en interne la mÃ©thode tostring() du psobject,
+#  #celle peut Ãªtre rÃ©dÃ©finie via ETS:
 #  # $MyObject |Add-Member -Force -MemberType ScriptMethod ToString { rver|Out-String } 
 #  param (
 #      [ValidateNotNullOrEmpty()]
@@ -144,7 +149,7 @@ Function Stop-Log4Net {
 
 Function ConvertTo-Log4NetCoreLevel {
 #Converti un nom de niveau en un objet [Log4Net.Core.Level]
-#Chaque repository peut déclarer de nouveaux niveaux
+#Chaque repository peut dÃ©clarer de nouveaux niveaux
  param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$false)]
@@ -161,6 +166,8 @@ Function ConvertTo-Log4NetCoreLevel {
 }#ConvertTo-Log4NetCoreLevel
 
 Function Set-Log4NetRepositoryThreshold {
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+                                                    Justification="Log4net do not change the system state, only the application 'context'")]
 #Bascule le niveau de log d'un repository
  [CmdletBinding(DefaultParameterSetName="Level")] 
  param (
@@ -180,8 +187,8 @@ Function Set-Log4NetRepositoryThreshold {
 
  process { 
    Get-Log4NetRepository $RepositoryName| 
-   Where {$_ -ne $Null}|
-   Foreach  {
+   Where-Object {$_ -ne $Null}|
+   Foreach-Object  {
       $Repository=$_ 
       If ($Off) 
        { $Repository.Threshold=[logLevel]::Off }
@@ -194,7 +201,10 @@ Function Set-Log4NetRepositoryThreshold {
  }#process
 }#Set-Log4NetRepositoryThreshold
 
+
 Function Set-Log4NetLoggerLevel {
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+                                                    Justification="Log4net do not change the system state, only the application 'context'")]
 #Bascule le niveau de log d'un logger
  [CmdletBinding(DefaultParameterSetName="Level")] 
  param (
@@ -212,7 +222,7 @@ Function Set-Log4NetLoggerLevel {
  ) 
 
  process { 
-   If ($Logger -ne $null)
+   If ($null -ne $Logger  )
    { 
       If ($Off) 
        { $Logger.Logger.Level=[logLevel]::Off }
@@ -228,6 +238,8 @@ Function Set-Log4NetLoggerLevel {
 }#Set-Log4NetLoggerLevel
 
 Function Set-Log4NetAppenderThreshold {
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+                                                    Justification="Log4net do not change the system state, only the application 'context'")]
 #Bascule le niveau de log d'un appender d'un logger
  [CmdletBinding(DefaultParameterSetName="Level")] 
  param (
@@ -248,11 +260,11 @@ Function Set-Log4NetAppenderThreshold {
  ) 
  
  process {  
-   If ($Logger -ne $null)
+   If ($null -ne $Logger)
    { 
       $logger.Logger.Appenders|
-       Where { $AppenderName -Contains $_.Name }|
-       Foreach {
+       Where-Object { $AppenderName -Contains $_.Name }|
+       Foreach-Object {
         If ($Off) 
          { $_.Threshold=[logLevel]::Off }
         elseif ($DebugLevel)
@@ -268,6 +280,8 @@ Function Set-Log4NetAppenderThreshold {
 }#Set-Log4NetAppenderThreshold
 
 Function Stop-ConsoleAppender { 
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+                                                    Justification="Log4net do not change the system state, only the application 'context'")]
 #Bascule le niveau de log d'un logger  
  param (
      [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
@@ -279,7 +293,9 @@ Function Stop-ConsoleAppender {
  } 
 }#Stop-ConsoleAppender
 
-Function Start-ConsoleAppender {  
+Function Start-ConsoleAppender {
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+                                                    Justification="Log4net do not change the system state, only the application 'context'")]
  param (
      [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
    [log4net.Core.LogImpl] $Logger 
@@ -290,7 +306,7 @@ Function Start-ConsoleAppender {
  } 
 }#Start-ConsoleAppender
 
- #Définition des couleurs d'affichage par défaut
+ #DÃ©finition des couleurs d'affichage par dÃ©faut
 [System.Collections.Hashtable[]] $script:LogDefaultColors=@(
    @{Level="Debug";FColor="Green";BColor=""},
    @{Level="Info";FColor="White";BColor=""},
@@ -301,16 +317,16 @@ Function Start-ConsoleAppender {
 
  # ------------- Type Accelerators -----------------------------------------------------------------
 function Get-Log4NetShortcuts {
-  #Affiche les raccourcis dédiés à Log4net
+  #Affiche les raccourcis dÃ©diÃ©s Ã  Log4net
  $AcceleratorsType::Get.GetEnumerator()|
-  Where {$_.Value.FullName -match "^log4net\.(.*)"}
+  Where-Object {$_.Value.FullName -match "^log4net\.(.*)"}
 }#Get-Log4NetShortcuts
  
 $AcceleratorsType = [PSObject].Assembly.GetType("System.Management.Automation.TypeAccelerators")   
  # Ajoute les raccourcis de type    
  Try {
   $LogShortCut.GetEnumerator() |
-  Foreach {
+  Foreach-Object {
    Try {
      Write-Debug "Add TypeAccelerators $($_.Key) =$($_.Value)"
      $AcceleratorsType::Add($_.Key,$_.Value)
@@ -335,7 +351,7 @@ function Get-Log4NetLogger {
     [String[]] $Name
   )
   
- #Renvoi un logger de nom $Name ou le crée s'il n'existe pas. 
+ #Renvoi un logger de nom $Name ou le crÃ©e s'il n'existe pas. 
  # le nom "Root" est valide et renvoi le root existant
  process {
    foreach ($Current in $Name)
@@ -346,7 +362,7 @@ function Get-Log4NetLogger {
 } #Get-Log4NetLogger
 
 function Get-Log4NetFileAppender{
-#Renvoi d'un repository tout les appender, dérivés de la classe FilesAppender, 
+#Renvoi d'un repository tout les appender, dÃ©rivÃ©s de la classe FilesAppender, 
 #dont le nom est $AppenderName
  param(
       [ValidateNotNullOrEmpty()]
@@ -362,19 +378,21 @@ function Get-Log4NetFileAppender{
 
  process { 
     $Repository.GetAppenders()|
-     Where {
+     Where-Object {
       if ($All)
       {$_.GetType().IsSubclassOf([Log4net.Appender.FileAppender])}
       else 
       {($_.Name -eq $AppenderName) -and  ($_.GetType().IsSubclassOf([Log4net.Appender.FileAppender]))}
      }|
-     Foreach { Write-Verbose "Find the appender '$($_.Name)' into the repository '$($Repository.Name)'."; $_}|
+     Foreach-Object { Write-Verbose "Find the appender '$($_.Name)' into the repository '$($Repository.Name)'."; $_}|
      Add-Member NoteProperty -Name RepositoryName -Value $Repository.Name -Force -Passthru
  }#process
 }#Get-Log4NetFileAppender
 
 Function Set-Log4NetAppenderFileName {
-#Change le nom de fichier d'un appender dérivé de la classe FileAppender
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+                                                   Justification="Log4net do not change the system state, only the application 'context'")]
+#Change le nom de fichier d'un appender dÃ©rivÃ© de la classe FileAppender
  param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
@@ -412,8 +430,8 @@ function Get-Log4NetRepository {
 
 function Test-Repository {
 #Indique si le repository existe ou pas. 
-#Si le paramètre -Configured est précisé on indique si le repository est configuré, 
-#s'il n'existe pas on déclenche une exception. 
+#Si le paramÃ¨tre -Configured est prÃ©cisÃ© on indique si le repository est configurÃ©, 
+#s'il n'existe pas on dÃ©clenche une exception. 
 
  param (
      [ValidateNotNullOrEmpty()]
@@ -435,7 +453,7 @@ function Test-Repository {
 }#Test-Repository
 
 function Get-DefaultAppenderFileName {
-#renvoi le chemin par défaut du fichier de log d'un module
+#renvoi le chemin par dÃ©faut du fichier de log d'un module
   Param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$true)]
@@ -443,7 +461,7 @@ function Get-DefaultAppenderFileName {
   )
          
  $Module=Get-Module $ModuleName
- if ($Module -eq $null) 
+ if ($null -ne $Module) 
  { Write-Error ($Log4PoshMsgs.ModuleDoNotExist -F $ModuleName) }
  else
  { 
@@ -469,14 +487,14 @@ function Get-Log4NetAppenderFileName {
   )
 
  process {  
-    #todo pour toutes les fonctions revoir si le repo est configuré       
+    #todo pour toutes les fonctions revoir si le repo est configurÃ©       
    $Repository=Get-Log4NetRepository $ModuleName #todo
-   if ($Repository -ne $null) 
+   if ($null -ne $Repository) 
    { 
      $AppenderName="File$($PsCmdlet.ParameterSetName)"
      $Repository.GetAppenders()|
-      Where { $_.Name -eq $AppenderName  }|
-      Foreach { 
+      Where-Object { $_.Name -eq $AppenderName  }|
+      Foreach-Object { 
        Write-Verbose "Find the appender '$($_.Name)' into the repository '$($Repository.Name)'."
        $_.File
       }
@@ -486,7 +504,7 @@ function Get-Log4NetAppenderFileName {
          
 function Initialize-Log4NetModule {
 #Initialise, pour un module, un repository Log4Net et ses loggers
-#Fonction injectée dans le module utilisant Log4Posh 
+#Fonction injectÃ©e dans le module utilisant Log4Posh 
   Param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$true)]
@@ -508,19 +526,19 @@ function Initialize-Log4NetModule {
  
 #  Register-PSObjectRenderer $Repository.Name
   
-   #Créé les variables Logger dans la portée de l'appelant
-   #les noms des loggers sont normés
+   #CrÃ©Ã© les variables Logger dans la portÃ©e de l'appelant
+   #les noms des loggers sont normÃ©s
   Set-Variable -Name DebugLogger -Value ([LogManager]::GetLogger($ModuleName,'DebugLogger')) -Scope Script
   Set-Variable -Name InfoLogger -Value ([LogManager]::GetLogger($ModuleName,'InfoLogger')) -Scope Script
   Set-Variable -Name DefaultLogFile -Value "$psScriptRoot\Logs\$ModuleName.log" -Scope Script
   
-   #Initialise le nom de fichier des FileAppenders dédiés au module
+   #Initialise le nom de fichier des FileAppenders dÃ©diÃ©s au module
   Switch-AppenderFileName -RepositoryName $ModuleName FileInternal $script:DefaultLogFile
   Switch-AppenderFileName -RepositoryName $ModuleName FileExternal $script:DefaultLogFile
 }#Initialize-Log4NetModule
 
 function Initialize-Log4NetScript {
-#Initialise le repository Log4Net par défaut 
+#Initialise le repository Log4Net par dÃ©faut 
   Param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=1, Mandatory=$false)]  
@@ -567,8 +585,8 @@ function Initialize-Log4NetScript {
 }#Initialize-Log4NetScript
 
 function Switch-AppenderFileName{
-#Modifie le nom du fichier associé au FileAppender 
-#nommés $AppenderName d'un repository $Name
+#Modifie le nom du fichier associÃ© au FileAppender 
+#nommÃ©s $AppenderName d'un repository $Name
 [CmdletBinding(DefaultParameterSetName="NewName")]
  param(
       [ValidateNotNullOrEmpty()]
@@ -577,7 +595,7 @@ function Switch-AppenderFileName{
   
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=1, Mandatory=$false)]  
-    #Par défaut nom de l'appender dédié aux logs fonctionnels de chaque module utilisant Log4Posh
+    #Par dÃ©faut nom de l'appender dÃ©diÃ© aux logs fonctionnels de chaque module utilisant Log4Posh
    [string] $AppenderName="FileExternal",
   
      [ValidateNotNullOrEmpty()]
@@ -602,7 +620,7 @@ function Switch-AppenderFileName{
 function OnRemoveLog4Posh {
    #Remove shortcuts
   $LogShortCut.GetEnumerator() |
-    Foreach {
+    Foreach-Object {
      Try {
        Write-Debug "Remove TypeAccelerators $($_.Key)"
        [void]$AcceleratorsType::Remove($_.Key)
