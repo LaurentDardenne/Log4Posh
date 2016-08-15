@@ -36,11 +36,28 @@ install:
 
 
 build_script:
-
   - ps: |
         . $env:APPVEYOR_BUILD_FOLDER\Tools\Log4Posh_ProjectProfile.ps1
         Import-Module Psake
         . $env:APPVEYOR_BUILD_FOLDER\Tools\Build.ps1
+
+test_script:
+  - ps: |
+        Add-AppveyorTest -Name "PsScriptAnalyzer" -Outcome Running
+        $Results = Invoke-ScriptAnalyzer -Path $Log4PoshDelivry -Recurse -Severity Error -ErrorAction SilentlyContinue
+        If ($Results) {
+          $ResultString = $Results | Out-String
+          Write-Warning $ResultString
+          Add-AppveyorMessage -Message "PSScriptAnalyzer output contained one or more result(s) with 'Error' severity.`
+          Check the 'Tests' tab of this build for more details." -Category Error
+          Update-AppveyorTest -Name "PsScriptAnalyzer" -Outcome Failed -ErrorMessage $ResultString
+           
+          # Failing the build
+          Throw "Build failed"
+        }
+        Else {
+          Update-AppveyorTest -Name "PsScriptAnalyzer" -Outcome Passed
+        }
 
 # Upload the project along with TestResults as a zip archive
 on_finish:
