@@ -81,7 +81,7 @@
     <maximumFileSize value="2MB"/>
     <staticLogFileName value="true"/>
     <layout type="log4net.Layout.PatternLayout">
-      <param name="ConversionPattern" value="[PID:%property{Owner}] [%property{LogJobName}] %-5level %d{yyyy-MM-dd hh:mm:ss} – %message%newline"/>
+      <param name="ConversionPattern" value="[PID:%property{Owner}] [%property{LogJobName}] %-5level %d{yyyy-MM-dd HH:mm:ss} – %message%newline"/>
     </layout>
     <lockingModel type="log4net.Appender.FileAppender+MinimalLock"/>
   </appender>
@@ -97,14 +97,14 @@
     <maximumFileSize value="2MB"/>
     <staticLogFileName value="true"/>
     <layout type="log4net.Layout.PatternLayout">
-      <param name="ConversionPattern" value="[PID:%property{Owner}] [%property{LogJobName}] %-5level %d{yyyy-MM-dd hh:mm:ss} – %message%newline"/>
+      <param name="ConversionPattern" value="[PID:%property{Owner}] [%property{LogJobName}] %-5level %d{yyyy-MM-dd HH:mm:ss} – %message%newline"/>
     </layout>
     <lockingModel type="log4net.Appender.FileAppender+MinimalLock"/>
   </appender>  
   
   <appender name="Debugger" type="log4net.Appender.OutputDebugStringAppender">
     <layout type="log4net.Layout.PatternLayout">
-      <conversionPattern value="%property{LogJobName} %-5level %d{yyyy-MM-dd hh:mm:ss} - %message%newline"/>
+      <conversionPattern value="%property{LogJobName} %-5level %d{yyyy-MM-dd HH:mm:ss} - %message%newline"/>
     </layout>
     <threshold value="OFF"/>  
   </appender>

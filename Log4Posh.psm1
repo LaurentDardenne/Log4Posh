@@ -512,7 +512,11 @@ function Initialize-Log4NetModule {
 
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=1, Mandatory=$True)]  
-   [string] $Path
+   [string] $Path,
+     
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=2, Mandatory=$True)]  
+   [string] $DefaultLogFilePath
   )
   if (Test-Repository $ModuleName)
   { 
@@ -522,7 +526,7 @@ function Initialize-Log4NetModule {
   else
   { $Repository=[LogManager]::CreateRepository($ModuleName) }
   
-  Start-Log4Net $Repository $Path
+  Start-Log4Net $Repository $Path 
  
 #  Register-PSObjectRenderer $Repository.Name
   
@@ -530,7 +534,10 @@ function Initialize-Log4NetModule {
    #les noms des loggers sont normés
   Set-Variable -Name DebugLogger -Value ([LogManager]::GetLogger($ModuleName,'DebugLogger')) -Scope Script
   Set-Variable -Name InfoLogger -Value ([LogManager]::GetLogger($ModuleName,'InfoLogger')) -Scope Script
-  Set-Variable -Name DefaultLogFile -Value "$psScriptRoot\Logs\$ModuleName.log" -Scope Script
+  #todo test et création si erreur -> env
+  #todo connaitre l'emplacement
+  #todo revoir le pb avec $psscriptRoot :/
+  Set-Variable -Name DefaultLogFile -Value "$DefaultLogFilePath\Logs\$ModuleName.log" -Scope Script
   
    #Initialise le nom de fichier des FileAppenders dédiés au module
   Switch-AppenderFileName -RepositoryName $ModuleName FileInternal $script:DefaultLogFile
