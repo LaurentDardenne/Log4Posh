@@ -63,7 +63,7 @@ $LogShortCut=@{
 
 
 Function Start-Log4Net {
- [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                     Justification="Log4net do not change the system state, only the application 'context'")]
 #Configure un repository à l'aide d'un fichier de configuration XML
  [CmdletBinding(DefaultParameterSetName="Path")] 
@@ -108,7 +108,7 @@ Function Start-Log4Net {
 }#Start-Log4Net
 
 Function Stop-Log4Net {
- [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                     Justification="Log4net do not change the system state, only the application 'context'")]
 #On arrête proprement les loggers d'un repository,
 #on vide les buffers, puis on réinitialise le repository.
@@ -166,7 +166,7 @@ Function ConvertTo-Log4NetCoreLevel {
 }#ConvertTo-Log4NetCoreLevel
 
 Function Set-Log4NetRepositoryThreshold {
- [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                     Justification="Log4net do not change the system state, only the application 'context'")]
 #Bascule le niveau de log d'un repository
  [CmdletBinding(DefaultParameterSetName="Level")] 
@@ -203,7 +203,7 @@ Function Set-Log4NetRepositoryThreshold {
 
 
 Function Set-Log4NetLoggerLevel {
- [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                     Justification="Log4net do not change the system state, only the application 'context'")]
 #Bascule le niveau de log d'un logger
  [CmdletBinding(DefaultParameterSetName="Level")] 
@@ -238,7 +238,7 @@ Function Set-Log4NetLoggerLevel {
 }#Set-Log4NetLoggerLevel
 
 Function Set-Log4NetAppenderThreshold {
- [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                     Justification="Log4net do not change the system state, only the application 'context'")]
 #Bascule le niveau de log d'un appender d'un logger
  [CmdletBinding(DefaultParameterSetName="Level")] 
@@ -280,7 +280,7 @@ Function Set-Log4NetAppenderThreshold {
 }#Set-Log4NetAppenderThreshold
 
 Function Stop-ConsoleAppender { 
- [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                     Justification="Log4net do not change the system state, only the application 'context'")]
 #Bascule le niveau de log d'un logger  
  param (
@@ -294,7 +294,7 @@ Function Stop-ConsoleAppender {
 }#Stop-ConsoleAppender
 
 Function Start-ConsoleAppender {
- [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                     Justification="Log4net do not change the system state, only the application 'context'")]
  param (
      [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
@@ -390,7 +390,7 @@ function Get-Log4NetFileAppender{
 }#Get-Log4NetFileAppender
 
 Function Set-Log4NetAppenderFileName {
- [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions",
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                    Justification="Log4net do not change the system state, only the application 'context'")]
 #Change le nom de fichier d'un appender dérivé de la classe FileAppender
  param (
