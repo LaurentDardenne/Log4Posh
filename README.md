@@ -2,3 +2,5 @@
 
 # Log4Posh
 A log4net wrapper for PowerShell
+
+[French](https://github.com/LaurentDardenne/Log4Posh/blob/master/fr-FR/about_Log4Posh.md) documentation. Principe et configuration
