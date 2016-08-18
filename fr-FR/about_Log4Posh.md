@@ -116,8 +116,9 @@ Enfin l'initialisation du script principal :
     # 09/03/2014 15:46:12       6639           1808      73%        False   HashTable_clixml
 ```
 renvoi la ligne de log ci dessous :
-    [PID:5380] [ConsoleHost] DEBUG 2014-03-11 07:29:23 – PsIonic : The file name is 'c:\temp\test.zip'
-
+```
+[PID:5380] [ConsoleHost] DEBUG 2014-03-11 07:29:23 – PsIonic : The file name is 'c:\temp\test.zip'
+```
 *\[PID:5380\]* est l'ID du process Powershell.
  *\[ConsoleHost\]* est le nom par défaut du job, ici c'est la console Powershell. Pour un job le nom par défaut est 'ServerRemoteHost'.
  *"PsIonic : The file name is 'c:\\temp\\test.zip'"*, est le message préfixé du nom du module.
@@ -131,8 +132,9 @@ Pour modifier le nom du Job :
     Get-ZipFile c:\temp\test.zip -list
 ```
 Ce qui génère la ligne suivante
- >    [PID:5380] [UnScript] DEBUG 2014-03-11 07:29:24 – PsIonic : The file name is 'c:\temp\test.zip'
-
+```
+[PID:5380] [UnScript] DEBUG 2014-03-11 07:29:24 – PsIonic : The file name is 'c:\temp\test.zip'
+```
 La même chose, mais dans deux jobs :
 ```powershell
     $action={
@@ -148,7 +150,8 @@ La même chose, mais dans deux jobs :
     start-job -ArgumentList 'Job2' -ScriptBlock $action
 ```
  Le résultat dans le fichier de log :
- >   [PID:5380] [Job2] DEBUG 2014-03-11 07:30:02 – PsIonic : The file name is 'c:\temp\test.zip'
- >   [PID:5380] [Job1] DEBUG 2014-03-11 07:30:02 – PsIonic : The file name is 'c:\temp\test.zip'
-
+ ```
+ [PID:5380] [Job2] DEBUG 2014-03-11 07:30:02 – PsIonic : The file name is 'c:\temp\test.zip'
+ [PID:5380] [Job1] DEBUG 2014-03-11 07:30:02 – PsIonic : The file name is 'c:\temp\test.zip'
+```
 Pour ce cas les lignes se chevaucheront.
