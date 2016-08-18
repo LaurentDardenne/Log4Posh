@@ -1,14 +1,16 @@
 ﻿Param (
  # Spécifique au poste de développement
- [ValidateScript({Test-Path $_})]
- [string] $VcsPathRepository=$env:APPVEYOR_BUILD_FOLDER
+ [string] $VcsPathRepository=''
 ) 
 
-if ($VcsPathRepository -eq [string]::Empty)
+if (Test-Path env:APPVEYOR_BUILD_FOLDER)
 {
-  $VcsPathRepository="$env:temp"
-   #todo a supprimer une fois renseigné
-  Throw "Erreur de configuration, le chemin 'VcsPathRepository' doit être configuré." 
+  $VcsPathRepository=$env:APPVEYOR_BUILD_FOLDER
+}
+
+if (!(Test-Path $VcsPathRepository))
+{
+  Throw 'Configuration error, the variable $VcsPathRepository should be configured.'
 }
 
 #Variable commune à tous les postes
@@ -31,7 +33,17 @@ $Log4PoshSetup= "$VcsPathRepository\Setup"
 $Log4PoshVcs= "$VcsPathRepository"
 $Log4PoshTests= "$VcsPathRepository\Tests"
 $Log4PoshTools= "$VcsPathRepository\Tools"
-$Log4PoshUrl= 'https://github.com/LaurentDardenne/Log4Posh.git'
+
+if (Test-Path env:APPVEYOR_BUILD_FOLDER)
+{
+  $Log4PoshUr="'https://github.com/${env:APPVEYOR_REPO_NAME}.git" 
+}
+else
+{
+  $Log4PoshUrl= 'Todo'
+  # Configuration error, the variable $Log4PoshUrl should be configured.'
+  Set-PSBreakpoint -Variable Log4PoshUrl -Mode readwrite 
+}
 
  #PSDrive sur le répertoire du projet 
 $null=New-PsDrive -Scope Global -Name Log4Posh -PSProvider FileSystem -Root $Log4PoshVcs 
