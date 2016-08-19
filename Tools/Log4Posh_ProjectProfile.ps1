@@ -23,8 +23,8 @@ if ( $null -eq [System.Environment]::GetEnvironmentVariable("ProfileLog4Posh","U
 }
 
  # Variable spécifiques au poste de développement
-$Log4PoshDelivry= "$('C:\Users\Laurent\AppData\Local\Temp\Delivry'.TrimEnd('\','/'))\Log4Posh"   
-$Log4PoshLogs= "$('C:\Users\Laurent\AppData\Local\Temp\Logs'.TrimEnd('\','/'))\Log4Posh" 
+$Log4PoshDelivry= "${env:temp}\Delivry\Log4Posh"   
+$Log4PoshLogs= "${env:temp}\Delivry\Logs\Log4Posh" 
 
  # Variable communes à tous les postes, leurs contenu est spécifique au poste de développement
 $Log4PoshBin= "$VcsPathRepository\Bin"
