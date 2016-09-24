@@ -74,7 +74,7 @@
   </appender>
 
   <appender name="FileInternal" type="log4net.Appender.RollingFileAppender">
-    <file type="log4net.Util.PatternString" value="%env{TEMP}\\DefaultLog4Posh-%property{Owner}-%property{LogJobName}-%date{ddMMyyyyHHmmss}.log"/>
+    <file type="log4net.Util.PatternString" value="%env{TEMP}\\DefaultLog4Posh-%property{Owner}-%property{LogJobName}-%date{ddMMyyyy}.log"/>
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>
@@ -90,7 +90,7 @@
     <!-- Exemple de nom par défaut :  
      C:\Users\User\AppData\Local\Temp\DefaultLog4Posh-2224-ConsoleHost-17032014093932
     -->
-    <file type="log4net.Util.PatternString" value="%env{TEMP}\\DefaultLog4Posh-%property{Owner}-%property{LogJobName}-%date{ddMMyyyyHHmmss}.log"/>
+    <file type="log4net.Util.PatternString" value="%env{TEMP}\\DefaultLog4Posh-%property{Owner}-%property{LogJobName}-%date{ddMMyyyy}.log"/>
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>
