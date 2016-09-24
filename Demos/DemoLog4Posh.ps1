@@ -11,9 +11,8 @@ ipmo Module1,Module2,Module3
 'Module1','Module2','Module3'|
  Get-Log4NetRepository|
  Foreach  {
-   Write-Warning $_.name
-   $_.GetAppenders()|
-   Select-Object  Name
+   Write-Warning "Current repository '$($_.name)'"
+   $_.GetAppenders()
  } 
 
  #Supprime les fichiers de logs associés aux modules précisés
@@ -31,7 +30,8 @@ ipmo Module1,Module2,Module3
  #déclaré dans les modules précisés.
    #Noms des modules à interroger
 'Module1','Module2','Module3'|
-   #Récupère tous les Appenders nommé 'FileExternal' 
+   #Récupère tous les Appenders nommé 'FileExternal'
+   #Pour cette démo 'FileExternal' et 'FileInternal' sont identiques 
  Get-Log4NetAppenderFileName -External|
    #Affiche le fichier de logs de chaque module 
  Get-Content -path {Write-warning "File log : $_";$_}
@@ -104,6 +104,7 @@ ATrois
 # 4794142 DEBUG - [Module3] message du module CUn
 # 4794142 INFO  - [Module3] message from function CUn
 
+#Affiche certains détails des fichiers de log
 'Module1','Module2','Module3'|
   Get-Log4NetRepository|
   Get-Log4NetFileAppender -All|
@@ -113,6 +114,8 @@ $Repo= [Log4net.LogManager]::GetRepository()
 $Repo.GetAppenders()
 #Ras.
 #Le repository par défaut pour le script courant/Session courante n'est pas configuré
+$Repo.Configured
+#false
 
  #Configure le repository par défaut
 Initialize-Log4NetScript 

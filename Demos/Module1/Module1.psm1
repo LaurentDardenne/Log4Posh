@@ -1,9 +1,16 @@
 ﻿$Script:lg4n_ModuleName=$MyInvocation.MyCommand.ScriptBlock.Module.Name
 
    #Récupère le code d'une fonction publique du module Log4Posh (Prérequis)
-   #et l'exécute dans la portée du module
-$InitializeLogging=$MyInvocation.MyCommand.ScriptBlock.Module.NewBoundScriptBlock(${function:Initialize-Log4NetModule})
-&$InitializeLogging $Script:lg4n_ModuleName "$psScriptRoot\Log4Net.Config.xml"
+   #et l'exécute dans la portée du module.
+   #Car, si on passe un scriptblock qui utilise la variable $PSscriptRoot,
+   #celle-ci reste liée au scriptblock qui l'a créé !!
+$InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4NetModule}")
+$Params=@{
+  RepositoryName = $Script:lg4n_ModuleName
+  XmlConfigPath = "$psScriptRoot\Log4Net.Config.xml"
+  DefaultLogFilePath = "$psScriptRoot\Logs\${Script:lg4n_ModuleName}.log"
+}
+&$InitializeLogging @Params
 
 function AUn {
   $DebugLogger.PSDebug("message from function AUn")

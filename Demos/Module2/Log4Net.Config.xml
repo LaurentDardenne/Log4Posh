@@ -45,7 +45,7 @@
   </appender>
 
   <appender name="FileInternal" type="log4net.Appender.RollingFileAppender">
-    <file type="log4net.Util.PatternString" value="%env{TEMP}\\PsIonic.log"/>
+    <file type="log4net.Util.PatternString" value="%env{TEMP}\\Module2.log"/>
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>
@@ -58,7 +58,7 @@
   </appender>
   
   <appender name="FileExternal" type="log4net.Appender.RollingFileAppender">
-    <file type="log4net.Util.PatternString" value="%env{TEMP}\\PsIonic.log"/>
+    <file type="log4net.Util.PatternString" value="%env{TEMP}\\Module2.log"/>
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>
