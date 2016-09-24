@@ -14,8 +14,15 @@ Le module dépend du module log4Posh via un manifeste. Les premières lignes de 
       #Récupère le code d'une fonction publique du module Log4Posh (Prérequis)
       #et l'exécute dans la portée du module
     $Script:lg4n_ModuleName=$MyInvocation.MyCommand.ScriptBlock.Module.Name
-    $InitializeLogging=$MyInvocation.MyCommand.ScriptBlock.Module.NewBoundScriptBlock(${function:Initialize-Log4NetModule})
-    &$InitializeLogging $Script:lg4n_ModuleName "$psScriptRoot\Log4Net.Config.xml"
+    
+    $InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4NetModule}")
+    $Params=@{
+      RepositoryName = $Script:lg4n_ModuleName
+      XmlConfigPath = "$psScriptRoot\Log4Net.Config.xml"
+      DefaultLogFilePath = "$psScriptRoot\Logs\${Script:lg4n_ModuleName}.log"
+    }
+    &$InitializeLogging @Params
+
 ```
 La variable privée $lg4n\_ModuleName est référencée dans le fichier de type '[log4net.Core.LogImpl.Types.ps1xml](https://github.com/LaurentDardenne/Log4Posh/blob/master/TypeData/log4net.Core.LogImpl.Types.ps1xml)' et permet d'ajouter le nom du producteur du log.
 Chaque module à son propre fichier de configuration ([Log4Net.Config.xml](https://github.com/LaurentDardenne/Log4Posh/blob/master/DefaultLog4Posh.Config.xml)) et son propre repository. Le nom du repository Log4Net est identique au nom du module, **attention les API Log4Net de gestion des repository sont sensibles à la casse**.
