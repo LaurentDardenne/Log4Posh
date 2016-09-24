@@ -2,9 +2,6 @@
 # Manifeste de module pour le module "Log4Posh"
 #
 # Généré le : 10/02/2010
-# Ajout  : 27/03/2014 Méthode PSDebug, refonte autour de repository
-# Ajout  : 06/08/2016 refonte du chargement des dll
-#
 @{
   Author="Laurent Dardenne"
   CompanyName="http://laurent-dardenne.developpez.com/"
@@ -13,10 +10,56 @@
   CLRVersion="2.0"
   GUID = 'f796dd07-541c-4ad8-bfac-a6f15c4b06a0'
   ModuleToProcess="Log4Posh.psm1" 
-  ModuleVersion="1.2.0.0"
+  ModuleVersion="2.0.0"
   PowerShellVersion="2.0"
   TypesToProcess = @(
       'TypeData\log4net.Core.LogImpl.Types.ps1xml'
   )
-  
+  FunctionsToExport = @(
+    'ConvertTo-Log4NetCoreLevel',
+    'Get-Log4NetAppenderFileName',
+    'Get-DefaultAppenderFileName',
+    'Get-DefaultRepositoryName',
+    'Get-Log4NetShortcuts',
+    'Get-Log4NetLogger',
+    'Get-Log4NetFileAppender',
+    'Get-ParentProcess',
+    'Get-Log4NetRepository',
+    'Initialize-Log4NetModule',
+    'Initialize-Log4NetScript',
+    'Start-Log4Net',
+    'Stop-Log4Net',
+    'Set-Log4NetAppenderFileName',
+    'Set-Log4NetRepositoryThreshold',
+    'Set-Log4NetLoggerLevel',
+    'Set-Log4NetAppenderThreshold',
+    'Stop-ConsoleAppender',
+    'Start-ConsoleAppender',
+    'Switch-AppenderFileName',
+    'Test-Repository',
+    'Set-LogDebugging',
+    'Get-LogDebugging'
+  )
+  # Private data to pass to the module specified in RootModule/ModuleToProcess. 
+  PrivateData = @{
+    
+     # PSData data to pass to the Publish-Module cmdlet
+    PSData = @{
+
+        # Tags applied to this module. These help with module discovery in online galleries.
+        #Tags = @(')
+
+        # A URL to the license for this module.
+        LicenseUri = 'https://creativecommons.org/licenses/by-nc-sa/4.0'
+
+        # A URL to the main website for this project.
+        ProjectUri = 'https://github.com/LaurentDardenne/Log4Psoh'
+
+        # A URL to an icon representing this module.
+        IconUri = 'https://github.com/LaurentDardenne/Log4Posh/blob/master/Icon/Log4Posh.png'
+
+        # ReleaseNotes of this module
+        ReleaseNotes = 'Initial version.'
+    } # End of PSData hashtable
+} # End of PrivateData hashtable  
 }
