@@ -23,8 +23,12 @@ if ( $null -eq [System.Environment]::GetEnvironmentVariable("ProfileLog4Posh","U
 }
 
  # Variable spécifiques au poste de développement
-$Log4PoshDelivry= "${env:temp}\Delivry\Log4Posh"   
-$Log4PoshLogs= "${env:temp}\Delivry\Logs\Log4Posh" 
+$Log4PoshDelivery= "${env:temp}\Delivery\Log4Posh"   
+$Log4PoshLogs= "${env:temp}\Delivery\Logs\Log4Posh" 
+$Log4PoshDelivery, $Log4PoshLogs|
+ Foreach {
+  new-item $_ -ItemType Directory -EA SilentlyContinue         
+ }
 
  # Variable communes à tous les postes, leurs contenu est spécifique au poste de développement
 $Log4PoshBin= "$VcsPathRepository\Bin"
