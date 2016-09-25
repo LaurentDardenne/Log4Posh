@@ -645,4 +645,29 @@ $MyInvocation.MyCommand.ScriptBlock.Module.AccessMode="ReadOnly"
 Set-Alias -name saca  -value Start-ConsoleAppender
 Set-Alias -name spca  -value Stop-ConsoleAppender
 
-Export-ModuleMember -Variable LogDefaultColors,LogJobName  -Alias * 
+$F=@(
+ 'ConvertTo-Log4NetCoreLevel',
+ 'Get-Log4NetAppenderFileName',
+ 'Get-DefaultAppenderFileName',
+ 'Get-DefaultRepositoryName',
+ 'Get-Log4NetShortcuts',
+ 'Get-Log4NetLogger',
+ 'Get-Log4NetFileAppender',
+ 'Get-ParentProcess',
+ 'Get-Log4NetRepository',
+ 'Initialize-Log4NetModule',
+ 'Initialize-Log4NetScript',
+ 'Register-PSObjectRenderer',
+ 'Start-Log4Net',
+ 'Stop-Log4Net',
+ 'Set-Log4NetAppenderFileName',
+ 'Set-Log4NetRepositoryThreshold',
+ 'Set-Log4NetLoggerLevel',
+ 'Set-Log4NetAppenderThreshold',
+ 'Stop-ConsoleAppender',
+ 'Start-ConsoleAppender',
+ 'Switch-AppenderFileName',
+ 'Test-Repository'
+)
+
+Export-ModuleMember -Variable LogDefaultColors,LogJobName  -Alias * -Function $F 
