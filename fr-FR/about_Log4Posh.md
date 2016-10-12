@@ -5,7 +5,7 @@ Ces dernières, similaire à un *Write-Verbose*, contiennent des infos de progre
 Afin de valider la présence du module [Log4Posh](https://github.com/LaurentDardenne/Log4Posh/blob/master/Log4Posh.psm1), il est préférable de créer [un manifeste de module](http://ottomatt.pagesperso-orange.fr/Data/Tutoriaux/Powershell/Les-modules-PowerShell/Les-modules-PowerShell.pdf) et d'y renseigner la ligne suivante :
  ```powershell
      #Module de log
-    RequiredModules=@{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="1.1.0.0"}     
+    RequiredModules=@{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="2.0.0"}     
 ```
 
 ### Modification du fichier de configuration
@@ -20,9 +20,9 @@ Plus précisément dans l'élément _file_ :
 ``` 
 Vous pouvez utilisez une variable d'environnement ou un nom de chemin complet.
 
-La fonction _*Get-Log4NetAppenderFileName*_  renvoit les emplacements par défaut des fichiers de log.
+La fonction _**Get-Log4NetAppenderFileName**_  renvoit les emplacements par défaut des fichiers de log.
 
-Une fois la configuration chargée, la fonction _*Switch-AppenderFileName*_  permet de modifier les emplacements du fichier  associé à un FileAppender.
+Une fois la configuration chargée, la fonction _**Switch-AppenderFileName**_  permet de modifier les emplacements du fichier  associé à un FileAppender.
 
 
 ### Initialisation des logs dans le code d'un module
