@@ -7,6 +7,24 @@ Afin de valider la présence du module [Log4Posh](https://github.com/LaurentDard
      #Module de log
     RequiredModules=@{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="1.1.0.0"}     
 ```
+
+### Modification du fichier de configuration
+Vous pouvez configurer Log4Posh pour votre module en recopiant le fichier _DefaultLog4Posh.Config.xml_ dans le répertoire de votre module.
+Le nom d'un fichier de log se déclare dans les élements de type FileAppender  :
+```xml
+ <appender name="FileInternal" type="log4net.Appender.RollingFileAppender">
+```
+Plus précisément dans l'élément _file_ :
+```xml
+  <file type="log4net.Util.PatternString" value="%env{TEMP}\\DefaultLog4Posh-%property{Owner}-%property{LogJobName}-%date{ddMMyyyy}.log"/>
+``` 
+Vous pouvez utilisez une variable d'environnement ou un nom de chemin complet.
+
+La fonction _*Get-Log4NetAppenderFileName*_  renvoit les emplacements par défaut des fichiers de log.
+
+Une fois la configuration chargée, la fonction _*Switch-AppenderFileName*_  permet de modifier les emplacements du fichier  associé à un FileAppender.
+
+
 ### Initialisation des logs dans le code d'un module
 
 Le module dépend du module log4Posh via un manifeste. Les premières lignes de code du module doivent initialiser le repository Log4Net :
