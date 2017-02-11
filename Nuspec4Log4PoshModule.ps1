@@ -9,7 +9,7 @@ $Result=nuspec 'Log4Posh' $ModuleVersion {
    properties @{
         Authors='Dardenne Laurent'
         Owners='Dardenne Laurent'
-        Description='Powershell DSL to create a nuspec file.'
+        Description='A log4net wrapper for PowerShell.'
         title='Log4Posh module'
         summary='A log4net wrapper for PowerShell.'
         copyright='Copyleft'
