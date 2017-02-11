@@ -1,4 +1,8 @@
-﻿Version 2.0.0
+﻿Version 2.0.1
+  2017-02-11   
+   Fix the function Initialize-Log4NetModule : the call of New-item must use the -PATH parameter.
+     
+Version 2.0.0
   2016-09-24  
    Fix the initialization of the code injection
    Add functions Set-LogDebugging and Get-LogDebugging
