@@ -1,4 +1,8 @@
-﻿2016-09-24  Version 2.0.0
+﻿2017-02-11  Version 2.0.1
+  Fix: 
+     function Initialize-Log4NetModule : the call of New-item must use the -PATH parameter.
+
+2016-09-24  Version 2.0.0
   Fix: 
      the initialization of the code injection
      build script
