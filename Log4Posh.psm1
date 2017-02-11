@@ -8,6 +8,49 @@ Import-LocalizedData -BindingVariable Log4PoshMsgs -Filename Log4Posh.Resources.
 $ClrVersion=[System.Reflection.Assembly]::Load("mscorlib").GetName().Version.ToString(2)
 Add-Type -Path "$psScriptRoot\$ClrVersion\log4net.dll"
 
+#todo
+#https://github.com/PowerShell/PowerShell/issues/2578
+# /// suggested alternative (about 100 times faster)
+# public static class ProcessInfoUtil
+# {
+# 	public static System.Diagnostics.Process GetParentProcess() { return ParentProcessId == 0 ? null : System.Diagnostics.Process.GetProcessById(ParentProcessId); }
+# 
+# 	public static readonly int ParentProcessId = GetParentProcessId();
+# 
+# 	private static int GetParentProcessId()
+# 	{
+# 		var pi = new PROCESS_BASIC_INFORMATION();
+# 		int actual;
+# 		if (0 == NativeMethods.NtQueryInformationProcess(new IntPtr(-1), 0/*processbasicInformation*/, ref pi, pi.Size, out actual))
+# 		{
+# 			return (int)pi.InheritedFromUniqueProcessId;
+# 		}
+# 		else 
+# 		{
+# 			return 0;
+# 		}
+# 	}
+# 
+# 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
+# 	private struct PROCESS_BASIC_INFORMATION
+# 	{
+# 		public IntPtr ExitStatus;
+# 		public IntPtr PebBaseAddress;
+# 		public IntPtr AffinityMask;
+# 		public IntPtr BasePriority;
+# 		public UIntPtr UniqueProcessId;
+# 		public IntPtr InheritedFromUniqueProcessId;
+# 
+# 		public int Size { get { return Marshal.SizeOf(typeof(PROCESS_BASIC_INFORMATION));}}
+# 	}
+# 
+# 	static class NativeMethods
+# 	{
+# 	[DllImport("NtDll", SetLastError=true)]
+# 	public static extern int NtQueryInformationProcess(IntPtr ProcessHandle, int processInformationClass, ref PROCESS_BASIC_INFORMATION ProcessInformation, int processInformationLength, out int returnLength);
+# 	}
+# }
+
 Function Get-ParentProcess {
 #Permet de retrouver le process parent ayant exécuté 
 #la session Powershell exécutant ce script/module
@@ -524,7 +567,7 @@ function Initialize-Log4NetModule {
 
   $ParentPath=Split-Path $DefaultLogFilePath -parent
   if (-not (Test-Path $ParentPath))
-  { New-Item -Name $ParentPath -ItemType Directory }
+  { New-Item -Path $ParentPath -ItemType Directory }
   Set-Variable -Name DefaultLogFile -Value $DefaultLogFilePath -Scope Script
   
    #Initialise le nom de fichier des FileAppenders dédiés au module
@@ -657,7 +700,6 @@ $F=@(
  'Get-Log4NetRepository',
  'Initialize-Log4NetModule',
  'Initialize-Log4NetScript',
- 'Register-PSObjectRenderer',
  'Start-Log4Net',
  'Stop-Log4Net',
  'Set-Log4NetAppenderFileName',
