@@ -1,4 +1,5 @@
 ﻿Logs/
+NetStandard/
 *.bak
 Log4Posh.library-ms
 Log4Posh.tdl
