@@ -40,6 +40,10 @@
     'Set-LogDebugging',
     'Get-LogDebugging'
   )
+  
+  # Supported PSEditions
+  #CompatiblePSEditions = 'Desktop', 'Core'
+  
   # Private data to pass to the module specified in RootModule/ModuleToProcess. 
   PrivateData = @{
     
@@ -47,7 +51,7 @@
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        #Tags = @(')
+        Tags = @('PSEdition_Desktop') #'PSEdition_Core'
 
         # A URL to the license for this module.
         LicenseUri = 'https://creativecommons.org/licenses/by-nc-sa/4.0'
