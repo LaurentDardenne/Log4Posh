@@ -22,9 +22,6 @@ if (($PSVersionTable.Keys -contains "PSEdition") -and ($PSVersionTable.PSEdition
    if (-not $IsWindows)
    { Write-Warning "this OS is not yet tested." }    
    Add-Type -Path "$psScriptRoot\core\log4net.dll"
-   
-    #Create default repository
-   [log4net.LogManager]::CreateRepository($script:DefaultRepositoryName)
 
   #todo Test
     #https://windowsserver.uservoice.com/forums/295068-nano-server/suggestions/13870437-powershell-core-add-type-bug-unable-to-locate-cor
@@ -40,6 +37,8 @@ else
   $ClrVersion=[System.Reflection.Assembly]::Load("mscorlib").GetName().Version.ToString(2)
   Add-Type -Path "$psScriptRoot\$ClrVersion\log4net.dll"
 }
+ #Create default repository
+[log4net.LogManager]::CreateRepository($script:DefaultRepositoryName) > $null
 
 #todo
 #https://github.com/PowerShell/PowerShell/issues/2578
