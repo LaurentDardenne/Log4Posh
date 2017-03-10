@@ -11,7 +11,7 @@ $Params=@{
 &$InitializeLogging @Params
   
 function CUn {
-  $DebugLogger.PSDebug("message du module CUn")
+  $DebugLogger.PSDebug("message from function CUn")
   $InfoLogger.PSInfo("message from function CUn")
 }
 
