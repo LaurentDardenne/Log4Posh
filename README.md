@@ -2,7 +2,7 @@
 
 ![Logo](http://ottomatt.pagesperso-orange.fr/Data/Log4Posh.jpg)
 # Log4Posh
-A log4net wrapper for PowerShell
+A log4net wrapper for PowerShell. Support .NET Core 1.0 / .NET Standard 1.3
 
 [French](https://github.com/LaurentDardenne/Log4Posh/blob/master/fr-FR/about_Log4Posh.md) documentation. Principe et configuration
 
