@@ -6,8 +6,12 @@ Set-Location  $PSScriptRoot
 $env:PSModulePath +=";$pwd"
 ipmo Module1,Module2,Module3
 
-#Affiche les appenders de chaque logger déclaré dans 
-#les modules précisés
+Write-host "`r`nShow all created Log4net repositories :"
+[LogManager]::GetAllRepositories()|
+ Select-Object Name,Configured|
+ Format-Table
+
+Write-host "`r`nDisplays the appenders of each logger declared in the specified modules."
 'Module1','Module2','Module3'|
  Foreach { Write-host "`r`nLog4NetRepository for the module : $_";$_}|
  Get-Log4NetRepository|
@@ -31,7 +35,6 @@ $Code=${Function:ATrois}
 Write-Host "Code of the function Module1.ATrois" -foreground green
 Write-Host $Code -foreground yellow
 
- #Affiche les noms de fichiers des fileappenders de chaque logger
  Write-Host "For each logger displays the FileAppender file name" -foreground green
  #déclaré dans les modules précisés.
    #Noms des modules à interroger
