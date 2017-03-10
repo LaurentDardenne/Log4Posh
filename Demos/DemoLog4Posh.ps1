@@ -6,8 +6,7 @@ Set-Location  "$($M.Modulebase)\Demos"
 $env:PSModulePath +=";$pwd"
 ipmo Module1,Module2,Module3
 
-#Affiche les appenders de chaque logger déclaré dans 
-#les modules précisés
+Write-host "`r`nDisplays the appenders of each logger declared in the specified modules." -foreground yellow
 'Module1','Module2','Module3'|
  Get-Log4NetRepository|
  Foreach  {
@@ -15,19 +14,18 @@ ipmo Module1,Module2,Module3
    $_.GetAppenders()
  } 
 
- #Supprime les fichiers de logs associés aux modules précisés
+Write-host "`r`nDeletes the log files associated with the specified modules" -foreground yellow
 'Module1','Module2','Module3'| 
  Get-Log4NetAppenderFileName -Internal|
  Del -path {$_}
 
- #Par défault, les loggers n'émettent pas sur la console
+ Write-host "`r`nBy default, loggers do not send to the console" -foreground yellow
  ATrois
 
- #Contenu de la fonction ATrois
+ Write-host "`r`nContent of the ATrois function" -foreground yellow
  ${Function:ATrois}
 
- #Affiche les noms de fichiers des fileappenders de chaque logger 
- #déclaré dans les modules précisés.
+ Write-host "`r`nDisplays the file names of the fileappenders of each logger declared in the specified modules :" -foreground yellow
    #Noms des modules à interroger
 'Module1','Module2','Module3'|
    #Récupère tous les Appenders nommé 'FileExternal'
@@ -35,12 +33,11 @@ ipmo Module1,Module2,Module3
  Get-Log4NetAppenderFileName -External|
    #Affiche le fichier de logs de chaque module 
  Get-Content -path {Write-warning "File log : $_";$_}
- #Par défault, les loggers émettent dans un fichier situé 
- #dans le répertoire 'logs' de chaque module utilisant log4Posh
-
+Write-host "By default, loggers emit in a file located in the 'logs' directory of each module using log4Posh" -fore yellow
  
  #Active les traces sur la console
  #Seul les loggers de niveau INFO sont concernés
+Write-host "`r`nActivates the traces on the console, only the loggers with 'INFO' level  are concerned." -foreground yellow 
 'Module1','Module2','Module3'|
    #Récupère le repository Log4Net associé
   Get-Log4NetRepository|
@@ -54,8 +51,7 @@ ATrois
 # 2629853 INFO  - [Module2] message from function BUn
 # 2629869 INFO  - [Module3] message from function CUn
  
- #Active les traces sur la console  
- #Les loggers de niveau DEBUG sont concernés
+Write-host "`r`nActivates the traces on the console, only the loggers with 'DEBUG' level  are concerned." -foreground yellow  
 'Module1','Module2','Module3'|
   Get-Log4NetRepository|
   Get-Log4NetLogger -Name 'InfoLogger','DebugLogger'|
@@ -70,7 +66,7 @@ ATrois
 # 3020150 DEBUG - [Module3] message du module CUn
 # 3020150 INFO  - [Module3] message from function CUn  
 
- #Visualisation des noms de modules selon les fonctions appelées 
+Write-host "`r`nDisplay of module names according to the functions called." -foreground yellow  
 AUn
 # 3176650 DEBUG - [Module1] message from function AUn
 # 3176650 INFO  - [Module1] message from function AUn  
@@ -91,7 +87,7 @@ CTrois
 # 3191766 DEBUG - [Module3] message du module CUn
 # 3191766 INFO  - [Module3] message from function CUn
 
-#Désactive les loggers du module nommé 'module2'
+Write-host "`r`nDisables the loggers of the module named 'Module2'" -foreground yellow
  [LogManager]::GetRepository('Module2')|
   Get-Log4NetLogger -Name 'InfoLogger','DebugLogger'|
   Set-Log4NetAppenderThreshold 'Console' -Off
@@ -104,36 +100,37 @@ ATrois
 # 4794142 DEBUG - [Module3] message du module CUn
 # 4794142 INFO  - [Module3] message from function CUn
 
-#Affiche certains détails des fichiers de log
+Write-host "`r`nDisplays some details of log files :" -foreground yellow
 'Module1','Module2','Module3'|
   Get-Log4NetRepository|
   Get-Log4NetFileAppender -All|
   Select Name,File,LockingModel,RepositoryName|fl -GroupBy RepositoryName
 
-$Repo= [Log4net.LogManager]::GetRepository()
+$Repo= [Log4net.LogManager]::GetRepository((Get-DefaultRepositoryName))
+Write-host "`r`nTry to display the appenders." -foreground yellow
 $Repo.GetAppenders()
 #Ras.
-#Le repository par défaut pour le script courant/Session courante n'est pas configuré
+Write-host "`r`nThe default repository for the current script/current session is not configured :" -foreground yellow
 $Repo.Configured
 #false
 
- #Configure le repository par défaut
+Write-host "`r`nConfigures the default repository" -foreground yellow
 Initialize-Log4NetScript 
 
- #Affiche les appenders configurés
+Write-host "`r`nDisplays configured appenders :" -foreground yellow
 $Repo.GetAppenders()
 
- #Affiche les loggers déclarés
+Write-host "`r`nDisplays declared loggers :" -foreground yellow 
 $Repo.GetCurrentLoggers()|Select Name
- #Affiche les variables associé aux loggers déclarés
- #LoggerName = VariableName
+
+Write-host "`r`nDisplays variables associated with loggers declared (Logger name = Variable name):" -foreground yellow 
 $Repo.GetCurrentLoggers()|Select Name|Get-Variable 
 
- #Log une information à l'aide des variables loggers déclarées 
- #via l'appel à Initialize-Log4NetScript
+Write-host "`r`nLog information using the loggers variables declared by the 'Initialize-Log4NetScript' function :" -foreground yellow
 $InfoLogger.PSInfo("Logger info ready.")
 $DebugLogger.PSDebug("Logger debug ready.")
 
+Write-host "`r`nActivates the logs on the console, modifying the log level :" -foreground yellow
 $Repo|
    #Récupère les loggers indiqués
   Get-Log4NetLogger -Name 'InfoLogger','DebugLogger'|
@@ -145,12 +142,12 @@ $DebugLogger.PSDebug("Logger debug ready.")
  
 $pid 
 #5932 
- #Emplacement par défaut du fichier de log
+
+Write-host "`r`nDefault log file location :" -foreground yellow
 $Repo.Name|Get-Log4NetAppenderFileName -External
 #C:\Users\Laurent\AppData\Local\Temp\DefaultLog4Posh-5932-ConsoleHost-07042014190000.log
 
-#Modification de l'emplacement du fichier de log
-#du script principal
+Write-host "`r`nChanging the location of the main script log file :" -foreground yellow
 $Repo.Name|
  Switch-AppenderFileName FileExternal 'C:\temp\MyLog.txt'
 $InfoLogger.PSInfo("Appender FileExternal redirigé")
@@ -165,13 +162,11 @@ Type 'C:\temp\MyLog.txt'
 #[PID:5932] [ConsoleHost] INFO  2014-04-07 05:16:48 - [Console] Appender FileExternal redirigé
 #[PID:5932] [ConsoleHost] INFO  2014-04-07 05:20:14 - [DemoScript] Modification du nom du producteur de log
 
-#Modification de l'emplacement du fichier de log
-#du module 'module3'
+Write-host "`r`nModifying the location of the module log file 'module3' :" -foreground yellow
 'Module3'|Switch-AppenderFileName FileExternal 'C:\temp\MyLog.txt'
 ATrois
 Type 'C:\temp\MyLog.txt'
 
-#Rétabli l'emplacement par défaut du fichier de log
-#du module 'module3'
+Write-host "`r`nReset the default location of the log file of module 'module3' :" -foreground yellow
 'Module3'|Switch-AppenderFileName FileExternal -Default
 'Module3'|Get-Log4NetAppenderFileName -External
