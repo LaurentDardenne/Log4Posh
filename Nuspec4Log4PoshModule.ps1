@@ -24,6 +24,7 @@ $Result=nuspec 'Log4Posh' $ModuleVersion {
    files {
         file -src "$Log4PoshVcs\lib\net20\log4net.dll" -target "2.0\log4net.dll"
         file -src "$Log4PoshVcs\lib\net40\log4net.dll" -target "4.0\log4net.dll"
+        file -src "$Log4PoshVcs\lib\core\" -target "core"
         file -src "$Log4PoshVcs\Log4Posh.psd1"
         file -src "$Log4PoshVcs\Log4Posh.psm1"
         file -src "$Log4PoshVcs\DefaultLog4Posh.Config.xml"
@@ -36,6 +37,7 @@ $Result=nuspec 'Log4Posh' $ModuleVersion {
         file -src "$Log4PoshVcs\TypeData\log4net.Core.LogImpl.Types.ps1xml" -target "TypeData\log4net.Core.LogImpl.Types.ps1xml"
         file -src "$Log4PoshVcs\README.md"
         file -src "$Log4PoshVcs\releasenotes.md"
+        file -src "$Log4PoshVcs\Log4NetLicence\" -target "Log4NetLicence\"
    }        
 }
 

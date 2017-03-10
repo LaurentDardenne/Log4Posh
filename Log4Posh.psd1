@@ -10,7 +10,7 @@
   CLRVersion="2.0"
   GUID = 'f796dd07-541c-4ad8-bfac-a6f15c4b06a0'
   ModuleToProcess="Log4Posh.psm1" 
-  ModuleVersion="2.0.1"
+  ModuleVersion="2.1.0"
   PowerShellVersion="2.0"
   TypesToProcess = @(
       'TypeData\log4net.Core.LogImpl.Types.ps1xml'
@@ -51,7 +51,7 @@
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('PSEdition_Desktop') #'PSEdition_Core'
+        Tags = @('PSEdition_Desktop','PSEdition_Core')
 
         # A URL to the license for this module.
         LicenseUri = 'https://creativecommons.org/licenses/by-nc-sa/4.0'

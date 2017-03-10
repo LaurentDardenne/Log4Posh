@@ -1,4 +1,39 @@
-﻿Version 2.0.1
+﻿Version 2.1.0
+     
+    CHANGE : 
+             Rename the function Get-Log4NetShortcuts to Get-Log4NetShortcut
+             Use log4Net dll version 2.0.7.0
+    
+    ADDING : 
+    Support for .NET Core 1.0 
+    Localization of the demo scripts 
+    Minimal inline help 
+   
+    
+    FIX: 
+     Get-DefaultAppenderFileName
+   
+   
+    From : https://logging.apache.org/log4net/release/framework-support.html#netstandard-1.3
+
+    .NET Core 1.0 / .NET Standard 1.3
+      Targets netstandard-1.3 and thus doesn't support a few things that work on Mono or the classical .NET platform.
+      Things that are not supported in log4net for .NET Standard 1.3:
+        - the ADO.NET appender
+        - anything related to ASP.NET (trace appender and several pattern converters)
+        - .NET Remoting
+        - log4net.LogicalThreadContext and the associated properties and stack classes
+        - the colored console appender
+        - the event log appender
+        - The NetSendAppender
+        - The SMTP appender
+        - DOMConfigurator
+        - stack trace patterns
+        - access to appSettings (neither the log4net section itself nor using the AppSettingsPatternConverter)
+        - Access to "special paths" using the EnvironmentFolderPathPatternConverter
+        - Impersonation of Windows accounts
+
+Version 2.0.1
   2017-02-11   
    Fix the function Initialize-Log4NetModule : the call of New-item must use the -PATH parameter.
      
