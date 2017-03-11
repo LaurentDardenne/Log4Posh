@@ -20,7 +20,8 @@ if (($PSVersionTable.Keys -contains "PSEdition") -and ($PSVersionTable.PSEdition
 {
     #$IsCoreCLR
    if (-not $IsWindows)
-   { Write-Warning "this OS is not yet tested." }    
+   { Write-Warning "this OS is not yet tested." }
+   Write-Verbose "Loading : $psScriptRoot\core\log4net.dll"    
    Add-Type -Path "$psScriptRoot\core\log4net.dll"
 
   #todo Test
@@ -31,14 +32,21 @@ if (($PSVersionTable.Keys -contains "PSEdition") -and ($PSVersionTable.PSEdition
     #    $script:isNanoServer = ($systemSKU -eq 109) -or ($systemSKU -eq 144) -or ($systemSKU -eq 143)
     #if(IsNanoServer) #pb with Add-Type ?
     # $Dll = [Microsoft.PowerShell.CoreCLR.AssemblyExtensions]::LoadFrom($PSScriptRoot + "\my.coreclr.dll")
+    
+    #The method GetLoggerRepository() do not exist because GetCallingAssembly() is 
+    # not available in CoreFX (https://github.com/dotnet/corefx/issues/2221).
+   #Create default repository
+  [log4net.LogManager]::CreateRepository($script:DefaultRepositoryName) > $null
 }
 else
 {  
   $ClrVersion=[System.Reflection.Assembly]::Load("mscorlib").GetName().Version.ToString(2)
+  Write-Verbose "Loading : $psScriptRoot\$ClrVersion\log4net.dll"
   Add-Type -Path "$psScriptRoot\$ClrVersion\log4net.dll"
+     #Creating indirectly the default repository
+  [log4net.LogManager]::GetRepository() > $null
 }
- #Create default repository
-[log4net.LogManager]::CreateRepository($script:DefaultRepositoryName) > $null
+
 
 #todo
 #https://github.com/PowerShell/PowerShell/issues/2578
