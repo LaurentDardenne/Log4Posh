@@ -57,7 +57,7 @@
         LicenseUri = 'https://creativecommons.org/licenses/by-nc-sa/4.0'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/LaurentDardenne/Log4Psoh'
+        ProjectUri = 'https://github.com/LaurentDardenne/Log4Posh'
 
         # A URL to an icon representing this module.
         IconUri = 'https://github.com/LaurentDardenne/Log4Posh/blob/master/Icon/Log4Posh.png'
