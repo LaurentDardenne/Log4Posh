@@ -176,16 +176,20 @@ Function Start-Log4Net {
    $Repository=[LogManager]::GetRepository($script:DefaultRepositoryName)
  } 
 
- $ConfigFile=New-Object System.IO.fileInfo $Path
- Write-debug "Configure the repository '$Repository' with  '$Path'" 
- $Result=[Log4net.Config.XmlConfigurator]::Configure($Repository,$ConfigFile)
- if ($Result.Count -ne 0 )
+ if (Test-Path $Path) 
  { 
-   $ofs="`r`n"
-   [string]$Message=$Result|Out-String
-   throw ( New-Object System.Xml.XmlException $Message) 
+   $ConfigFile=New-Object System.IO.fileInfo $Path
+   Write-debug "Configure the repository '$Repository' with  '$Path'" 
+   $Result=[Log4net.Config.XmlConfigurator]::Configure($Repository,$ConfigFile)
+   if ($Result.Count -ne 0 )
+   { 
+     $ofs="`r`n"
+     [string]$Message=$Result|Out-String
+     throw ( New-Object System.Xml.XmlException $Message) 
+   }
  }
- 
+ else
+ { throw "The configuration file do not exist : $Path" }
 # prevent silent failure of log4net
  if(!$Repository.Configured)
  {
