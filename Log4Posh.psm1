@@ -815,7 +815,9 @@ $F=@(
  'Stop-ConsoleAppender',
  'Start-ConsoleAppender',
  'Switch-AppenderFileName',
- 'Test-Repository'
+ 'Test-Repository',
+ 'Set-LogDebugging',
+ 'Get-LogDebugging'
 )
 
 Export-ModuleMember -Variable LogDefaultColors,LogJobName  -Alias * -Function $F 
