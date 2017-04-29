@@ -7,7 +7,7 @@
   "targets": {
     ".NETStandard,Version=v1.3": {},
     ".NETStandard,Version=v1.3/": {
-      "log4net/2.0.7": {
+      "log4net/2.0.8": {
         "dependencies": {
           "System.AppContext": "4.1.0",
           "System.Collections.NonGeneric": "4.0.1",
@@ -673,7 +673,7 @@
     }
   },
   "libraries": {
-    "log4net/2.0.7": {
+    "log4net/2.0.8": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
