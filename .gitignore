@@ -1,8 +1,10 @@
 ﻿Logs/
-NetStandard/
+src/Logs/*
+Release/
+test/Out/*
+.vscode/
 *.bak
+NetStandard/
 Log4Posh.library-ms
 Log4Posh.tdl
-
-
 

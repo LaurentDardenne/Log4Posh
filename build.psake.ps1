@@ -258,7 +258,7 @@ Task GenerateMarkdown -requiredVariables DefaultLocale, DocsRootDir, ModuleName,
                          -WithModulePage -ErrorAction SilentlyContinue -Verbose:($VerbosePreference -eq 'Continue') > $null
     }
     finally {
-        Remove-Module $ModuleName
+        Remove-Module $ModuleName -Force
     }
 }
 
@@ -419,7 +419,7 @@ Task Test -depends Build -requiredVariables TestRootDir, ModuleName, CodeCoverag
     }
     finally {
         Microsoft.PowerShell.Management\Pop-Location
-        Remove-Module $ModuleName -ErrorAction SilentlyContinue
+        Remove-Module $ModuleName -ErrorAction SilentlyContinue -Force
     }
 }
 

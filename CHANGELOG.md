@@ -1,4 +1,8 @@
-﻿2017-02-11  Version 2.0.1
+﻿2017-05-13  Version 2.0.1
+  Change
+      Reorganization of the repository for the build
+
+2017-02-11  Version 2.0.1
   Fix: 
      function Initialize-Log4NetModule : the call of New-item must use the -PATH parameter.
 

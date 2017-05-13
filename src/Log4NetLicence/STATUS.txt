@@ -1,4 +1,4 @@
-APACHE LOG4NET PROJECT STATUS
+﻿APACHE LOG4NET PROJECT STATUS
 =============================
 
 Project Status

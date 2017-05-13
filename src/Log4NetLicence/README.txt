@@ -1,4 +1,4 @@
-Project Status
+﻿Project Status
 ==============
 
 Apache log4net is a sub project of the Apache Logging Services project. 

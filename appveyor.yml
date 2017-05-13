@@ -1,72 +1,70 @@
-﻿# clone directory
-clone_folder: c:\projects\Log4Posh
+﻿environment:
+  MY_APPVEYOR_DevMyGetApiKey:
+    secure: irzUE0TW1t0PaM/FtieoJK1Uq/7ZXUw4qEUea1wX7LpwXRx1xeUTXEo4spxBVN6c
+  MY_APPVEYOR_MyGetApiKey:
+    secure: irzUE0TW1t0PaM/FtieoJK1Uq/7ZXUw4qEUea1wX7LpwXRx1xeUTXEo4spxBVN6c
 
-clone_depth: 0
-
+# Set-ItemProperty is a workaround :
+# A command that prompts the user failed because the host program or the command type does not support user interaction.
+#
+# The tasks Install et Build uses the same PS session
 install:
-  - ps: | 
-        Install-PackageProvider Nuget -ForceBootstrap -Force
-        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-        Install-Module Pester -Force
-        Install-Module PsScriptAnalyzer -force
-        Install-Module Psake  -force
+  - ps: |
+          Set-ItemProperty -Name DisablePromptToUpdateHelp -Value 1 -path 'HKLM:\SOFTWARE\Microsoft\PowerShell'
 
-        Register-PSRepository -Name PoshBuildTools -SourceLocation https://ci.appveyor.com/nuget/poshbuildtools
-        Install-Module PoshBuildTools -Scope CurrentUser -Force
-        
-        $ModulePath='c:\projects\Modules'
-        Md "$ModulePath\Plaster" > $null
-        Md "$ModulePath\DTW.PS.FileSystem" > $null
-        
-        $source = 'http://www.dtwconsulting.com/PS/Downloads/DTW.PS.FileSystem.zip'
-        $destination = "$ModulePath\\DTW.PS.FileSystem.zip"
-         Invoke-WebRequest $source -OutFile $destination
-         Expand-Archive -Path $destination  -DestinationPath $ModulePath
-         remove-item "$ModulePath\Tests" -Force -Recurse 
+          PowerShell.exe -Command {
+            Install-PackageProvider Nuget -ForceBootstrap -Force > $null
+            Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+             #The version delivered with PS does not come from a repository,
+             #We force the installation from PS Gallery
+            Install-module PowershellGet -MinimumVersion 1.1.0.0 -Force -Scope AllUsers
+            Export-Clixml -InputObject $Profile -Path  $env:temp\PSProfile.xml      }
 
-        $source = 'https://github.com/PowerShell/Plaster/archive/master.zip'
-        $destination = "$Env:Temp\Plaster.Zip"
-         Invoke-WebRequest $source -OutFile $destination
-         Microsoft.PowerShell.Archive\Expand-Archive -Path $destination -DestinationPath "$Env:Temp\"
-         Get-ChildItem "$Env:Temp\Plaster-master\src\*"  -Recurse |
-          Move-Item -destination "$ModulePath\Plaster"
-        
-        $env:PSModulePath +=";$ModulePath"
-
-
+nuget:
+  account_feed: true
+  project_feed: true
 
 build_script:
-  - ps: |
-        . $env:APPVEYOR_BUILD_FOLDER\Tools\Log4Posh_ProjectProfile.ps1
-        Import-Module Psake
-        . $env:APPVEYOR_BUILD_FOLDER\Tools\Build.ps1
+   - ps: |
 
-test_script:
-  - ps: |
-        Add-AppveyorTest -Name "PsScriptAnalyzer" -Outcome Running
-        $Results = Invoke-ScriptAnalyzer -Path $Log4PoshDelivry -Recurse -Severity Error -ErrorAction SilentlyContinue
-        If ($Results) {
-          $ResultString = $Results | Out-String
-          Write-Warning $ResultString
-          Add-AppveyorMessage -Message "PSScriptAnalyzer output contained one or more result(s) with 'Error' severity.`
-          Check the 'Tests' tab of this build for more details." -Category Error
-          Update-AppveyorTest -Name "PsScriptAnalyzer" -Outcome Failed -ErrorMessage $ResultString
-           
-          # Failing the build
-          Throw "Build failed"
-        }
-        Else {
-          Update-AppveyorTest -Name "PsScriptAnalyzer" -Outcome Passed
-        }
+         $Profile=Import-Clixml $env:temp\PSProfile.xml
+         Install-Module Psake  -force
+         Import-Module Psake
 
-# Upload the project along with TestResults as a zip archive
-on_finish:
-  - ps: |
-        Add-AppveyorTest -Name "Finish" -Outcome Running
-        $zipFile ="c:\projects\Modules\Log4Posh.zip"
-        Add-Type -assemblyname System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::CreateFromDirectory($Log4PoshDelivry, $zipFile)
-        @(
-            # You can add other artifacts here
-            (ls $zipFile)
-        ) | % { Push-AppveyorArtifact $_.FullName }
+         Write-Host "Install dependencies"
+         Invoke-Psake .\Install.psake.ps1 -parameters @{"Mode"="Install"} -nologo
+         if (-not $psake.build_success)
+         {
+            # Terminate the script to fail the build
+            $Error | Format-List * -Force
+            exit 1
+         }
+
+         Write-Host "Call Publish task. Target '$Env:MY_APPVEYOR_GalleryName'"
+         #$testResultsFile = Join-Path $pwd -ChildPath "TestResults.xml"
+
+         If ($Env:MY_APPVEYOR_GalleryName -eq 'DevMyget')
+         { $RepositoryName='DevOttoMatt' }
+         elseIf ($Env:MY_APPVEYOR_GalleryName -eq 'MyGet')
+         { $RepositoryName='OttoMatt' }
+
+         #Invoke-PSake .\build.psake.ps1 -taskList Publish -parameters @{"TestOutputFile"=$testResultsFile;"RepositoryName"=$RepositoryName}
+         Invoke-PSake .\build.psake.ps1 -taskList Publish -parameters @{"RepositoryName"=$RepositoryName}
+         if (-not $psake.build_success)
+         {
+            # Terminate the script to fail the build
+            $Error | Format-List * -Force
+            exit 1
+         }
+        #  if ($psake.build_success -and (Test-Path $testResultsFile)) {
+        #     (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", $testResultsFile)
+        #  }
+        #  else {
+        #     # Terminate the script to fail the build
+        #     $Error | Format-List * -Force
+        #     exit 1;
+        #  }
+
+
+
+
