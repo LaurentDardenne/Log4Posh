@@ -5,7 +5,7 @@ Task default -Depends CreateZip
 
 Task CreateZip -Depends Delivery,ValideParameterSet,TestBomFinal {
 
-  $zipFile = "$env:\Temp\Log4Posh.zip"
+  $zipFile = "$env:Temp\Log4Posh.zip"
   Add-Type -assemblyname System.IO.Compression.FileSystem
   [System.IO.Compression.ZipFile]::CreateFromDirectory($Log4PoshDelivery, $zipFile)
   if (Test-Path env:APPVEYOR)
