@@ -1,15 +1,15 @@
 ﻿ #Charge le module prérequis
-$m=ipmo log4posh -pass
+$m=Import-Module log4posh -pass
 
 #Charge les modules de démos utilisant log4posh
 Set-Location  "$($M.Modulebase)\Demos"
 $env:PSModulePath +=";$pwd"
-ipmo Module1,Module2,Module3
+Import-Module Module1,Module2,Module3
 
 Write-host "`r`nDisplays the appenders of each logger declared in the specified modules." -foreground yellow
 'Module1','Module2','Module3'|
  Get-Log4NetRepository|
- Foreach  {
+ ForEach-Object  {
    Write-Warning "Current repository '$($_.name)'"
    $_.GetAppenders()
  } 
@@ -17,7 +17,7 @@ Write-host "`r`nDisplays the appenders of each logger declared in the specified 
 Write-host "`r`nDeletes the log files associated with the specified modules" -foreground yellow
 'Module1','Module2','Module3'| 
  Get-Log4NetAppenderFileName -Internal|
- Del -path {$_}
+ Remove-Item -path {$_}
 
  Write-host "`r`nBy default, loggers do not send to the console" -foreground yellow
  ATrois
@@ -104,7 +104,7 @@ Write-host "`r`nDisplays some details of log files :" -foreground yellow
 'Module1','Module2','Module3'|
   Get-Log4NetRepository|
   Get-Log4NetFileAppender -All|
-  Select Name,File,LockingModel,RepositoryName|fl -GroupBy RepositoryName
+  Select-Object Name,File,LockingModel,RepositoryName|Format-List -GroupBy RepositoryName
 
 $Repo= [Log4net.LogManager]::GetRepository((Get-DefaultRepositoryName))
 Write-host "`r`nTry to display the appenders." -foreground yellow
@@ -121,10 +121,10 @@ Write-host "`r`nDisplays configured appenders :" -foreground yellow
 $Repo.GetAppenders()
 
 Write-host "`r`nDisplays declared loggers :" -foreground yellow 
-$Repo.GetCurrentLoggers()|Select Name
+$Repo.GetCurrentLoggers()|Select-Object Name
 
 Write-host "`r`nDisplays variables associated with loggers declared (Logger name = Variable name):" -foreground yellow 
-$Repo.GetCurrentLoggers()|Select Name|Get-Variable 
+$Repo.GetCurrentLoggers()|Select-Object Name|Get-Variable 
 
 Write-host "`r`nLog information using the loggers variables declared by the 'Initialize-Log4NetScript' function :" -foreground yellow
 $InfoLogger.PSInfo("Logger info ready.")
@@ -153,19 +153,19 @@ $Repo.Name|
 $InfoLogger.PSInfo("Appender FileExternal redirigé")
 #1233853 INFO  - [Console] Appender FileExternal redirigé
 
-Type 'C:\temp\MyLog.txt'
+Get-Content 'C:\temp\MyLog.txt'
 #[PID:5932] [ConsoleHost] INFO  2014-04-07 05:16:48 - [Console] Appender FileExternal redirigé
 
 $lg4n_ScriptName="DemoScript"
 $InfoLogger.PSInfo("Modification du nom du producteur de log")
-Type 'C:\temp\MyLog.txt'
+Get-Content 'C:\temp\MyLog.txt'
 #[PID:5932] [ConsoleHost] INFO  2014-04-07 05:16:48 - [Console] Appender FileExternal redirigé
 #[PID:5932] [ConsoleHost] INFO  2014-04-07 05:20:14 - [DemoScript] Modification du nom du producteur de log
 
 Write-host "`r`nModifying the location of the module log file 'module3' :" -foreground yellow
 'Module3'|Switch-AppenderFileName FileExternal 'C:\temp\MyLog.txt'
 ATrois
-Type 'C:\temp\MyLog.txt'
+Get-Content 'C:\temp\MyLog.txt'
 
 Write-host "`r`nReset the default location of the log file of module 'module3' :" -foreground yellow
 'Module3'|Switch-AppenderFileName FileExternal -Default

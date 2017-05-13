@@ -1,10 +1,10 @@
 ﻿ #Charge le module prérequis
-ipmo Log4Posh
+Import-Module Log4Posh
 
 #Charge les modules de démos utilisant log4posh
 Set-Location  $PSScriptRoot
 $env:PSModulePath +=";$pwd"
-ipmo Module1,Module2,Module3
+Import-Module Module1,Module2,Module3
 
 Write-host "`r`nShow all created Log4net repositories :"
 [LogManager]::GetAllRepositories()|
@@ -13,9 +13,9 @@ Write-host "`r`nShow all created Log4net repositories :"
 
 Write-host "`r`nDisplays the appenders of each logger declared in the specified modules."
 'Module1','Module2','Module3'|
- Foreach { Write-host "`r`nLog4NetRepository for the module : $_";$_}|
+ ForEach-Object { Write-host "`r`nLog4NetRepository for the module : $_";$_}|
  Get-Log4NetRepository|
- Foreach  {
+ ForEach-Object  {
    $T=$_.GetAppenders()| Select-Object -ExpandProperty Name
    $ofs=','
    Write-Host "`tAppenders : " -foreground green -noNewLine
@@ -25,7 +25,7 @@ Write-host "`r`nDisplays the appenders of each logger declared in the specified 
  Write-Host "Removes the log files associated with the modules" 
 'Module1','Module2','Module3'| 
   Get-Log4NetAppenderFileName -Internal | 
-  Del -path {$_}
+  Remove-Item -path {$_}
 
 
 Write-Host "Call the function Module1.ATrois. By default, loggers do not write on the console."
