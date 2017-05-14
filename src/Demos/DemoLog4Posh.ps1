@@ -1,8 +1,12 @@
-﻿ #Charge le module prérequis
+﻿Function Demo2 {
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Scope="Function")]
+param()
+ #Charge le module prérequis
 $m=Import-Module log4posh -pass
 
 #Charge les modules de démos utilisant log4posh
 Set-Location  "$($M.Modulebase)\Demos"
+ [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $env:PSModulePath +=";$pwd"
 Import-Module Module1,Module2,Module3
 
@@ -156,6 +160,7 @@ $InfoLogger.PSInfo("Appender FileExternal redirigé")
 Get-Content 'C:\temp\MyLog.txt'
 #[PID:5932] [ConsoleHost] INFO  2014-04-07 05:16:48 - [Console] Appender FileExternal redirigé
 
+ [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $lg4n_ScriptName="DemoScript"
 $InfoLogger.PSInfo("Modification du nom du producteur de log")
 Get-Content 'C:\temp\MyLog.txt'
@@ -170,3 +175,5 @@ Get-Content 'C:\temp\MyLog.txt'
 Write-host "`r`nReset the default location of the log file of module 'module3' :" -foreground yellow
 'Module3'|Switch-AppenderFileName FileExternal -Default
 'Module3'|Get-Log4NetAppenderFileName -External
+}
+. Demo2

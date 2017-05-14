@@ -1,8 +1,12 @@
-﻿ #Charge le module prérequis
+﻿Function Demo {
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Scope="Function")]
+param()
+ #Charge le module prérequis
 Import-Module Log4Posh
 
 #Charge les modules de démos utilisant log4posh
 Set-Location  $PSScriptRoot
+ [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $env:PSModulePath +=";$pwd"
 Import-Module Module1,Module2,Module3
 
@@ -58,3 +62,5 @@ Write-Host $Code -foreground yellow
 
 Write-Host "Call the function Module1.ATrois"
 ATrois
+}
+. Demo
