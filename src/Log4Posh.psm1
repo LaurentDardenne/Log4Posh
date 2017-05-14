@@ -178,22 +178,37 @@ Function Start-Log4Net {
 
  if (Test-Path $Path) 
  { 
+    #Need  a full path. Use internally [environment]::currentdirectory
+   $Path=$ExecutionContext.SessionState.Path.GetResolvedPSPathFromPSPath($Path)
    $ConfigFile=New-Object System.IO.fileInfo $Path
-   Write-debug "Configure the repository '$Repository' with  '$Path'" 
+
+   Write-debug "Configure the repository '$($Repository.Name)' with  '$Path'" 
    $Result=[Log4net.Config.XmlConfigurator]::Configure($Repository,$ConfigFile)
    if ($Result.Count -ne 0 )
    { 
-     $ofs="`r`n"
-     [string]$Message=$Result|Out-String
-     throw ( New-Object System.Xml.XmlException $Message) 
+      $ofs="`r`n"
+      [string]$Message=$Result|Out-String
+      $ex=New-Object System.Xml.XmlException $Message
+      $ER= New-Object -Typename System.Management.Automation.ErrorRecord -Argumentlist $ex,
+                                                                                       'XMLConfigurationFile',
+                                                                                       'InvalidData',
+                                                                                       $Path
+      $PSCmdlet.ThrowTerminatingError($ER)  
    }
  }
  else
- { throw "The configuration file do not exist : $Path" }
-# prevent silent failure of log4net
+ { 
+      $ex=New-Object System.IO.FileNotFoundException "The configuration file do not exist : $Path" 
+      $ER= New-Object -Typename System.Management.Automation.ErrorRecord -Argumentlist $ex,
+                                                                                       'XMLConfigurationFile',
+                                                                                       'ObjectNotFound',
+                                                                                       $Path
+      $PSCmdlet.ThrowTerminatingError($ER)  
+ }
+ # prevent silent failure of log4net
  if(!$Repository.Configured)
  {
- 	 Write-Error "Log4net repository $($Repository.Name) is not configured"
+ 	 Write-Error "Log4net repository $($Repository.Name) is not configured" -ErrorId 'XMLConfigurationFile' -Category InvalidOperation 
  	 foreach($message in $Repository.ConfigurationMessages)
  	 { Write-Error "`t$Message" }
  }
@@ -553,7 +568,15 @@ function Test-Repository {
  if ($Configured)
  {
   if (-not $isExist)
-  {throw ($Log4PoshMsgs.RepositoryDoNotExist -F $RepositoryName) }
+  {
+      $msg=$Log4PoshMsgs.RepositoryDoNotExist -F $RepositoryName
+      $ex=new-object System.Exception $msg
+      $ER= New-Object -Typename System.Management.Automation.ErrorRecord -Argumentlist $ex,
+                                                                                       'RepositoryNotConfigured',
+                                                                                       'ResourceUnavailable',
+                                                                                       $RepositoryName
+      $PSCmdlet.ThrowTerminatingError($ER)  
+  }
   else
   { [LogManager]::GetRepository($RepositoryName).Configured }
  }
@@ -764,6 +787,17 @@ function Set-LogDebugging{
 
  $State = -not $Off.IsPresent  
  [log4net.Util.LogLog]::InternalDebugging=$State
+#  todo Add. Config file or by code ?
+#  <system.diagnostics>
+#     <trace autoflush="true">
+#         <listeners>
+#             <add 
+#                 name="textWriterTraceListener" 
+#                 type="System.Diagnostics.TextWriterTraceListener" 
+#                 initializeData="C:\tmp\log4net.txt" />
+#         </listeners>
+#     </trace>
+# </system.diagnostics>
 }
 
 function Get-LogDebugging{
