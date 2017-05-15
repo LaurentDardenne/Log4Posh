@@ -227,9 +227,6 @@ Task BuildHelp -Precondition { $IsHelpGeneration } -depends Build, BeforeBuildHe
 }
 
 Task GenerateMarkdown -requiredVariables DefaultLocale, DocsRootDir, ModuleName, ModuleOutDir {
-    #todo génération de About dans `Release\Template pas dans \Docs :/
-    #usage de locale ? crée un répertoire avec une aide minimal dans release
-    # même si 'en-US' n'existe pas....
     if (!(Get-Module platyPS -ListAvailable)) {
         "platyPS module is not installed. Skipping $($psake.context.currentTaskName) task."
         return

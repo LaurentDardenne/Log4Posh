@@ -540,17 +540,6 @@ Task BeforePublish -requiredVariables Projectname, OutDir, ModuleName, PublishRe
            Update-Metadata -Path $ManifestPath  -PropertyName ModuleVersion -Value $Version
         }
     }
-
-    #todo selon les dépendances de projets. créer une sous-tâche ?
-    # #si on publie sur :
-    # #     PSGallery, la clé n'est pas nécessaire, c'est le même repository
-    # #     Myget, la clé est nécessaire, car ce n'est pas le même repository
-    # if ($PublishRepository -ne 'PSGallery')
-    # {
-    #    #todo bug:
-    #    #https://windowsserver.uservoice.com/forums/301869-powershell/suggestions/19210978-update-modulemanifest-externalmoduledependencies
-    #    Update-ModuleManifest -path $ManifestPath -ExternalModuleDependencies 'PSScriptAnalyzer','PSScriptAnalyzer'
-    # }
 }
 
 # Executes after the Publish task.
