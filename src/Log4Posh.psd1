@@ -37,7 +37,8 @@
                      'Switch-AppenderFileName',
                      'Test-Repository',
                      'Set-LogDebugging',
-                     'Get-LogDebugging'
+                     'Get-LogDebugging',
+                     'New-Log4NetCoreLevel'
  
   VariablesToExport ='LogDefaultColors','LogJobName'                              
   

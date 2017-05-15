@@ -811,6 +811,31 @@ function Get-LogDebugging{
  [log4net.Util.LogLog]::InternalDebugging
 }
 
+Function New-Log4NetCoreLevel {
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
+                                                    Justification="Log4net do not change the system state, only the application 'context'")]
+<#
+    .SYNOPSIS
+     Create a new level.
+     Levels have a numeric Value that defines the relative ordering between levels. Two Levels with the same Value are deemed to be equivalent.
+     The levels that are recognized by log4net are set for each Repository and each repository can have different levels defined. 
+#> 
+  Param (
+     #Name of the module to initialize
+     #This is to the name of the repository
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=0, Mandatory=$true)]
+   [string] $RepositoryName
+  )
+
+    # TODO $Repository=[LogManager]::GetRepository('Test')
+    # $Result=ConvertTo-Log4NetCoreLevel -Repository $Repository.Name 'Debug'
+    # $Result.Equals([Log4net.Core.Level]::Debug)
+    
+    # $ScriptLevel= new-object log4net.Core.Level 41000,'SCRIPT'
+    # $Repository.LevelMap.Add($ScriptLevel)
+}
+
 # ----------- Suppression des objets du Wrapper -------------------------------------------------------------------------
 function OnRemoveLog4Posh {
    #Remove shortcuts
