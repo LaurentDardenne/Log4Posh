@@ -1,19 +1,25 @@
 ﻿Version 2.1.0
      
-    CHANGE : 
-             Rename the function Get-Log4NetShortcuts to Get-Log4NetShortcut
-             Use log4Net dll version 2.0.7.0
+   CHANGE : 
+     Rename the function Get-Log4NetShortcuts to Get-Log4NetShortcut
+     Use log4Net dll version 2.0.8.0
+     Remove Export-ModuleMember use instead the manifest
+     Export functions 'Set-LogDebugging' and 'Get-LogDebugging'
+      
+   ADDING : 
+     Support for .NET Core 1.0
+     'New-Log4NetCoreLevel' function. Create a personalized level.
+     Localization of the demo scripts 
+     Minimal inline help
+     Translation
+     French tutoriel about Log4net with Powershell 
     
-    ADDING : 
-    Support for .NET Core 1.0 
-    Localization of the demo scripts 
-    Minimal inline help 
-   
-    
-    FIX: 
+   FIX: 
      Get-DefaultAppenderFileName
-   
-   
+     Start-Log4Net
+
+   Note :
+     
     From : https://logging.apache.org/log4net/release/framework-support.html#netstandard-1.3
 
     .NET Core 1.0 / .NET Standard 1.3
