@@ -4,7 +4,7 @@
 # Log4Posh
 A log4net wrapper for PowerShell. Support .NET Core 1.0 / .NET Standard 1.3
 
-[French](https://github.com/LaurentDardenne/Log4Posh/blob/master/fr-FR/about_Log4Posh.md) documentation. Principe et configuration
+[French](https://github.com/LaurentDardenne/Log4Posh/blob/master/src/fr-FR/about_Log4Posh.md) documentation. Principe et configuration
 
 To install this module :
 ```Powershell

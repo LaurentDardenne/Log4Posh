@@ -220,6 +220,9 @@ Function Stop-Log4Net {
 <#
     .SYNOPSIS
       The loggers of a repository are cleanly stopped, the buffers are emptied, and the repository is then reinitialized.
+
+      Note:
+      When the module Log4Posh is removed, [LogManager]::GetAllRepositories() return all repositories with the state NOT CONFIGURED.
 #>   
  param (
      [ValidateNotNullOrEmpty()]
@@ -587,7 +590,7 @@ function Test-Repository {
 function Get-DefaultAppenderFileName {
 <#
     .SYNOPSIS
-     Return the default path of the log file of a module*
+     Return the default path of the log file of a module.
 #> 
   Param (
      [ValidateNotNullOrEmpty()]
@@ -779,7 +782,7 @@ function Set-LogDebugging{
          
 <#
     .SYNOPSIS
-      Enables log4Net framework internal debugging       
+      Set the internal debugging for the log4Net framework
 #>     
  param ( 
    [switch] $Off
@@ -803,7 +806,7 @@ function Set-LogDebugging{
 function Get-LogDebugging{
 <#
     .SYNOPSIS
-      Disables log4Net framework internal debugging       
+      Get the internal debugging for the log4Net framework
 #>             
  [log4net.Util.LogLog]::InternalDebugging
 }

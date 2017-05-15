@@ -10,6 +10,19 @@ Describe "Log4Posh standalone - basic" {
     [log4net.LogManager] -eq [LogManager] | Should Be $true
   }
  
+  It "The default repository name is exactly 'log4net-default-repository'"{
+    Get-DefaultRepositoryName|Should BeExactly 'log4net-default-repository'
+  }
+  
+  It "The names of a repository is case sensitive"{
+    [LogManager]::GetRepository('log4net-default-repository') | Should Not Throw 
+    [LogManager]::GetRepository('Log4net-default-repository') | Should Throw 
+  }
+  #todo case avec GetReposot
+  
+  # if (($PSVersionTable.Keys -contains "PSEdition") -and ($PSVersionTable.PSEdition -eq 'Desktop')) 
+  #  { $LogShortCut.LogColoredConsole = [log4net.Appender.ColoredConsoleAppender] ...
+
   It "Start-Log4Net configure a repository with a xml file" -skip:$(Test-Repository 'Test'){ 
     $Repository=[LogManager]::CreateRepository('Test') 
     Start-Log4Net -Repository $Repository -Path "$PSScriptRoot\BasicLog4Posh.Config.xml"
@@ -37,6 +50,59 @@ Describe "Log4Posh standalone - basic" {
   It "Must logger works"{  
     $DebugLogger=[LogManager]::GetLogger('Test','DebugLogger')
     {$DebugLogger.PSDebug('Test')}| Should Not Throw 
+    #todo file
+  }
+ 
+  It "Must enable the console appender, then disabled it"{
+    $DebugLogger=[LogManager]::GetLogger('Test','DebugLogger')
+    $Appender=$DebugLogger.Logger.Appenders | Where-Object { $_.Name -eq 'Console'}
+     $Appender.Threshold|Should Be 'Debug'
+    Stop-ConsoleAppender 
+     $Appender.Threshold|Should Be 'Off'  
+    Start-ConsoleAppender
+     $Appender.Threshold|Should Be 'Debug'
+  }
+
+  It "Must convert a string to Log4Net.Core.Level" {
+    $Repository=[LogManager]::GetRepository('Test')
+    $Result=ConvertTo-Log4NetCoreLevel -Repository $Repository.Name 'Debug'
+    $Result.Equals([Log4net.Core.Level]::Debug)
+    
+    $ScriptLevel= new-object log4net.Core.Level 41000,'SCRIPT'
+    $Repository.LevelMap.Add($ScriptLevel)
+    $Result=ConvertTo-Log4NetCoreLevel -Repository $Repository.Name 'SCRIPT'
+    $Result.Equals($ScriptLevel) 
+  }
+  
+  It "Must reset the configuration of the 'Test' repository" {
+    Test-Repository 'Test' -Configured | Should Be $true
+    Stop-Log4Net -$RepositoryName 'Test'
+    Test-Repository 'Test' -Configured | Should Be $false
+    $Repository.GetAppenders().Count | Should Be 0
+  }
+      Start-Log4Net -Repository $Repository -Path "$PSScriptRoot\BasicLog4Posh.Config.xml"
+    Test-Repository 'Test' -Configured | Should Be $true 
+  
+  It "Start-Log4Net reconfigure the repository 'Test' with a new xml file" -skip:$(Test-Repository 'Test'){ 
+    $Repository=[LogManager]::GetRepository('Test') 
+    Start-Log4Net -Repository $Repository -Path "$PSScriptRoot\ThreeAppenders.Config.xml
+"
+    Test-Repository 'Test' -Configured | Should Be $true 
+  }
+ 
+  It "Must exist three appender"{   
+    $Repository=[LogManager]::GetRepository('Test')   
+    $Repository.GetAppenders().Count| Should be 3
+  }
+  
+  It "Must exist two logger"{     
+    $Repository=[LogManager]::GetRepository('Test')   
+    $Repository.GetCurrentLoggers().Count| Should be 2
+  }
+ 
+  It "Must loggers are not null"{  
+    [LogManager]::GetLogger('Test','DebugLogger')|Should Not BeNullOrEmpty
+    [LogManager]::GetLogger('Test','InfoLogger')|Should Not BeNullOrEmpty
   }
  }
 
@@ -77,13 +143,9 @@ Describe "Log4Posh standalone - basic" {
  }
 }
 
-
-
-Remove-Module Log4Posh -Force
-Import-Module  "..\Release\Log4Posh\Log4Posh.psd1" -Force
-Import-Module  "..\Release\Log4Posh\Demos\Module1\Module1.psd1" -Force
-
-InModuleScope Module1 {
+# bug de portée ? fonctionne en locale mais pas dans PSake
+ Import-Module  "..\Release\Log4Posh\Demos\Module1\Module1.psd1"
+ InModuleScope Module1 {
 
   Describe "Log4Posh inside a module - basic" {
 
@@ -94,10 +156,10 @@ InModuleScope Module1 {
     }
   
     It "Must exist the repository 'Module1'"{   
-     $Repository=[LogManager]::GetRepository('Module1') | Should Be $true
+     [LogManager]::GetRepository('Module1') | Should Not BeNullOrEmpty
     }
 
-    It "Verify if the repository 'Module1' is configured" {     
+    It "Verify if the repository 'Module1' is configured" {  
       Test-Repository 'Module1' -Configured | Should Be $true
     }
  
@@ -129,6 +191,7 @@ InModuleScope Module1 {
     }
   }
 
+  #  #$env:TEMP\TestAppendersLG4PS.log
   # Context "When there error" {
   #   It "Verify if a unknown repository not exist" -skip:$(Test-Repository 'Pester') {     
   #     Test-Repository 'Pester' | Should Be $false
@@ -169,11 +232,6 @@ InModuleScope Module1 {
 
 <#
 Start-Log4Net
-1- Start-Log4Net $Repository $XmlConfigPath 
- fichier inexistant
- fichier xml erroné/invalide
- teste les appenders
- teste les loggers
 
 2- Start-Log4Net $Repository $XmlConfigPath 
  Même chose mais avec un module
@@ -183,14 +241,6 @@ Initialize-Log4NetModule
  Même chose mais avec un script
  Initialize-Log4NetScript
 
-Stop-Log4Net
-  implication pour 1 module : import M1
-  implication pour 2 modules : import M1,M2  Remove M1 -> M2 fonctionne tjr ?
-  implication pour 2 modules : import M1  Remove M2 -> M1 fonctionne  ?
-
-Start-ConsoleAppender
-Stop-ConsoleAppender
-
 Get-Log4NetLogger
 
 
@@ -198,9 +248,8 @@ Set-Log4NetAppenderFileName
 Get-Log4NetAppenderFileName
 
 
-ConvertTo-Log4NetCoreLevel
 Get-DefaultAppenderFileName
-Get-DefaultRepositoryName
+
 Get-Log4NetFileAppender
 
 Get-Log4NetRepository
@@ -211,7 +260,7 @@ Set-Log4NetLoggerLevel
 Set-Log4NetRepositoryThreshold
 Set-LogDebugging
 Switch-AppenderFileName
-Test-Repository
+
 
 
 
