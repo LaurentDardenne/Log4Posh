@@ -819,21 +819,39 @@ Function New-Log4NetCoreLevel {
      Create a new level.
      Levels have a numeric Value that defines the relative ordering between levels. Two Levels with the same Value are deemed to be equivalent.
      The levels that are recognized by log4net are set for each Repository and each repository can have different levels defined. 
+     
+     The levels are stored in the LevelMap on the repository : 
+      $Repository.LevelMap.AllLevels
+      $Repository.LevelMap['Debug']
 #> 
   Param (
      #Name of the module to initialize
      #This is to the name of the repository
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$true)]
-   [string] $RepositoryName
+   [string] $RepositoryName,
+    
+    #Levels have a numeric Value that defines the relative ordering between levels. Two Levels with the same Value are deemed to be equivalent.
+    [Parameter(Position=1, Mandatory=$true)]
+   [int] $Level, 
+   
+    #Name of the level
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=2, Mandatory=$true)]
+   [string] $LevelName, 
+
+    #Each level has a DisplayName in addition to its Name. The DisplayName is the string that is written into the output log. 
+    #By default the display name is the same as the level name, but this can be used to alias levels or to localize the log output.  
+     [Parameter(Position=3)]
+   [string] $DisplayName
   )
 
-    # TODO $Repository=[LogManager]::GetRepository('Test')
-    # $Result=ConvertTo-Log4NetCoreLevel -Repository $Repository.Name 'Debug'
-    # $Result.Equals([Log4net.Core.Level]::Debug)
-    
-    # $ScriptLevel= new-object log4net.Core.Level 41000,'SCRIPT'
-    # $Repository.LevelMap.Add($ScriptLevel)
+    $Repository=[LogManager]::GetRepository($RepositoryName)
+    if ($PSBoundParameters.ContainsKey('DisplayName'))
+    { $ScriptLevel= new-object log4net.Core.Level $Level,$LevelName,$DisplayName }
+    else
+    { $ScriptLevel= new-object log4net.Core.Level $Level,$LevelName }
+    $Repository.LevelMap.Add($ScriptLevel)
 }
 
 # ----------- Suppression des objets du Wrapper -------------------------------------------------------------------------
