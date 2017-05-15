@@ -1,6 +1,6 @@
 ﻿
-Import-Module  "..\Release\Log4Posh\Log4Posh.psd1" -Force
-Write-Warning "Work in progress"
+Import-Module  "..\Release\Log4Posh\Log4Posh.psd1" -Force -Global
+Import-Module  "..\Release\Log4Posh\Demos\Module1\Module1.psd1" -Global
 
 Describe "Log4Posh standalone - basic" {
 
@@ -10,21 +10,28 @@ Describe "Log4Posh standalone - basic" {
     [log4net.LogManager] -eq [LogManager] | Should Be $true
   }
  
-  It "The default repository name is exactly 'log4net-default-repository'"{
+  It "The default repository name is exactly 'log4net-default-repository'" {
     Get-DefaultRepositoryName|Should BeExactly 'log4net-default-repository'
   }
   
-  It "The names of a repository is case sensitive"{
-    [LogManager]::GetRepository('log4net-default-repository') | Should Not Throw 
-    [LogManager]::GetRepository('Log4net-default-repository') | Should Throw 
+  It "The names of a repository is case sensitive" {
+    { [LogManager]::GetRepository('log4net-default-repository') } | Should Not Throw 
+    { [LogManager]::GetRepository('Log4net-default-repository') } | Should Throw 
   }
-  #todo case avec GetReposot
-  
+
+  #todo si PS v6 portable
   # if (($PSVersionTable.Keys -contains "PSEdition") -and ($PSVersionTable.PSEdition -eq 'Desktop')) 
   #  { $LogShortCut.LogColoredConsole = [log4net.Appender.ColoredConsoleAppender] ...
 
-  It "Start-Log4Net configure a repository with a xml file" -skip:$(Test-Repository 'Test'){ 
-    $Repository=[LogManager]::CreateRepository('Test') 
+  It "Start-Log4Net configure a repository with a xml file" { 
+    if (Test-Repository 'Test')
+    { 
+       Stop-Log4Net -Repository 'Test' 
+       $Repository=[LogManager]::GetRepository('Test')
+    }
+    else
+    { $Repository=[LogManager]::CreateRepository('Test') }
+    
     Start-Log4Net -Repository $Repository -Path "$PSScriptRoot\BasicLog4Posh.Config.xml"
     Test-Repository 'Test' -Configured | Should Be $true 
   }
@@ -49,7 +56,7 @@ Describe "Log4Posh standalone - basic" {
  
   It "Must logger works"{  
     $DebugLogger=[LogManager]::GetLogger('Test','DebugLogger')
-    {$DebugLogger.PSDebug('Test')}| Should Not Throw 
+    {$DebugLogger.PSDebug('Message - Console - Main context')}| Should Not Throw 
     #todo file
   }
  
@@ -57,9 +64,9 @@ Describe "Log4Posh standalone - basic" {
     $DebugLogger=[LogManager]::GetLogger('Test','DebugLogger')
     $Appender=$DebugLogger.Logger.Appenders | Where-Object { $_.Name -eq 'Console'}
      $Appender.Threshold|Should Be 'Debug'
-    Stop-ConsoleAppender 
+    Stop-ConsoleAppender -Logger $DebugLogger
      $Appender.Threshold|Should Be 'Off'  
-    Start-ConsoleAppender
+    Start-ConsoleAppender -Logger $DebugLogger
      $Appender.Threshold|Should Be 'Debug'
   }
 
@@ -76,17 +83,17 @@ Describe "Log4Posh standalone - basic" {
   
   It "Must reset the configuration of the 'Test' repository" {
     Test-Repository 'Test' -Configured | Should Be $true
-    Stop-Log4Net -$RepositoryName 'Test'
+    Stop-Log4Net -RepositoryName 'Test'
     Test-Repository 'Test' -Configured | Should Be $false
+    $Repository=[LogManager]::GetRepository('Test')
     $Repository.GetAppenders().Count | Should Be 0
   }
-      Start-Log4Net -Repository $Repository -Path "$PSScriptRoot\BasicLog4Posh.Config.xml"
-    Test-Repository 'Test' -Configured | Should Be $true 
   
-  It "Start-Log4Net reconfigure the repository 'Test' with a new xml file" -skip:$(Test-Repository 'Test'){ 
+  It "Start-Log4Net reconfigure the repository 'Test' with a new xml file" { 
+    if (Test-Repository 'Test')
+    { Stop-Log4Net -Repository 'Test' }
     $Repository=[LogManager]::GetRepository('Test') 
-    Start-Log4Net -Repository $Repository -Path "$PSScriptRoot\ThreeAppenders.Config.xml
-"
+    Start-Log4Net -Repository $Repository -Path "$PSScriptRoot\ThreeAppenders.Config.xml"
     Test-Repository 'Test' -Configured | Should Be $true 
   }
  
@@ -107,6 +114,7 @@ Describe "Log4Posh standalone - basic" {
  }
 
  Context "When there error" {
+   #Log4Net repository can not be removed While the dll is loaded, but they can be reconfigured.
   It "Verify if a unknown repository not exist" -skip:$(Test-Repository 'Pester') {     
     Test-Repository 'Pester' | Should Be $false
   }
@@ -143,17 +151,9 @@ Describe "Log4Posh standalone - basic" {
  }
 }
 
-# bug de portée ? fonctionne en locale mais pas dans PSake
- Import-Module  "..\Release\Log4Posh\Demos\Module1\Module1.psd1"
- InModuleScope Module1 {
-
-  Describe "Log4Posh inside a module - basic" {
+Describe "Log4Posh used by module - basic" {
 
   Context "When there is no error" {
-
-    It "Log4Net assemblie loaded, [LogManager] must existed"{
-      [log4net.LogManager] -eq [LogManager] | Should Be $true
-    }
   
     It "Must exist the repository 'Module1'"{   
      [LogManager]::GetRepository('Module1') | Should Not BeNullOrEmpty
@@ -177,20 +177,25 @@ Describe "Log4Posh standalone - basic" {
       [LogManager]::GetLogger('Module1','DebugLogger')|Should Not BeNullOrEmpty
       [LogManager]::GetLogger('Module1','InfoLogger')|Should Not BeNullOrEmpty
     }
-    
-    It "Must TypeData loaded"{  
-      Get-TypeData log4net.Core.LogImpl|Should Not BeNullOrEmpty
-    }
-   
+  }
+}
+
+InModuleScope Module1 {
+  Describe "Log4Posh used by module - InModuleScope " {
+
+   Context "When there is no error" {
+     #The name of the repository is set by an ETS member (log4net.Core.LogImpl.Types)
+     #This member use a private variable of the module
     It "Must logger works"{  
-        [LogManager]::GetRepository('Module1')|
-        Get-Log4NetLogger -Name 'InfoLogger','DebugLogger'|
-        Set-Log4NetAppenderThreshold 'Console' -DebugLevel
+     [LogManager]::GetRepository('Module1')|
+       Get-Log4NetLogger -Name 'InfoLogger','DebugLogger'|
+       Set-Log4NetAppenderThreshold 'Console' -DebugLevel
      $DebugLogger=[LogManager]::GetLogger('Module1','DebugLogger')
-     {$DebugLogger.PSDebug('Test')}| Should Not Throw 
+     {$DebugLogger.PSDebug('Message - Console - Module1 context')}| Should Not Throw 
     }
   }
-
+ }
+}
   #  #$env:TEMP\TestAppendersLG4PS.log
   # Context "When there error" {
   #   It "Verify if a unknown repository not exist" -skip:$(Test-Repository 'Pester') {     
@@ -227,8 +232,6 @@ Describe "Log4Posh standalone - basic" {
   #   }
   #   }
   # }
- }
-}
 
 <#
 Start-Log4Net
