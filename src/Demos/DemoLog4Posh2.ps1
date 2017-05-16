@@ -110,7 +110,8 @@ Write-host "`r`nDisplays some details of log files :" -foreground yellow
 'Module1','Module2','Module3'|
   Get-Log4NetRepository|
   Get-Log4NetFileAppender -All|
-  Select-Object Name,File,LockingModel,RepositoryName|Format-List -GroupBy RepositoryName
+  Select-Object Name,File,LockingModel,RepositoryName|Format-List -GroupBy RepositoryName|Out-String
+  #Out-String Workaroud for PS v2
 
 $Repo= [Log4net.LogManager]::GetRepository((Get-DefaultRepositoryName))
 Write-host "`r`nTry to display the appenders." -foreground yellow

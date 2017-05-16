@@ -1,4 +1,10 @@
-﻿Function Demo {
+﻿function Get-ScriptDirectory
+{  
+  $Invocation = (Get-Variable MyInvocation -Scope 1).Value
+  Split-Path $Invocation.MyCommand.Path
+}
+
+Function Demo {
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Scope="Function")]
 param()
  #Charge le module prérequis
@@ -7,6 +13,7 @@ if ($null -eq $M)
 { Import-Module Log4Posh }
 
 #Charge les modules de démos utilisant log4posh
+if(!$PSScriptRoot){ $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent }
 Set-Location  $PSScriptRoot
  [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $env:PSModulePath +=";$pwd"
@@ -65,4 +72,8 @@ Write-Host $Code -foreground yellow
 Write-Host "Call the function Module1.ATrois"
 ATrois
 }
+
+if(!$PSScriptRoot)
+{  $PSScriptRoot = Get-ScriptDirectory }
+
 . Demo
