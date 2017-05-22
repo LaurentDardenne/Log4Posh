@@ -1,4 +1,8 @@
-﻿Version 2.1.0
+﻿Version 2.1.2
+  FIX : 
+     In the manifest the key 'VariableToExport' need Export-ModuleMember -Variable * -Function * -Alias *
+   
+Version 2.1.0
      
    CHANGE : 
      Rename the function Get-Log4NetShortcuts to Get-Log4NetShortcut

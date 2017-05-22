@@ -1,4 +1,8 @@
-﻿2017-05-15  Version 2.1.1
+﻿2017-05-15  Version 2.1.2
+  Fix 
+   In the manifest the key 'VariableToExport' need Export-ModuleMember -Variable * -Function * -Alias *
+
+2017-05-15  Version 2.1.1
   Fix 
     Start-Log4Net: XmlConfigurator use [Environment]::CurrentDirectory not the Powershell location
    

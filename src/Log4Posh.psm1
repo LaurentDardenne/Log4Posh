@@ -874,3 +874,4 @@ $MyInvocation.MyCommand.ScriptBlock.Module.AccessMode="ReadOnly"
 Set-Alias -name saca  -value Start-ConsoleAppender
 Set-Alias -name spca  -value Stop-ConsoleAppender
  
+Export-ModuleMember -Variable * -Function * -Alias *
