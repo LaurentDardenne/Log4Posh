@@ -24,7 +24,7 @@ if (($PSVersionTable.Keys -contains "PSEdition") -and ($PSVersionTable.PSEdition
    Write-Verbose "Loading : $psScriptRoot\core\log4net.dll"    
    Add-Type -Path "$psScriptRoot\core\log4net.dll"
 
-  #todo Test
+  #todo 
     #https://windowsserver.uservoice.com/forums/295068-nano-server/suggestions/13870437-powershell-core-add-type-bug-unable-to-locate-cor
     #     #IsNanoServer: from NanoServerPackage.psm1
     #    $operatingSystem = Get-CimInstance -ClassName win32_operatingsystem
@@ -47,49 +47,6 @@ else
   [log4net.LogManager]::GetRepository() > $null
 }
 
-
-#todo
-#https://github.com/PowerShell/PowerShell/issues/2578
-# /// suggested alternative (about 100 times faster)
-# public static class ProcessInfoUtil
-# {
-# 	public static System.Diagnostics.Process GetParentProcess() { return ParentProcessId == 0 ? null : System.Diagnostics.Process.GetProcessById(ParentProcessId); }
-# 
-# 	public static readonly int ParentProcessId = GetParentProcessId();
-# 
-# 	private static int GetParentProcessId()
-# 	{
-# 		var pi = new PROCESS_BASIC_INFORMATION();
-# 		int actual;
-# 		if (0 == NativeMethods.NtQueryInformationProcess(new IntPtr(-1), 0/*processbasicInformation*/, ref pi, pi.Size, out actual))
-# 		{
-# 			return (int)pi.InheritedFromUniqueProcessId;
-# 		}
-# 		else 
-# 		{
-# 			return 0;
-# 		}
-# 	}
-# 
-# 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-# 	private struct PROCESS_BASIC_INFORMATION
-# 	{
-# 		public IntPtr ExitStatus;
-# 		public IntPtr PebBaseAddress;
-# 		public IntPtr AffinityMask;
-# 		public IntPtr BasePriority;
-# 		public UIntPtr UniqueProcessId;
-# 		public IntPtr InheritedFromUniqueProcessId;
-# 
-# 		public int Size { get { return Marshal.SizeOf(typeof(PROCESS_BASIC_INFORMATION));}}
-# 	}
-# 
-# 	static class NativeMethods
-# 	{
-# 	[DllImport("NtDll", SetLastError=true)]
-# 	public static extern int NtQueryInformationProcess(IntPtr ProcessHandle, int processInformationClass, ref PROCESS_BASIC_INFORMATION ProcessInformation, int processInformationLength, out int returnLength);
-# 	}
-# }
 
 Function Get-ParentProcess {
 #Permet de retrouver le process parent ayant exécuté 
@@ -117,13 +74,13 @@ Function Get-ParentProcess {
 
  
  if ($ExecutionContext.host.Name -eq 'ServerRemoteHost')
- {$_pid= (Get-ParentProcess  $PID)[0].Id}
+ {$ParentPID= (Get-ParentProcess  $PID)[0].Id}
  else
- {$_pid= $pid}
+ {$ParentPID= $pid}
 
   #Propriété statique, indique le process PowerShell courant
   #Dans un job local ce n'est pas le process courant, mais le parent 
-[log4net.GlobalContext]::Properties.Item("Owner")=$_pid
+[log4net.GlobalContext]::Properties.Item("Owner")=$ParentPID
 [log4net.GlobalContext]::Properties.Item("RunspaceId")=[System.Management.Automation.Runspaces.Runspace]::DefaultRunspace.InstanceId
 
   #Propriété dynamique, Log4net appel la méthode ToString de l'objet référencé.
@@ -460,13 +417,14 @@ function Get-Log4NetLogger {
 <#
     .SYNOPSIS
       Returns one or more loggers from the repository $Repository.
+      If the named logger already exists, then the existing instance will be returned. Otherwise, a new instance is created. 
       The name 'Root' is valid.
 #>           
   Param (   
       [ValidateNotNullOrEmpty()]
       [Parameter(Position=0,Mandatory=$True,ValueFromPipeline = $true)] 
-    [log4net.Repository.ILoggerRepository] $Repository=$([Log4net.LogManager]::GetRepository($script:DefaultRepositoryName)),
-    
+    [log4net.Repository.ILoggerRepository] $Repository, 
+     
       [ValidateNotNullOrEmpty()]
       [Parameter(Position=1,Mandatory=$True)]
     [String[]] $Name
@@ -477,7 +435,7 @@ function Get-Log4NetLogger {
  process {
    foreach ($Current in $Name)
    {
-     [LogManager]::GetLogger($Repository.Name,$Current)
+     [LogManager]::GetLogger($Repository.Name,$Current) 
    }
  }
 } #Get-Log4NetLogger
@@ -490,7 +448,7 @@ function Get-Log4NetFileAppender{
  param(
       [ValidateNotNullOrEmpty()]
       [Parameter(Position=0,Mandatory=$True,ValueFromPipeline = $true)]
-   [log4net.Repository.ILoggerRepository] $Repository=$([Log4net.LogManager]::GetRepository($script:DefaultRepositoryName)),
+   [log4net.Repository.ILoggerRepository] $Repository,
 
     [ValidateNotNullOrEmpty()]
     [Parameter(Position=1,Mandatory=$false)]  
@@ -595,7 +553,7 @@ function Get-DefaultAppenderFileName {
   Param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$true)]
-   [string] $ModuleName
+   [string] $ModuleName 
   )
          
  $Module=Get-Module $ModuleName
@@ -617,6 +575,7 @@ function Get-Log4NetAppenderFileName {
   Param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
+     [Alias('RepositoryName')]
    [string] $ModuleName,
   
     [Parameter(ParameterSetName="External")]
@@ -627,7 +586,6 @@ function Get-Log4NetAppenderFileName {
   )
 
  process {  
-    #todo pour toutes les fonctions revoir si le repo est configuré       
    $Repository=Get-Log4NetRepository $ModuleName 
    if ($null -ne $Repository) 
    { 
@@ -641,7 +599,13 @@ function Get-Log4NetAppenderFileName {
    }  
  }
 }#Get-Log4NetAppenderFileName
-         
+
+ #<%REMOVE%> todo [Obsolete('Use instead the function Initialize-Log4Net.')]    Initialize-Log4Net (use XML config) (PSN=Default-Module)
+ #<%REMOVE%> todo #$DefaultLogFile obsolete.
+ #<%REMOVE%>  N'est pas documenté, n'est pas mis à jour, ex Get-DefaultAppenderFileName
+ #<%REMOVE%>  A l'origine la configuration affecte la même valeur aux 2 appenders, mais la modification du nom de fichier peut affecté un seul appender.
+ #<%REMOVE%>  Utiliser plutot une fonction. De plus la variable peut être écrasée par un autre script.
+ #<%REMOVE%>  Get-Log4NetAppenderFileName -All -> return PSObject @{loggerName='';AppenderName='';File=''} .ToString(->File)
 function Initialize-Log4NetModule {
 <#
     .SYNOPSIS
@@ -663,9 +627,19 @@ function Initialize-Log4NetModule {
      #Path of default log file
      #The directory is created if it do not exist
      [ValidateNotNullOrEmpty()]
-     [Parameter(Position=2, Mandatory=$True)]  
-   [string] $DefaultLogFilePath
+     [Parameter(Position=2)]  
+   [string] $DefaultLogFilePath 
   )
+  function getDefaultFileName {
+    $FileName=($DebugLogger.Logger.Appenders|Where-Object {$_.Name -eq 'FileInternal'}).File
+    if ($FileName -eq ($InfoLogger.Logger.Appenders|Where-Object {$_.name -eq 'FileExternal'}).File)
+    {
+      return $Filename 
+    }
+    else
+    { return $null}
+  }
+
   if (Test-Repository $RepositoryName)
   { 
    $Repository=[LogManager]::GetRepository($RepositoryName)
@@ -680,18 +654,27 @@ function Initialize-Log4NetModule {
    #les noms des loggers sont normés
   Set-Variable -Name DebugLogger -Value ([LogManager]::GetLogger($RepositoryName,'DebugLogger')) -Scope Script
   Set-Variable -Name InfoLogger -Value ([LogManager]::GetLogger($RepositoryName,'InfoLogger')) -Scope Script
+ 
+  if ($PSBoundParameters.ContainsKey('DefaultLogFilePath'))
+  {
+    $ParentPath=Split-Path $DefaultLogFilePath -parent
+    if (-not (Test-Path $ParentPath))
+    { New-Item -Path $ParentPath -ItemType Directory }
 
-  $ParentPath=Split-Path $DefaultLogFilePath -parent
-  if (-not (Test-Path $ParentPath))
-  { New-Item -Path $ParentPath -ItemType Directory }
-  Set-Variable -Name DefaultLogFile -Value $DefaultLogFilePath -Scope Script
-  
-   #Initialise le nom de fichier des FileAppenders dédiés au module
-  Switch-AppenderFileName -RepositoryName $RepositoryName FileInternal $script:DefaultLogFile
-  Switch-AppenderFileName -RepositoryName $RepositoryName FileExternal $script:DefaultLogFile
+    Set-Variable -Name DefaultLogFile -Value $DefaultLogFilePath -Scope Script 
+    
+     #Initialise le nom de fichier des FileAppenders dédiés au module
+    Switch-AppenderFileName -RepositoryName $RepositoryName FileInternal $script:DefaultLogFile
+    Switch-AppenderFileName -RepositoryName $RepositoryName FileExternal $script:DefaultLogFile
+  }
+  else 
+  {
+    Set-Variable -Name DefaultLogFile -Value (getDefaultFileName) -Scope Script
+  }
 }#Initialize-Log4NetModule
 
-function Initialize-Log4NetScript {
+#<%REMOVE%> todo [Obsolete('Use instead the function Initialize-Log4Net.')]    Initialize-Log4Net -Default (PSN=Script)
+function Initialize-Log4NetScript { 
 <#
     .SYNOPSIS
       Initializes the default Log4Net repository      
@@ -739,21 +722,22 @@ function Initialize-Log4NetScript {
   }  
 }#Initialize-Log4NetScript
 
-function Switch-AppenderFileName{
+function Switch-AppenderFileName{ 
 <#
     .SYNOPSIS
       Modifies the name of the file associated with the FileAppender named $AppenderName of a repository $Name       
 #> 
 [CmdletBinding(DefaultParameterSetName="NewName")]
  param(
-   #Nom du repository, par convention est identique au nom du module.
+    #Name of the repository.
       [ValidateNotNullOrEmpty()]
       [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
    [String] $RepositoryName,  
   
+    #<%REMOVE%> todo localisation
+    #Par défaut nom de l'appender dédié aux logs fonctionnels de chaque module utilisant Log4Posh 
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=1, Mandatory=$false)]  
-    #Par défaut nom de l'appender dédié aux logs fonctionnels de chaque module utilisant Log4Posh
    [string] $AppenderName="FileExternal",
   
      [ValidateNotNullOrEmpty()]
@@ -790,17 +774,6 @@ function Set-LogDebugging{
 
  $State = -not $Off.IsPresent  
  [log4net.Util.LogLog]::InternalDebugging=$State
-#  todo Add. Config file or by code ?
-#  <system.diagnostics>
-#     <trace autoflush="true">
-#         <listeners>
-#             <add 
-#                 name="textWriterTraceListener" 
-#                 type="System.Diagnostics.TextWriterTraceListener" 
-#                 initializeData="C:\tmp\log4net.txt" />
-#         </listeners>
-#     </trace>
-# </system.diagnostics>
 }
 
 function Get-LogDebugging{
