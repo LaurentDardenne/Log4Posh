@@ -5,14 +5,18 @@
      <Members> 
        <ScriptMethod> 
          <!-- Insére au début du message à logger le nom du module courant.
-              Chaque module utilisant Log4Posh déclare une variable privée $lg4n_Modulename,
+              Chaque module utilisant Log4Posh déclare une variable privée $lg4n_ModuleName,
               le module Log4Posh déclare une variable privée LogJobName. 
               Celle-ci est ajoutée dans [log4net.GlobalContext]::Properties["LogJobName"]
+              
+              Chaque script utilisant Log4Posh déclare une variable $lg4n_ScriptName.
 
               Insert the name of the current module at the beginning of the message to be logged.
-              Each module using Log4Posh declares a private variable $ lg4n_Modulename,
+              Each module using Log4Posh declares a private variable $ lg4n_ModuleName,
               The Log4Posh module declares a private variable LogJobName
               This is added in [log4net.GlobalContext]::Properties ["LogJobName"]
+
+              Each script using Log4Posh declares a variable $ lg4n_ScriptName,
              
               Overload :
                PSDebug(Object) : Converts the message object (passed as parameter) to a string by invoking the appropriate IObjectRenderer.
