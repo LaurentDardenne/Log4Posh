@@ -23,7 +23,7 @@ Write-host "`r`nDisplays the appenders of each logger declared in the specified 
 Write-host "`r`nDeletes the log files associated with the specified modules" -foreground yellow
 'Module1','Module2','Module3'| 
  Get-Log4NetAppenderFileName -Internal|
- Remove-Item -path {$_}
+ Remove-Item -path {$_} -EA SilentlyContinue
 
  Write-host "`r`nBy default, loggers do not send to the console" -foreground yellow
  ATrois

@@ -38,7 +38,7 @@ Write-host "`r`nDisplays the appenders of each logger declared in the specified 
  Write-Host "Removes the log files associated with the modules" 
 'Module1','Module2','Module3'| 
   Get-Log4NetAppenderFileName -Internal | 
-  Remove-Item -path {$_}
+  Remove-Item -path {$_} -EA SilentlyContinue
 
 
 Write-Host "Call the function Module1.ATrois. By default, loggers do not write on the console."
