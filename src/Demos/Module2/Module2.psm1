@@ -1,5 +1,7 @@
 ﻿$Script:lg4n_ModuleName=$MyInvocation.MyCommand.ScriptBlock.Module.Name
+ #see \TypeData\log4net.Core.LogImpl.Types.ps1xml
 
+ 
    #Récupère le code d'une fonction publique du module Log4Posh (Prérequis)
    #et l'exécute dans la portée du module
 $InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4NetModule}")

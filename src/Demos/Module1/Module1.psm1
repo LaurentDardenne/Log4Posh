@@ -1,5 +1,6 @@
 ﻿$Script:lg4n_ModuleName=$MyInvocation.MyCommand.ScriptBlock.Module.Name
-
+ #see \TypeData\log4net.Core.LogImpl.Types.ps1xml
+ 
    #Récupère le code d'une fonction publique du module Log4Posh (Prérequis)
    #et l'exécute dans la portée du module.
    #Car, si on passe un scriptblock qui utilise la variable $PSscriptRoot,
