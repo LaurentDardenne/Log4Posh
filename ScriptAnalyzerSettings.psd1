@@ -1,5 +1,4 @@
-﻿#TODO : https://github.com/PowerShell/PSScriptAnalyzer/issues/675
-@{
+﻿@{
     # Use Severity when you want to limit the generated diagnostic records to a
     # subset of: Error, Warning and Information.
     # Uncomment the following line if you only want Errors and Warnings but

@@ -345,7 +345,7 @@ Task RemoveConditionnal -requiredVariables BuildConfiguration, ModuleOutDir{
  #bug scope/limit PSake ?
  # The first call works, but not the followings
  #-Force reload the ScriptToProcess
- Import-Module Template -Force #todo $TemplateDefaultSettings -> PSSake Properties ?
+ Import-Module Template -Force 
 
  try {
    $TempDirectory=New-TemporaryDirectory
