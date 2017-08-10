@@ -1,5 +1,4 @@
-﻿
-Import-Module  "..\Release\Log4Posh\Log4Posh.psd1" -Force -Global
+﻿Import-Module  "..\Release\Log4Posh\Log4Posh.psd1" -Force -Global
 Import-Module  "..\Release\Log4Posh\Demos\Module1\Module1.psd1" -Global
 
 Describe "Log4Posh standalone - basic" {
@@ -18,10 +17,6 @@ Describe "Log4Posh standalone - basic" {
     { [LogManager]::GetRepository('log4net-default-repository') } | Should Not Throw 
     { [LogManager]::GetRepository('Log4net-default-repository') } | Should Throw 
   }
-
-  #todo si PS v6 portable
-  # if (($PSVersionTable.Keys -contains "PSEdition") -and ($PSVersionTable.PSEdition -eq 'Desktop')) 
-  #  { $LogShortCut.LogColoredConsole = [log4net.Appender.ColoredConsoleAppender] ...
 
   It "Start-Log4Net configure a repository with a xml file" { 
     if (Test-Repository 'Test')
@@ -57,7 +52,6 @@ Describe "Log4Posh standalone - basic" {
   It "Must logger works"{  
     $DebugLogger=[LogManager]::GetLogger('Test','DebugLogger')
     {$DebugLogger.PSDebug('Message - Console - Main context')}| Should Not Throw 
-    #todo file
   }
  
   It "Must enable the console appender, then disabled it"{
@@ -119,10 +113,10 @@ Describe "Log4Posh standalone - basic" {
     Test-Repository 'Pester' | Should Be $false
   }
   
-  It "Verify if the a new repository 'Pester' is not configured" -skip:$(Test-Repository 'Pester'){     
+  It "Verify if a new repository 'Pester' is not configured" -skip:$(Test-Repository 'Pester'){     
    try {
      $Repository=[LogManager]::CreateRepository('Pester') 
-     Test-Repository 'Pester' -Configured | Should Be $false
+     Test-Repository $Repository.Name -Configured | Should Be $false
    } 
    catch {
       $_.FullyQualifiedErrorId | Should be 'RepositoryNotConfigured,Test-Repository'
@@ -196,42 +190,6 @@ InModuleScope Module1 {
   }
  }
 }
-  #  #$env:TEMP\TestAppendersLG4PS.log
-  # Context "When there error" {
-  #   It "Verify if a unknown repository not exist" -skip:$(Test-Repository 'Pester') {     
-  #     Test-Repository 'Pester' | Should Be $false
-  #   }
-    
-  #   It "Verify if the a new repository 'Pester' is not configured" -skip:$(Test-Repository 'Pester'){     
-  #   try {
-  #     $Repository=[LogManager]::CreateRepository('Pester') 
-  #     Test-Repository 'Pester' -Configured | Should Be $false
-  #   } 
-  #   catch {
-  #       $_.FullyQualifiedErrorId | Should be 'RepositoryNotConfigured,Test-Repository'
-  #   }
-  #   }
-
-  #   It "Start-Log4Net throw a FileNotFoundException" -skip:$(Test-Repository 'Test2'){ 
-  #   $Repository=[LogManager]::CreateRepository('Test2') 
-  #   try {
-  #     Start-Log4Net -Repository $Repository -Path "$PSScriptRoot\NotExistLog4Posh.Config.xml"
-  #   }
-  #   catch {
-  #     $_.FullyQualifiedErrorId | Should be 'XMLConfigurationFile,Start-Log4Net'
-  #   }
-  #   }
-
-  #   It "Start-Log4Net throw a XML configuration error. Set 'threshold' property to 'ON' is invalid" -skip:$(Test-Repository 'Test3'){ 
-  #   $Repository=[LogManager]::CreateRepository('Test3') 
-  #   try {
-  #     Start-Log4Net -Repository $Repository -Path "$PSScriptRoot\ErrorLog4Posh.Config.xml"
-  #   }
-  #   catch {
-  #     $_.FullyQualifiedErrorId | Should be 'XMLConfigurationFile,Start-Log4Net'
-  #   }
-  #   }
-  # }
 
 <#
 Start-Log4Net
@@ -263,8 +221,5 @@ Set-Log4NetLoggerLevel
 Set-Log4NetRepositoryThreshold
 Set-LogDebugging
 Switch-AppenderFileName
-
-
-
 
 #>
