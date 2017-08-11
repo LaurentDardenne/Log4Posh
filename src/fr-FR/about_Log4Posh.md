@@ -1,15 +1,15 @@
-﻿Log4Posh est un module basé sur la librairie [Log4Net](http://laurent-dardenne.developpez.com/articles/Windows/PowerShell/UtiliserLog4NetAvecPowerShell) et propose un mécanisme de log pouvant être réutilisé par vos propres modules.
+﻿Log4Posh est un module basé sur la librairie [Log4Net](http://laurent-dardenne.developpez.com/articles/Windows/PowerShell/UtiliserLog4NetAvecPowerShell) et propose un mécanisme de log pouvant être réutilisé par vos propres scripts ou modules.
 Il permet d'implémenter aisément dans le code d'autres modules des traces de debug techniques ou des traces fonctionnelles.
  
 Ces dernières, similaire à un *Write-Verbose*, contiennent des infos de progression d'un traitement et pourront être utilisées par le script principal.
 Afin de valider la présence du module [Log4Posh](https://github.com/LaurentDardenne/Log4Posh/blob/master/Log4Posh.psm1), il est préférable de créer [un manifeste de module](http://ottomatt.pagesperso-orange.fr/Data/Tutoriaux/Powershell/Les-modules-PowerShell/Les-modules-PowerShell.pdf) et d'y renseigner la ligne suivante :
  ```powershell
      #Module de log
-    RequiredModules=@{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="2.0.1"}     
+    RequiredModules=@{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="2.2.0"}     
 ```
 
 ### Modification du fichier de configuration
-Vous pouvez configurer Log4Posh pour votre module en recopiant le fichier _DefaultLog4Posh.Config.xml_ dans le répertoire de votre module.
+Vous pouvez configurer Log4Posh en recopiant le fichier _DefaultLog4Posh.Config.xml_ dans le répertoire de votre script ou de votre module.
 Le nom d'un fichier de log se déclare dans les élements de type FileAppender  :
 ```xml
  <appender name="FileInternal" type="log4net.Appender.RollingFileAppender">
@@ -21,6 +21,7 @@ Plus précisément dans l'élément _file_ :
 Vous pouvez utilisez une variable d'environnement ou un nom de chemin complet.
 
 La fonction _**Get-Log4NetAppenderFileName**_  renvoit les emplacements par défaut des fichiers de log.
+La fonction _**Get-Log4NetAppender**_  renvoit le détail de tous les fichiers de log d'un repository.
 
 Une fois la configuration chargée, la fonction _**Switch-AppenderFileName**_  permet de modifier les emplacements du fichier  associé à un FileAppender.
 
@@ -30,10 +31,11 @@ Une fois la configuration chargée, la fonction _**Switch-AppenderFileName**_  p
 Le module dépend du module log4Posh via un manifeste. Les premières lignes de code du module doivent initialiser le repository Log4Net :
 ```powershell
       #Récupère le code d'une fonction publique du module Log4Posh (Prérequis)
-      #et l'exécute dans la portée du module
+      #et l'exécute dans la portée du module.
+      #Ce code créé les variables $DebugLogger et $InfoLogger dans la portée du module
     $Script:lg4n_ModuleName=$MyInvocation.MyCommand.ScriptBlock.Module.Name
     
-    $InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4NetModule}")
+    $InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
     $Params=@{
       RepositoryName = $Script:lg4n_ModuleName
       XmlConfigPath = "$psScriptRoot\Log4Net.Config.xml"
@@ -42,11 +44,11 @@ Le module dépend du module log4Posh via un manifeste. Les premières lignes de 
     &$InitializeLogging @Params
 
 ```
-La variable privée $lg4n\_ModuleName est référencée dans le fichier de type '[log4net.Core.LogImpl.Types.ps1xml](https://github.com/LaurentDardenne/Log4Posh/blob/master/TypeData/log4net.Core.LogImpl.Types.ps1xml)' et permet d'ajouter le nom du producteur du log.
+La variable privée _$lg4n\_ModuleName_ est référencée dans le fichier de type '[log4net.Core.LogImpl.Types.ps1xml](https://github.com/LaurentDardenne/Log4Posh/blob/master/TypeData/log4net.Core.LogImpl.Types.ps1xml)' et permet d'ajouter le nom du producteur du log.
 Chaque module à son propre fichier de configuration ([Log4Net.Config.xml](https://github.com/LaurentDardenne/Log4Posh/blob/master/DefaultLog4Posh.Config.xml)) et son propre repository. Le nom du repository Log4Net est identique au nom du module, **attention les API Log4Net de gestion des repository sont sensibles à la casse**.
 ### Finalisation du module
 
-Le scriptBlock OnRemove doit contenir l'arrêt du repository lié au module:
+Le scriptBlock _OnRemove_ doit contenir l'arrêt du repository lié au module:
 ```powershell
     $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove= {Stop-Log4Net $Script:lg4n_ModuleName }
 ```
@@ -91,6 +93,42 @@ Par défaut le nom de chemin du fichier de ces FileAppenders pointe sur
 ```
 Ce nom de chemin peut être reconfiguré dynamiquement dans le code du script principal.
 
+## Initialisation des logs dans le code d'un script
+### Utilisation du repository par défaut
+Le script doit charger le module Log4Posh puis configurer le repository par défaut en appelant la fonction Initialize-Log4Net.
+Dans ce cas tous les scripts utiliseraient la même configuration :
+```powershell
+Import-Module Log4Posh
+Initialize-Log4Net -Console All 
+
+$InfoLogger.PSInfo("Name of the productor of the log : $lg4n_ScriptName")
+ $lg4n_ScriptName="DemoScriptWithLog4Posh"
+$InfoLogger.PSInfo("Change the name of the productor of the log : $lg4n_ScriptName")
+```
+La variable $lg4n\_ScriptName est référencée dans le fichier de type '[log4net.Core.LogImpl.Types.ps1xml](https://github.com/LaurentDardenne/Log4Posh/blob/master/TypeData/log4net.Core.LogImpl.Types.ps1xml)' et permet d'ajouter le nom du producteur du log.
+
+### Utilisation d'un repository dédié
+Le script doit charger le module Log4Posh puis appeler la fonction Initialize-Log4Net en précisant le nom du repository et le fichier de configuration xml.
+Dans ce cas chaque script utilise sa propre configuration :
+```powershell
+   #Récupère le code d'une fonction publique du module Log4Posh (Prérequis)
+   #et l'exécute dans la portée du script
+   #Ce code créé les variables $DebugLogger et $InfoLogger dans la portée de l'appelant.
+$InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
+$Params=@{
+  RepositoryName = $MyInvocation.ScriptName
+  XmlConfigPath = "$PSScriptRoot\Demo2Script.Log4Net.Config.xml"
+}
+
+&$InitializeLogging @Params
+```
+A partir de la version 3 de Powershell, vous pouvez également utilisez l'instruction #Requires :
+```powershell
+#Requires -Modules Log4Posh
+ #ou
+#Requires -Modules @{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="2.2.0"}   
+```
+
 ### Le principe
 
 Plusieurs FileAppenders, ou dérivés, peuvent pointer sur un même fichier, que ces FileAppenders soient déclarés dans un ou plusieurs Loggers ne modifie pas cette possibilité.
@@ -110,7 +148,7 @@ Enfin l'initialisation du script principal :
      #Les chemins des FileAppenders nommés FileExternal sont redirigés
      #Les appenders console sont activés
      #Les variables logger sont créées dans la portée de l'appelant de ce script
-    Initialize-Log4NetScript -FileExternal "C:\temp\Main.log" -Console All
+    Initialize-Log4Net -FileExternal "C:\temp\Main.log" -Console All
       
     $InfoLogger.PSInfo("Logger info ready.") 
     $DebugLogger.PSDebug("Logger debug ready.")
@@ -123,7 +161,7 @@ Enfin l'initialisation du script principal :
                   value="[PID:%property{Owner}] [%property{LogJobName}] %-5p %d{yyyy-MM-dd hh:mm:ss} – %message%newline"/>
 ```
 *'Owner'* est le PID de la session Powershell. Si le module est exécuté dans un job, on recherche l'ID du process parent ce qui facilitera le filtrage des lignes de log.
- *'LogJobName'* est le nom du job, paramétrable via la propriété $JobName publiée par le module Log4Posh.
+*'LogJobName'* est le nom du job, paramétrable via la propriété $JobName publiée par le module Log4Posh.
  Ainsi on sait d'où proviennent les logs, mais pour retrouver le nom du producteur on utilisera la méthode synthétique, d'un Logger, nommée PSDebug.
  Celle-ci préfixe le message de log du nom du module où a été appelée la méthode.
  Le code d'usage suivant :
@@ -145,9 +183,9 @@ renvoi la ligne de log ci dessous :
 [PID:5380] [ConsoleHost] DEBUG 2014-03-11 07:29:23 – PsIonic : The file name is 'c:\temp\test.zip'
 ```
 *\[PID:5380\]* est l'ID du process Powershell.
- *\[ConsoleHost\]* est le nom par défaut du job, ici c'est la console Powershell. Pour un job le nom par défaut est 'ServerRemoteHost'.
- *"PsIonic : The file name is 'c:\\temp\\test.zip'"*, est le message préfixé du nom du module.
- Cette dernière partie est produite par cet appel :
+*\[ConsoleHost\]* est le nom par défaut du job, ici c'est la console Powershell. Pour un job le nom par défaut est 'ServerRemoteHost'.
+*"PsIonic : The file name is 'c:\\temp\\test.zip'"*, est le message préfixé du nom du module.
+Cette dernière partie est produite par cet appel :
  ```powershell
     $Logger.PSDebug("The file name is '$ArchivePath'")
 ```
