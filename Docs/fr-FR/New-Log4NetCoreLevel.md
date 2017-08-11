@@ -4,26 +4,16 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-Log4NetAppenderFileName
+# New-Log4NetCoreLevel
 
 ## SYNOPSIS
-Returns the current path of the internal (debug) or external (functional) log file of a module
+{{Fill in the Synopsis}}
 
 ## SYNTAX
 
-### External (Default)
 ```
-Get-Log4NetAppenderFileName [-ModuleName] <String> [-External] [<CommonParameters>]
-```
-
-### Internal
-```
-Get-Log4NetAppenderFileName [-ModuleName] <String> [-Internal] [<CommonParameters>]
-```
-
-### All
-```
-Get-Log4NetAppenderFileName [-ModuleName] <String> [-All] [<CommonParameters>]
+New-Log4NetCoreLevel [-RepositoryName] <String> [-Level] <Int32> [-LevelName] <String>
+ [[-DisplayName] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -40,62 +30,62 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -ModuleName
-{{Fill ModuleName Description}}
+### -DisplayName
+{{Fill DisplayName Description}}
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: RepositoryName
+Aliases: 
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Level
+{{Fill Level Description}}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases: 
 
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
-### -External
-{{Fill External Description}}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: External
-Aliases: 
-
-Required: False
-Position: Named
-Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Internal
-{{Fill Internal Description}}
+### -LevelName
+{{Fill LevelName Description}}
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: Internal
+Type: String
+Parameter Sets: (All)
 Aliases: 
 
-Required: False
-Position: Named
-Default value: False
+Required: True
+Position: 2
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -All
-{{Fill All Description}}
+### -RepositoryName
+{{Fill RepositoryName Description}}
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: All
+Type: String
+Parameter Sets: (All)
 Aliases: 
 
-Required: False
-Position: Named
-Default value: False
+Required: True
+Position: 0
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -105,7 +95,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None
+
 ## OUTPUTS
+
+### System.Object
 
 ## NOTES
 

@@ -21,6 +21,11 @@ Get-Log4NetAppenderFileName [-ModuleName] <String> [-External] [<CommonParameter
 Get-Log4NetAppenderFileName [-ModuleName] <String> [-Internal] [<CommonParameters>]
 ```
 
+### All
+```
+Get-Log4NetAppenderFileName [-ModuleName] <String> [-All] [<CommonParameters>]
+```
+
 ## DESCRIPTION
 {{Fill in the Description}}
 
@@ -41,7 +46,7 @@ PS C:\> {{ Add example code here }}
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases: RepositoryName
 
 Required: True
 Position: 1
@@ -71,6 +76,21 @@ Accept wildcard characters: False
 ```yaml
 Type: SwitchParameter
 Parameter Sets: Internal
+Aliases: 
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -All
+{{Fill All Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: All
 Aliases: 
 
 Required: False

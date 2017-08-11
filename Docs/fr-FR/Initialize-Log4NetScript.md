@@ -7,7 +7,8 @@ schema: 2.0.0
 # Initialize-Log4NetScript
 
 ## SYNOPSIS
-Initializes the default Log4Net repository
+Initializes the default Log4Net repositor
+This fonction is obsolete, use the 'Initialize-Log4Net' function instead.
 
 ## SYNTAX
 

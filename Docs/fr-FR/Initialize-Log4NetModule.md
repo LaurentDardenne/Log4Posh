@@ -8,12 +8,13 @@ schema: 2.0.0
 
 ## SYNOPSIS
 Initializes, for a module, a Log4Net repository and its loggers
-This function is injected into the module using Log4Posh
+This function is injected into the module using Log4Posh.
+This fonction is obsolete, use the 'Initialize-Log4Net' function instead.
 
 ## SYNTAX
 
 ```
-Initialize-Log4NetModule [-RepositoryName] <String> [-XmlConfigPath] <String> [-DefaultLogFilePath] <String>
+Initialize-Log4NetModule [-RepositoryName] <String> [-XmlConfigPath] <String> [[-DefaultLogFilePath] <String>]
  [<CommonParameters>]
 ```
 
@@ -71,7 +72,7 @@ Type: String
 Parameter Sets: (All)
 Aliases: 
 
-Required: True
+Required: False
 Position: 3
 Default value: None
 Accept pipeline input: False
