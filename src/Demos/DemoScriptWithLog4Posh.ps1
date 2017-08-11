@@ -25,7 +25,7 @@ if ($null -eq $M)
 { $m=Import-Module Log4Posh -PassThru}
 
 Write-host "`r`nConfigures the default repository" -foreground yellow
-Initialize-Log4NetScript -Console All 
+Initialize-Log4Net -Console All 
 
 $InfoLogger.PSInfo("Name of the productor of the log : $lg4n_ScriptName")
  [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -41,7 +41,7 @@ Write-host "`r`nShow all created Log4net repositories :"
  Select-Object Name,Configured|
  Format-Table
 
-Write-host "`r`nLog information using the loggers variables declared by the 'Initialize-Log4NetScript' function :" -foreground yellow
+Write-host "`r`nLog information using the loggers variables declared by the 'Initialize-Log4Net' function :" -foreground yellow
 Un
 
 Write-host "`r`nChange the layout for the console logger (utc date)"

@@ -28,7 +28,7 @@ Write-host "`r`nConfigures the default repository" -foreground yellow
 
  #Get the code of a public function of the module Log4Posh (Prerequisite)
  # and executes it within the scope of the module
-$InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4NetModule}")
+$InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
 $RepositoryName = $MyInvocation.ScriptName
 $Params=@{
   RepositoryName = $RepositoryName

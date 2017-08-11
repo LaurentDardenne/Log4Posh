@@ -5,7 +5,7 @@
    #et l'exécute dans la portée du module.
    #Car, si on passe un scriptblock qui utilise la variable $PSscriptRoot,
    #celle-ci reste liée au scriptblock qui l'a créé !!
-$InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4NetModule}")
+$InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
 $Params=@{
   RepositoryName = $Script:lg4n_ModuleName
   XmlConfigPath = "$psScriptRoot\Log4Net.Config.xml"

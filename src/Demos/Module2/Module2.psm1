@@ -4,7 +4,7 @@
  
    #Récupère le code d'une fonction publique du module Log4Posh (Prérequis)
    #et l'exécute dans la portée du module
-$InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4NetModule}")
+$InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
 $Params=@{
   RepositoryName = $Script:lg4n_ModuleName
   XmlConfigPath = "$psScriptRoot\Log4Net.Config.xml"

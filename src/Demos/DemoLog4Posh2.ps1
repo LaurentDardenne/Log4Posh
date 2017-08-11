@@ -122,7 +122,7 @@ $Repo.Configured
 #false
 
 Write-host "`r`nConfigures the default repository" -foreground yellow
-Initialize-Log4NetScript 
+Initialize-Log4Net 
 
 Write-host "`r`nDisplays configured appenders :" -foreground yellow
 $Repo.GetAppenders()
@@ -133,7 +133,7 @@ $Repo.GetCurrentLoggers()|Select-Object Name
 Write-host "`r`nDisplays variables associated with loggers declared (Logger name = Variable name):" -foreground yellow 
 $Repo.GetCurrentLoggers()|Select-Object Name|Get-Variable 
 
-Write-host "`r`nLog information using the loggers variables declared by the 'Initialize-Log4NetScript' function :" -foreground yellow
+Write-host "`r`nLog information using the loggers variables declared by the 'Initialize-Log4Net' function :" -foreground yellow
 $InfoLogger.PSInfo("Logger info ready.")
 $DebugLogger.PSDebug("Logger debug ready.")
 
