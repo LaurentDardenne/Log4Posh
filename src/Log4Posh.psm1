@@ -23,15 +23,6 @@ if (($PSVersionTable.Keys -contains "PSEdition") -and ($PSVersionTable.PSEdition
    { Write-Warning "this OS is not yet tested." }
    Write-Verbose "Loading : $psScriptRoot\core\log4net.dll"    
    Add-Type -Path "$psScriptRoot\core\log4net.dll"
-
-  #todo 
-    #https://windowsserver.uservoice.com/forums/295068-nano-server/suggestions/13870437-powershell-core-add-type-bug-unable-to-locate-cor
-    #     #IsNanoServer: from NanoServerPackage.psm1
-    #    $operatingSystem = Get-CimInstance -ClassName win32_operatingsystem
-    #    $systemSKU = $operatingSystem.OperatingSystemSKU
-    #    $script:isNanoServer = ($systemSKU -eq 109) -or ($systemSKU -eq 144) -or ($systemSKU -eq 143)
-    #if(IsNanoServer) #pb with Add-Type ?
-    # $Dll = [Microsoft.PowerShell.CoreCLR.AssemblyExtensions]::LoadFrom($PSScriptRoot + "\my.coreclr.dll")
     
     #The method GetLoggerRepository() do not exist because GetCallingAssembly() is 
     # not available in CoreFX (https://github.com/dotnet/corefx/issues/2221).
@@ -140,7 +131,10 @@ Function Start-Log4Net {
    $ConfigFile=New-Object System.IO.fileInfo $Path
 
    Write-debug "Configure the repository '$($Repository.Name)' with  '$Path'" 
-   $Result=[Log4net.Config.XmlConfigurator]::Configure($Repository,$ConfigFile)
+   # Result contains Loglog instances.
+    #Prefix member is a string indicating the severity of the internal message.
+    # Possible values : "log4net: ", "log4net:ERROR ", "log4net:WARN "
+   $Result=[Log4net.Config.XmlConfigurator]::Configure($Repository,$ConfigFile)|Where-Object {$_.Prefix -ne 'log4net: '}
    if ($Result.Count -ne 0 )
    { 
       $ofs="`r`n"
@@ -420,7 +414,7 @@ function Get-Log4NetLogger {
       If the named logger already exists, then the existing instance will be returned. Otherwise, a new instance is created. 
       The name 'Root' is valid.
 #>           
-  Param (   
+  Param (  
       [ValidateNotNullOrEmpty()]
       [Parameter(Position=0,Mandatory=$True,ValueFromPipeline = $true)] 
     [log4net.Repository.ILoggerRepository] $Repository, 
@@ -430,8 +424,6 @@ function Get-Log4NetLogger {
     [String[]] $Name
   )
   
- #Renvoi un logger de nom $Name ou le crée s'il n'existe pas. 
- # le nom "Root" est valide et renvoi le root existant
  process {
    foreach ($Current in $Name)
    {
@@ -443,18 +435,22 @@ function Get-Log4NetLogger {
 function Get-Log4NetFileAppender{
 <#
     .SYNOPSIS
-     Returns a repository to all append, derived from the FilesAppender class, whose name is $AppenderName
+     Search in a repository all appenders, derived from the FilesAppender class.
 #>  
  param(
+      #The name of the repository where to look for appenders.
       [ValidateNotNullOrEmpty()]
       [Parameter(Position=0,Mandatory=$True,ValueFromPipeline = $true)]
-   [log4net.Repository.ILoggerRepository] $Repository,
+    [log4net.Repository.ILoggerRepository] $Repository,
 
+    #Return the appender whose name is $AppenderName
+    #Default value is 'FileExternal'.
     [ValidateNotNullOrEmpty()]
     [Parameter(Position=1,Mandatory=$false)]  
-  [string] $AppenderName="FileExternal",
+   [string] $AppenderName="FileExternal",
   
-  [switch] $All
+    #Return all appenders for a repository.
+   [switch] $All
  )
 
  process { 
@@ -569,7 +565,7 @@ function Get-DefaultAppenderFileName {
 function Get-Log4NetAppenderFileName {
 <#
     .SYNOPSIS
-      Returns the current path of the internal (debug) or external (functional) log file of a module
+      Returns the current path of the internal (debug) or/and external (functional) log file of a module
 #> 
   [CmdletBinding(DefaultParameterSetName="External")]
   Param (
@@ -582,16 +578,22 @@ function Get-Log4NetAppenderFileName {
    [switch] $External,
    
     [Parameter(ParameterSetName="Internal")]
-   [switch] $Internal
+   [switch] $Internal,
+
+    [Parameter(ParameterSetName="All")]
+   [switch] $All
   )
 
  process {  
    $Repository=Get-Log4NetRepository $ModuleName 
    if ($null -ne $Repository) 
    { 
-     $AppenderName="File$($PsCmdlet.ParameterSetName)"
+     if ($PsCmdlet.ParameterSetName -eq 'All')
+     { $Pattern="FileExternal|FileInternal" }
+     else
+     { $Pattern="File$($PsCmdlet.ParameterSetName)" }
      $Repository.GetAppenders()|
-      Where-Object { $_.Name -eq $AppenderName  }|
+      Where-Object { $_.Name -match $Pattern  }|
       Foreach-Object { 
        Write-Verbose "Find the appender '$($_.Name)' into the repository '$($Repository.Name)'."
        $_.File
@@ -600,18 +602,133 @@ function Get-Log4NetAppenderFileName {
  }
 }#Get-Log4NetAppenderFileName
 
- #<%REMOVE%> todo [Obsolete('Use instead the function Initialize-Log4Net.')]    Initialize-Log4Net (use XML config) (PSN=Default-Module)
- #<%REMOVE%> todo #$DefaultLogFile obsolete.
- #<%REMOVE%>  N'est pas documenté, n'est pas mis à jour, ex Get-DefaultAppenderFileName
- #<%REMOVE%>  A l'origine la configuration affecte la même valeur aux 2 appenders, mais la modification du nom de fichier peut affecté un seul appender.
- #<%REMOVE%>  Utiliser plutot une fonction. De plus la variable peut être écrasée par un autre script.
- #<%REMOVE%>  Get-Log4NetAppenderFileName -All -> return PSObject @{loggerName='';AppenderName='';File=''} .ToString(->File)
+function Initialize-Log4Net {
+<#
+    .SYNOPSIS
+     Initializes a Log4Net repository and its loggers.
+     By default, initializes log4posh for a script and configure the default Log4Net repository.
+     To configure Log4Posh with a xml file, use the -XmlConfigPath parameter (for a module, a script or a job).
+     
+     For a module, this function is injected into the module using Log4Posh. By Default the repository name is the name of caller module.
+     
+#> 
+  [CmdletBinding(DefaultParameterSetName="DefaultConfiguration")]
+  
+  Param (
+     #Name of the module to initialize
+     #This is to the name of the repository
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=0, Mandatory=$true,ParameterSetName="XmlConfiguration")]
+   [string] $RepositoryName,
+
+     #Name of the config.xml
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=1, Mandatory=$True,ParameterSetName="XmlConfiguration")]  
+   [string] $XmlConfigPath,
+     
+     #Path of default log file
+     #The directory is created if it do not exist
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=2,ParameterSetName="XmlConfiguration")]  
+   [string] $DefaultLogFilePath,
+   
+     #Path of file used by the RollingFileAppender associated with logger $InfoLogger.
+     #This logger is dedicated to functional debug traces.
+     #
+     #By default the FileExternal and FileInternal appenders use the same file,
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=1, Mandatory=$false,ParameterSetName="DefaultConfiguration")]  
+   [string] $FileExternalPath,
+   
+     #Path of file used by the RollingFileAppender associated with logger $DebugLogger.
+     #This logger is dedicated to internal debug traces.
+     #
+     #By default the FileExternal and FileInternal appenders use the same file,
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=2, Mandatory=$false,ParameterSetName="DefaultConfiguration")]  
+   [string] $FileInternalPath,
+   
+     #Configure the console appender.
+     #
+     # All   : Start the console appender for the $InfoLogger and $DebugLogger loggers
+     # Debug : Start the console appender for the $DebugLogger logger
+     # Info  : Start the console appender for the $InfoLogger  logger
+     # None  : Stop the console appender for the  $InfoLogger and $DebugLogger loggers
+     [ValidateSet('All','Debug','Info','None')]
+     [Parameter(Mandatory=$false,ParameterSetName="DefaultConfiguration")]  
+   [string] $Console='None',
+   
+     #The number of the scope where create the $DebugLogger and $InfoLogger variable.
+     #The default valus is 2
+     [Parameter(Mandatory=$false,ParameterSetName="DefaultConfiguration")]  
+   [string] $Scope=2   
+  )
+
+ if ($PsCmdlet.ParameterSetName -eq 'XmlConfiguration')
+ {
+    if (Test-Repository $RepositoryName)
+    { 
+     $Repository=[LogManager]::GetRepository($RepositoryName)
+     $Repository.ResetConfiguration() 
+    }
+    else
+    { $Repository=[LogManager]::CreateRepository($RepositoryName) }
+    
+    Start-Log4Net $Repository $XmlConfigPath 
+   
+     #Créé les variables Logger dans la portée de l'appelant
+     #les noms des loggers sont normés
+    Set-Variable -Name DebugLogger -Value ([LogManager]::GetLogger($RepositoryName,'DebugLogger')) -Scope Script
+    Set-Variable -Name InfoLogger -Value ([LogManager]::GetLogger($RepositoryName,'InfoLogger')) -Scope Script
+   
+    if ($PSBoundParameters.ContainsKey('DefaultLogFilePath'))
+    {
+      $ParentPath=Split-Path $DefaultLogFilePath -parent
+      if (-not (Test-Path $ParentPath))
+      { New-Item -Path $ParentPath -ItemType Directory }
+  
+       #Initialise le nom de fichier des FileAppenders dédiés au module
+      Switch-AppenderFileName -RepositoryName $RepositoryName FileInternal $DefaultLogFilePath
+      Switch-AppenderFileName -RepositoryName $RepositoryName FileExternal $DefaultLogFilePath
+    }
+ }
+
+ if ($PsCmdlet.ParameterSetName -eq 'DefaultConfiguration')
+ {
+    $RepositoryName=$script:DefaultRepositoryName
+    
+    Start-Log4Net -DefaultConfiguration
+  
+    if ($PSBoundParameters.ContainsKey('FileExternalPath'))
+    { Switch-AppenderFileName -RepositoryName $RepositoryName FileExternal $FileExternalPath }
+    
+    if ($PSBoundParameters.ContainsKey('FileInternalPath'))
+    { Switch-AppenderFileName -RepositoryName $RepositoryName FileInternal $FileInternalPath }
+    
+    Set-Variable -Name DebugLogger -Value ([LogManager]::GetLogger($RepositoryName,'DebugLogger')) -Scope $Scope
+    Set-Variable -Name InfoLogger -Value ([LogManager]::GetLogger($RepositoryName,'InfoLogger')) -Scope $Scope
+    
+    If (($Console -eq 'All') -or ($Console -eq 'Info')) 
+    { Start-ConsoleAppender $InfoLogger }
+    
+    If (($Console -eq 'All') -or ($Console -eq 'Debug')) 
+    { Start-ConsoleAppender $DebugLogger }
+    
+    If ($Console -eq 'None') 
+    { 
+      $InfoLogger,$DebugLogger |
+       Stop-ConsoleAppender  
+    }  
+ }
+}
+
 function Initialize-Log4NetModule {
 <#
     .SYNOPSIS
      Initializes, for a module, a Log4Net repository and its loggers
      This function is injected into the module using Log4Posh      
 #> 
+  [Obsolete("Use the 'Initialize-Log4Net' function instead.")] 
   Param (
      #Name of the module to initialize
      #This is to the name of the repository
@@ -673,13 +790,13 @@ function Initialize-Log4NetModule {
   }
 }#Initialize-Log4NetModule
 
-#<%REMOVE%> todo [Obsolete('Use instead the function Initialize-Log4Net.')]    Initialize-Log4Net -Default (PSN=Script)
 function Initialize-Log4NetScript { 
 <#
     .SYNOPSIS
       Initializes the default Log4Net repository      
 #> 
-  Param (
+ [Obsolete("Use the 'Initialize-Log4Net' function instead.")] 
+ Param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=1, Mandatory=$false)]  
    [string] $FileExternalPath,
@@ -734,8 +851,7 @@ function Switch-AppenderFileName{
       [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
    [String] $RepositoryName,  
   
-    #<%REMOVE%> todo localisation
-    #Par défaut nom de l'appender dédié aux logs fonctionnels de chaque module utilisant Log4Posh 
+    #The name of the appender dedicated to the functional logs of each module/script using Log4Posh
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=1, Mandatory=$false)]  
    [string] $AppenderName="FileExternal",

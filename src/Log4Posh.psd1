@@ -26,6 +26,7 @@
                      'Get-Log4NetRepository',
                      'Initialize-Log4NetModule',
                      'Initialize-Log4NetScript',
+                     'Initialize-Log4Net',
                      'Start-Log4Net',
                      'Stop-Log4Net',
                      'Set-Log4NetAppenderFileName',
