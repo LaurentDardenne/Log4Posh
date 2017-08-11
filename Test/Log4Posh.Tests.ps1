@@ -45,6 +45,7 @@ Describe "Log4Posh standalone - basic" {
     [LogManager]::GetLogger('Test','DebugLogger')|Should Not BeNullOrEmpty
     [LogManager]::GetLogger('Test','InfoLogger')|Should Not BeNullOrEmpty
   }
+
   It "Must TypeData loaded"{  
     Get-TypeData log4net.Core.LogImpl|Should Not BeNullOrEmpty
   }
@@ -74,7 +75,12 @@ Describe "Log4Posh standalone - basic" {
     $Result=ConvertTo-Log4NetCoreLevel -Repository $Repository.Name 'SCRIPT'
     $Result.Equals($ScriptLevel) 
   }
-  
+
+  It "Must 'Test' repository exist"{   
+    $Repository=Get-Log4NetRepository -RepositoryName 'Test'
+    $Repository.Count| Should be 1
+  }
+
   It "Must reset the configuration of the 'Test' repository" {
     Test-Repository 'Test' -Configured | Should Be $true
     Stop-Log4Net -RepositoryName 'Test'
@@ -91,12 +97,12 @@ Describe "Log4Posh standalone - basic" {
     Test-Repository 'Test' -Configured | Should Be $true 
   }
  
-  It "Must exist three appender"{   
+  It "Must exist three appender" {   
     $Repository=[LogManager]::GetRepository('Test')   
     $Repository.GetAppenders().Count| Should be 3
   }
   
-  It "Must exist two logger"{     
+  It "Must exist two logger" {     
     $Repository=[LogManager]::GetRepository('Test')   
     $Repository.GetCurrentLoggers().Count| Should be 2
   }
@@ -105,9 +111,21 @@ Describe "Log4Posh standalone - basic" {
     [LogManager]::GetLogger('Test','DebugLogger')|Should Not BeNullOrEmpty
     [LogManager]::GetLogger('Test','InfoLogger')|Should Not BeNullOrEmpty
   }
+  
+  It "Must configure internal log of log4net framework" { 
+   Get-LogDebugging| Should Be $False
+    Set-LogDebugging
+   Get-LogDebugging| Should Be $True 
+    Set-LogDebugging -Off
+   Get-LogDebugging| Should Be $False
+  }
  }
 
  Context "When there error" {
+   It "Must 'NotExist' repository throw an error"{   
+    {Get-Log4NetRepository -RepositoryName 'NotExist' -ErrorAction Stop}| Should Throw 
+  }
+  
    #Log4Net repository can not be removed While the dll is loaded, but they can be reconfigured.
   It "Verify if a unknown repository not exist" -skip:$(Test-Repository 'Pester') {     
     Test-Repository 'Pester' | Should Be $false
@@ -162,7 +180,7 @@ Describe "Log4Posh used by module - basic" {
       $Repository.GetAppenders().Count| Should be 4
     }
     
-    It "Must exist two logger"{     
+    It "Must exist two logger" -skip:$(Test-Repository 'Pester') {     
       $Repository=[LogManager]::GetRepository('Module1')   
       $Repository.GetCurrentLoggers().Count| Should be 2
     }
@@ -170,6 +188,17 @@ Describe "Log4Posh used by module - basic" {
     It "Must loggers are not null"{  
       [LogManager]::GetLogger('Module1','DebugLogger')|Should Not BeNullOrEmpty
       [LogManager]::GetLogger('Module1','InfoLogger')|Should Not BeNullOrEmpty
+    }
+
+    It "Loggers should be 3 (via Get-Log4NetLogger)"{  
+      $Repository=Get-Log4NetRepository 'Module1'
+      $Loggers=Get-Log4NetLogger -Repository $Repository -Name 'DebugLogger','InfoLogger','Root'
+      $Loggers.Count|Should be 3
+    }
+    
+    It "Loggers should be 3 (via GetCurrentLoggers)"{  
+      $Loggers=[log4net.LogManager]::GetCurrentLoggers('Module1').Logger
+      $Loggers.Count|Should be 3
     }
   }
 }
@@ -192,18 +221,6 @@ InModuleScope Module1 {
 }
 
 <#
-Start-Log4Net
-
-2- Start-Log4Net $Repository $XmlConfigPath 
- Même chose mais avec un module
-
-Initialize-Log4NetModule
-3- Start-Log4Net $Repository $XmlConfigPath 
- Même chose mais avec un script
- Initialize-Log4NetScript
-
-Get-Log4NetLogger
-
 
 Set-Log4NetAppenderFileName
 Get-Log4NetAppenderFileName
