@@ -3,7 +3,7 @@
      The functions Initialize-Log4NetModule and Initialize-Log4NetScript are obsolete.
        Use instead the function Initialize-Log4Net.
 
-     function Initialize-Log4NetModule : 
+     function Initialize-Log4NetModule 
        The $DefaultLogFilePath parameter is no longer mandatory.
        We use by default the file names defined in the xml file.
        
@@ -15,8 +15,8 @@
        Returns the current path of the internal and external log files of a repository.
 
   Fix
-     function Get-Log4NetFileAppender : 
-       The required parameter '$Repository' can not have a default value.
+     function Get-Log4NetFileAppender
+       The required parameter -Repository can not have a default value.
     
      function Start-Log4Net
        When the internal log of Log4Net is activated, the API [Log4net.Config.XmlConfigurator]::Configure()
