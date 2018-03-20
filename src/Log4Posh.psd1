@@ -9,7 +9,7 @@
   Description="A log4net wrapper for PowerShell"
   CLRVersion="2.0"
   GUID = 'f796dd07-541c-4ad8-bfac-a6f15c4b06a0'
-  ModuleToProcess="Log4Posh.psm1" 
+  ModuleToProcess="Log4Posh.psm1"
   ModuleVersion="2.2.0"
   PowerShellVersion="2.0"
   TypesToProcess = @(
@@ -40,17 +40,17 @@
                      'Set-LogDebugging',
                      'Get-LogDebugging',
                      'New-Log4NetCoreLevel'
- 
-  VariablesToExport ='LogDefaultColors','LogJobName'                              
-  
+
+  VariablesToExport ='LogDefaultColors','LogJobName'
+
   AliasesToExport = 'saca','spca'
 
   # Supported PSEditions
   #CompatiblePSEditions = 'Desktop', 'Core'
-  
-  # Private data to pass to the module specified in RootModule/ModuleToProcess. 
+
+  # Private data to pass to the module specified in RootModule/ModuleToProcess.
   PrivateData = @{
-    
+
      # PSData data to pass to the Publish-Module cmdlet
     PSData = @{
 
@@ -69,5 +69,5 @@
         # ReleaseNotes of this module
         ReleaseNotes = 'Initial version.'
     } # End of PSData hashtable
-} # End of PrivateData hashtable  
+  } # End of PrivateData hashtable
 }
