@@ -44,7 +44,7 @@ Le module dépend du module log4Posh via un manifeste. Les premières lignes de 
     &$InitializeLogging @Params
 
 ```
-La variable privée _$lg4n\_ModuleName_ est référencée dans le fichier de type '[log4net.Core.LogImpl.Types.ps1xml](https://github.com/LaurentDardenne/Log4Posh/blob/master/TypeData/log4net.Core.LogImpl.Types.ps1xml)' et permet d'ajouter le nom du producteur du log.
+La variable privée _$lg4n\_ModuleName_ est référencée dans le fichier de type '[log4net.Core.LogImpl.Types.ps1xml](https://github.com/LaurentDardenne/Log4Posh/blob/master/src/TypeData/log4net.Core.LogImpl.Types.ps1xml)' et permet d'ajouter le nom du producteur du log.
 Chaque module à son propre fichier de configuration ([Log4Net.Config.xml](https://github.com/LaurentDardenne/Log4Posh/blob/master/DefaultLog4Posh.Config.xml)) et son propre repository. Le nom du repository Log4Net est identique au nom du module, **attention les API Log4Net de gestion des repository sont sensibles à la casse**.
 ### Finalisation du module
 
