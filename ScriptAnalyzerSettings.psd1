@@ -31,4 +31,7 @@
     #    version 6.0.0-alpha, on Linux.
     #    PSUseCompatibleCmdlets = @{Compatibility = @("core-6.0.0-alpha-linux")}
     #}
+
+    #CustomRulePath=@('C:\Program Files\WindowsPowerShell\Modules\ParameterSetRules\1.0.0\ParameterSetRules.psd1','C:\Program Files\WindowsPowerShell\Modules\OptimizationRules\0.3.0\OptimizationRules.psd1')
+    #IncludeDefaultRules=$true
 }
