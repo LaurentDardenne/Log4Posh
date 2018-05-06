@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<log4net>
+ 
+ <![CDATA[
+  Log4Posh module configuration file.
+ 
+  !!! Pay attention to the object name are case sensitive
+    "fileLogAppender" is not equal to  "fileLogappender"
+    "InfoLogger" is not equal to  "Infologger", etc.
+
+  Each module using Log4Posh to its own configuration file.
+ 
+  The loggger named 'DebugLogger' is used for the traces of techniques internal to the module (Debug). 
+  The logger named 'InfoLogger' is used for the traces of external processing functions using the module (Inforamation).
+ 
+  By default the 'FileExternal' and 'FileInternal' appenders use the same file.
+ 
+  The appender named 'Debugger' is a unique device for a session  Windows of a machine.
+  Each Powershell session will see the appender named 'Console' as a single device.
+  These two devices will be shared by several appenders.
+  
+  The Log4Posh module is loaded into each Powershell session / job.
+  Each module uses a configuration file in a dedicated repository, whose name is the name of the module.
+  By default, a main script will use the repository 'log4net-default-repository'.
+
+fr ******************************************
+ Fichier de configuration du module Log4Posh. 
+ 
+ !!! Attention les noms d'objets sont sensibles à la casse.
+  "fileLogAppender" est différent de "fileLogappender"
+   "InfoLogger" est différent de "Infologger", etc.
+
+ Chaque Module utilsant Log4Posh. à son propre fichier de configuration
+ 
+ Le loggger nommé 'DebugLogger' est utilisé pour les traces de techniques internes au module (Debug).
+ Le logger nommé 'InfoLogger' est utilisé pour les traces de fonctionnelles du traitement externes utilisant le module (Inforamation).
+ 
+ Par défaut les appenders 'FileExternal' et 'FileInternal' utilise le même fichier.
+ 
+ L'appender nommé 'Debugger' est un dispositif unique pour une session Windows d'une machine.
+ Chaque session Powershell verra l'appender nommé 'Console' comme un dispositif unique.
+ Ces deux dispositifs seront donc partagés par plusieurs appenders.
+
+ On charge le module Log4Posh dans chaque session/job Powershell.
+ Chaque module utilise un fichier de configuration dans un repository dédié, dont le nom est le nom du module.
+ Par défaut, un script principal utilisera le repository 'log4net-default-repository'.
+]]>
+ <logger name="DebugLogger">
+    <level value="Debug" />
+    <appender-ref ref="Console" />      <!-- Shared Appender / Appender partagé -->
+    <appender-ref ref="FileInternal"/>  <!-- Single Appender / Appender unique -->
+    <appender-ref ref="Debugger"/>      <!-- Shared Appender / Appender partagé --> 
+  </logger>
+   
+   <logger name="InfoLogger">
+    <level value="Info" />
+    <appender-ref ref="Console" />     <!-- Shared Appender / Appender partagé -->
+    <appender-ref ref="FileExternal"/> <!-- Single Appender / Appender unique -->
+    <appender-ref ref="Debugger"/>     <!-- Shared Appender / Appender partagé -->
+  </logger>
+
+    
+  <!-- Global Context properties : Owner, RunspaceId, LogJobName -->
+  
+  <appender name="Console" type="log4net.Appender.ManagedColoredConsoleAppender">
+    <layout type="log4net.Layout.PatternLayout">
+      <conversionPattern value="%-4timestamp %-5level - %message%newline" />
+    </layout>
+    <mapping>
+        <level value="INFO" />
+        <foreColor value="Cyan" />
+    </mapping>
+    <mapping>
+        <level value="DEBUG" />
+        <foreColor value="Green" />
+    </mapping>
+    <mapping>
+        <level value="WARN" />
+        <foreColor value="Yellow" />
+    </mapping>
+    <mapping>
+        <level value="ERROR" />
+        <foreColor value="Red" />
+    </mapping>
+    <mapping>
+        <level value="FATAL" />
+        <foreColor value="Black" />
+        <backColor value="Red" />        
+    </mapping>  
+    <threshold value="DEBUG"/>    
+  </appender>
+
+  <appender name="FileInternal" type="log4net.Appender.RollingFileAppender">
+    <file type="log4net.Util.PatternString" value="%property{ApplicationLogPath}\\%property{LogJobName}-%property{Owner}-DEBUG-%date{ddMMyyyy}.log"/>
+    <param name="AppendToFile" value="true"/>
+    <rollingStyle value="Size"/>
+    <maxSizeRollBackups value="5"/>
+    <maximumFileSize value="2MB"/>
+    <staticLogFileName value="true"/>
+    <layout type="log4net.Layout.PatternLayout">
+       <!-- when you use the same file 
+           add the level :
+            <param name="ConversionPattern" value="%-5level %d{yyyy-MM-dd HH:mm:ss} – %message%newline"/> 
+        -->
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} – %message%newline"/>
+    </layout>
+    <lockingModel type="log4net.Appender.FileAppender+MinimalLock"/>
+     <!--In a production environment, the Debug log lines are not logged -->
+    <threshold value="OFF"/>
+  </appender>
+  
+  <appender name="FileExternal" type="log4net.Appender.RollingFileAppender">
+     <file type="log4net.Util.PatternString" value="%property{ApplicationLogPath}\\%property{LogJobName}-%property{Owner}-%date{ddMMyyyy}.log"/>
+    <param name="AppendToFile" value="true"/>
+    <rollingStyle value="Size"/>
+    <maxSizeRollBackups value="5"/>
+    <maximumFileSize value="2MB"/>
+    <staticLogFileName value="true"/>
+    <layout type="log4net.Layout.PatternLayout">
+       <!-- when you use the same file 
+           add the level :
+            <param name="ConversionPattern" value="%-5level %d{yyyy-MM-dd HH:mm:ss} – %message%newline"/> 
+        -->    
+      <param name="ConversionPattern" value=" %d{yyyy-MM-dd HH:mm:ss} – %message%newline"/>
+      <header value="[START Header]" />
+    </layout>
+    <lockingModel type="log4net.Appender.FileAppender+MinimalLock"/>
+  </appender>  
+  
+  <!-- This appender can be associated with 'DebugView.exe' from Windows Sysinternals. -->
+  <appender name="Debugger" type="log4net.Appender.OutputDebugStringAppender">
+    <layout type="log4net.Layout.PatternLayout">
+      <conversionPattern value="%property{LogJobName} %-5level %d{yyyy-MM-dd HH:mm:ss} - %message%newline"/>
+    </layout>
+    <threshold value="OFF"/>  
+  </appender>
+</log4net>
