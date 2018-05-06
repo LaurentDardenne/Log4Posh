@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <log4net>
  
- <!-- 
+ <![CDATA[
   Log4Posh module configuration file.
  
   !!! Pay attention to the object name are case sensitive
@@ -23,10 +23,10 @@
   Each module uses a configuration file in a dedicated repository, whose name is the name of the module.
   By default, a main script will use the repository 'log4net-default-repository'.
 
-fr------------------------
+fr ******************************************
  Fichier de configuration du module Log4Posh. 
  
- !!! Attention les noms d'objets sont sensible à la casse.
+ !!! Attention les noms d'objets sont sensibles à la casse.
   "fileLogAppender" est différent de "fileLogappender"
    "InfoLogger" est différent de "Infologger", etc.
 
@@ -44,7 +44,7 @@ fr------------------------
  On charge le module Log4Posh dans chaque session/job Powershell.
  Chaque module utilise un fichier de configuration dans un repository dédié, dont le nom est le nom du module.
  Par défaut, un script principal utilisera le repository 'log4net-default-repository'.
- --> 
+]]>
  <logger name="DebugLogger">
     <level value="Debug" />
     <appender-ref ref="Console" />      <!-- Shared Appender / Appender partagé -->
