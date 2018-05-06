@@ -1,10 +1,7 @@
 ﻿#Log4Posh.psm1
-# !!! WARNING !!! Repository names are case sensitive
+# !!! Pay attention to the repositories name AND Loggers name, they are case sensitive.
 
 Import-LocalizedData -BindingVariable Log4PoshMsgs -Filename Log4Posh.Resources.psd1 -EA Stop
-
-# ------------ Initialisation et Finalisation  ----------------------------------------------------------------------------
-
 
 function Get-DefaultRepositoryName {
 <#
@@ -13,6 +10,14 @@ function Get-DefaultRepositoryName {
 #>
  'log4net-default-repository'
 }#Get-DefaultRepositoryName
+
+function Get-DefaultRepository {
+  <#
+      .SYNOPSIS
+        This function return the default repository.
+  #>
+  [LogManager]::GetRepository($script:DefaultRepositoryName)
+}#Get-DefaultRepository
 
 $script:DefaultRepositoryName=Get-DefaultRepositoryName
 
@@ -40,10 +45,15 @@ else
 
 
 Function Get-ParentProcess {
-#Permet de retrouver le process parent ayant exécuté
-#la session Powershell exécutant ce script/module
- param( $ID )
- $ParentID=$ID
+  <#
+      .SYNOPSIS
+        Retrieves the parent process that ran the Powershell session running this script / module
+  #>
+ param( 
+     # process ID from which the parent is searched.
+    $Id 
+  )
+ $ParentID=$Id
  $Result=@(
    Do {
      $Process=Get-CimInstance Win32_Process -Filter "ProcessID='$parentID'" -property Name,CommandLine,ParentProcessID
@@ -69,12 +79,12 @@ Function Get-ParentProcess {
  else
  {$ParentPID= $pid}
 
-  #Propriété statique, indique le process PowerShell courant
-  #Dans un job local ce n'est pas le process courant, mais le parent
+ # Static property, indicates the current PowerShell process. 
+ # Inside a local job it is not the current process, but the parent.
 [log4net.GlobalContext]::Properties.Item("Owner")=$ParentPID
 [log4net.GlobalContext]::Properties.Item("RunspaceId")=[System.Management.Automation.Runspaces.Runspace]::DefaultRunspace.InstanceId
 
-  #Propriété dynamique, Log4net appel la méthode ToString de l'objet référencé.
+ # Dynamic property, Log4net calls the ToString() method of the referenced object.
   $Script:LogJobName= new-object System.Management.Automation.PSObject -Property @{Value=$ExecutionContext.Host.Name}
   $Script:LogJobName|Add-Member -Force -MemberType ScriptMethod ToString { $this.Value.toString() }
 [log4net.GlobalContext]::Properties["LogJobName"]=$Script:LogJobName
@@ -102,18 +112,21 @@ Function Start-Log4Net {
                                                     Justification="Log4net do not change the system state, only the application 'context'")]
 <#
     .SYNOPSIS
-      This function configures a repository using an XML configuration file
+      This function configure a repository using an XML configuration file
 #>
  [CmdletBinding(DefaultParameterSetName="Path")]
  param (
+   #The repository to configure. The default value is the default repository (see Get-DefaultRepositoryName)
     [ValidateNotNullOrEmpty()]
     [Parameter(Position=0, Mandatory=$false,ParameterSetName="Path")]
   [log4net.Repository.ILoggerRepository] $Repository=$([LogManager]::GetRepository($script:DefaultRepositoryName)),
 
+    #Path of the XML configuration file
     [Parameter(Position=1,Mandatory=$true,ParameterSetName="Path")]
     [ValidateNotNullOrEmpty()]
   [string] $Path,
 
+    #Use the default XML configuration file : ModulePath\DefaultLog4Posh.Config.xml
     [Parameter(ParameterSetName="Default")]
   [switch] $DefaultConfiguration
  )
@@ -121,6 +134,7 @@ Function Start-Log4Net {
  if ($DefaultConfiguration)
  {
    $Path="$psScriptRoot\DefaultLog4Posh.Config.xml"
+   Write-debug "Configure the repository '$($script:DefaultRepositoryName)' with  '$Path'"
    $Repository=[LogManager]::GetRepository($script:DefaultRepositoryName)
  }
 
@@ -176,6 +190,7 @@ Function Stop-Log4Net {
       When the module Log4Posh is removed, [LogManager]::GetAllRepositories() return all repositories with the state NOT CONFIGURED.
 #>
  param (
+    #The Repository name to configure. The default value is the default repository name (see Get-DefaultRepositoryName)
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$false)]
    [string] $RepositoryName=$(Get-DefaultRepositoryName)
@@ -190,8 +205,8 @@ Function Stop-Log4Net {
    Write-Debug "Flush appender $($_.Name)"
     $_.Flush()
   }
-   #Shutdown() est appelé en interne, tous les appenders sont fermés proprement,
-   #le repository par défaut n'est plus configuré
+   # Shutdown() method is called internally, all appenders are closed properly, 
+   # the default repository is no longer configured.
  [LogManager]::ResetConfiguration($RepositoryName)
 }#Stop-Log4Net
 
@@ -202,10 +217,12 @@ Function ConvertTo-Log4NetCoreLevel {
       Each repository can declare new levels.
 #>
  param (
+    #The Repository name to configure. The default value is the default repository name (see Get-DefaultRepositoryName)
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$false)]
    [string] $RepositoryName=$(Get-DefaultRepositoryName),
 
+    # The level name to Converts to an object [Log4Net.Core.Level].
      [Parameter(Position=1,Mandatory=$true)]
    [string] $Level
  )
@@ -222,20 +239,24 @@ Function Set-Log4NetRepositoryThreshold {
 
 <#
     .SYNOPSIS
-      Change the log level of a repository
+      Change the logging threshold of a repository
 #>
  [CmdletBinding(DefaultParameterSetName="Level")]
  param (
+    #The Repository name to modify.
       [ValidateNotNullOrEmpty()]
       [Parameter(Position=0,Mandatory=$True,ValueFromPipeline = $true)]
     [String] $RepositoryName,
 
+    #The level name used to configure the repository. The default value is 'Info'
      [Parameter(Position=1, ParameterSetName="Level")]
    [string] $Level='Info',
 
+     #Set the log level of a repository with the value 'Off'
      [Parameter(ParameterSetName="off")]
    [switch] $Off,
 
+   #Set the log level of a repository with the value 'Debug'
      [Parameter(ParameterSetName="debug")]
    [switch] $DebugLevel
  )
@@ -262,19 +283,23 @@ Function Set-Log4NetLoggerLevel {
                                                     Justification="Log4net do not change the system state, only the application 'context'")]
 <#
     .SYNOPSIS
-      Change the log level of a logger
+      Change the logging level of a logger
 #>
  [CmdletBinding(DefaultParameterSetName="Level")]
  param (
+    #The logger object to modify.
      [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
    [log4net.Core.LogImpl] $Logger,
 
+   #The level name used to configure the logger. The default value is 'Info'
      [Parameter(Position=1, ParameterSetName="Level")]
    [string] $Level='Info',
 
+    #Set the log level of a logger  with the value 'Off'
      [Parameter(ParameterSetName="off")]
    [switch] $Off,
 
+    #Set the log level of a logger with the value 'Debug'
      [Parameter(ParameterSetName="debug")]
    [switch] $DebugLevel
  )
@@ -301,7 +326,7 @@ Function Set-Log4NetAppenderThreshold {
                                                     Justification="Log4net do not change the system state, only the application 'context'")]
 <#
     .SYNOPSIS
-      Change the log level of a appender
+      Change the logging threshold  of a appender
 #>
  [CmdletBinding(DefaultParameterSetName="Level")]
  param (
@@ -409,27 +434,43 @@ $AcceleratorsType = [PSObject].Assembly.GetType("System.Management.Automation.Ty
  }
 
 function Get-Log4NetLogger {
+  
 <#
     .SYNOPSIS
       Returns one or more loggers from the repository $Repository.
       If the named logger already exists, then the existing instance will be returned. Otherwise, a new instance is created.
       The name 'Root' is valid.
+      
+      By default, loggers do not have a set level but inherit it from the hierarchy. This is one of the central features of log4net. 
 #>
+  [CmdletBinding(DefaultParameterSetName="All")]
+  [outputType([Log4net.ILog])]
   Param (
+      #This is to the name of the repository
       [ValidateNotNullOrEmpty()]
       [Parameter(Position=0,Mandatory=$True,ValueFromPipeline = $true)]
     [log4net.Repository.ILoggerRepository] $Repository,
 
       [ValidateNotNullOrEmpty()]
-      [Parameter(Position=1,Mandatory=$True)]
-    [String[]] $Name
+      [Parameter(Position=1,Mandatory=$True,ParameterSetName='Name')]
+    [String[]] $Name,
+    
+    [Parameter(Position=1,Mandatory=$True,ParameterSetName='All')]
+    [Switch]$All
   )
 
  process {
-   foreach ($Current in $Name)
-   {
-     [LogManager]::GetLogger($Repository.Name,$Current)
-   }
+  if ($PsCmdlet.ParameterSetName -eq 'Name')
+  {
+    foreach ($Current in $Name)
+    { [LogManager]::GetLogger($Repository.Name,$Current) }
+  }
+  else
+  { 
+    #Note: GetCurrentLoggers return all loggers but in a different type as Getlogger
+    foreach ($Current in [LogManager]::GetRepository($Repository.Name).GetCurrentLoggers().Name)
+    { [LogManager]::GetLogger($Repository.Name,$Current) }
+  }
  }
 } #Get-Log4NetLogger
 
@@ -496,6 +537,8 @@ function Get-Log4NetRepository {
     .SYNOPSIS
       Returning a repository by its name
 #>
+ #[outputType([log4net.Repository.ILoggerRepository])]
+
  param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
@@ -550,7 +593,8 @@ function Get-DefaultAppenderFileName {
   Param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$true)]
-   [string] $ModuleName
+   [string] $ModuleName #todo default for script ? $RepositoryName = $MyInvocation.ScriptName avec ou sans .ps1
+                        #convention $lg4n_ScriptName
   )
 
  $Module=Get-Module $ModuleName
@@ -572,8 +616,8 @@ function Get-Log4NetAppenderFileName {
   Param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
-     [Alias('RepositoryName')]
-   [string] $ModuleName,
+     [Alias('ModuleName')]
+   [string] $RepositoryName,
 
     [Parameter(ParameterSetName="External")]
    [switch] $External,
@@ -586,7 +630,7 @@ function Get-Log4NetAppenderFileName {
   )
 
  process {
-   $Repository=Get-Log4NetRepository $ModuleName
+   $Repository=Get-Log4NetRepository $RepositoryName
    if ($null -ne $Repository)
    {
      if ($PsCmdlet.ParameterSetName -eq 'All')
@@ -616,7 +660,7 @@ function Initialize-Log4Net {
   [CmdletBinding(DefaultParameterSetName="DefaultConfiguration")]
 
   Param (
-     #Name of the module to initialize
+     #Name of the module to initialize todo module/script
      #This is to the name of the repository
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$true,ParameterSetName="XmlConfiguration")]
@@ -660,33 +704,43 @@ function Initialize-Log4Net {
    [string] $Console='None',
 
      #The number of the scope where create the $DebugLogger and $InfoLogger variable.
-     #The default valus is 2
-     [Parameter(Mandatory=$false,ParameterSetName="DefaultConfiguration")]
+     #The default value is 2
+     #[Parameter(Mandatory=$false,ParameterSetName="DefaultConfiguration")]
    [string] $Scope=2
   )
 
  if ($PsCmdlet.ParameterSetName -eq 'XmlConfiguration')
  {
+    Write-debug "with XmlConfiguration : $RepositoryName -> $XmlConfigPath"
     if (Test-Repository $RepositoryName)
     {
      $Repository=[LogManager]::GetRepository($RepositoryName)
+     Write-debug "Reset repository: '$Repository'"
      $Repository.ResetConfiguration()
     }
     else
-    { $Repository=[LogManager]::CreateRepository($RepositoryName) }
+    { 
+      Write-debug "Create repository: '$RepositoryName'"
+      $Repository=[LogManager]::CreateRepository($RepositoryName) 
+    }
 
     Start-Log4Net $Repository $XmlConfigPath
 
      #Créé les variables Logger dans la portée de l'appelant
      #les noms des loggers sont normés
-    Set-Variable -Name DebugLogger -Value ([LogManager]::GetLogger($RepositoryName,'DebugLogger')) -Scope Script
-    Set-Variable -Name InfoLogger -Value ([LogManager]::GetLogger($RepositoryName,'InfoLogger')) -Scope Script
+    Write-debug "Set loggers variable in scope : $scope"
+    Set-Variable -Name DebugLogger -Value ([LogManager]::GetLogger($RepositoryName,'DebugLogger')) -Scope $Scope
+    Set-Variable -Name InfoLogger -Value ([LogManager]::GetLogger($RepositoryName,'InfoLogger')) -Scope $Scope
 
     if ($PSBoundParameters.ContainsKey('DefaultLogFilePath'))
     {
       $ParentPath=Split-Path $DefaultLogFilePath -parent
+      Write-debug "with DefaultLogFilePath : '$DefaultLogFilePath'"
       if (-not (Test-Path $ParentPath))
-      { New-Item -Path $ParentPath -ItemType Directory }
+      { 
+        Write-debug "with create parentpath :'$ParentPath'"
+        New-Item -Path $ParentPath -ItemType Directory 
+      }
 
        #Initialise le nom de fichier des FileAppenders dédiés au module
       Switch-AppenderFileName -RepositoryName $RepositoryName FileInternal $DefaultLogFilePath
@@ -696,16 +750,24 @@ function Initialize-Log4Net {
 
  if ($PsCmdlet.ParameterSetName -eq 'DefaultConfiguration')
  {
+    
     $RepositoryName=$script:DefaultRepositoryName
-
+    Write-debug "with DefaultConfiguration : '$RepositoryName'"  
     Start-Log4Net -DefaultConfiguration
 
     if ($PSBoundParameters.ContainsKey('FileExternalPath'))
-    { Switch-AppenderFileName -RepositoryName $RepositoryName FileExternal $FileExternalPath }
+    { 
+       Write-debug "FileExternal: '$FileExternalPath'"
+       Switch-AppenderFileName -RepositoryName $RepositoryName FileExternal $FileExternalPath 
+    }
 
     if ($PSBoundParameters.ContainsKey('FileInternalPath'))
-    { Switch-AppenderFileName -RepositoryName $RepositoryName FileInternal $FileInternalPath }
-
+    { 
+      Write-Debug "FileInternal : '$FileInternalPath'"
+      Switch-AppenderFileName -RepositoryName $RepositoryName FileInternal $FileInternalPath
+    }
+    
+    Write-debug "Set loggers variable in scope : $scope"
     Set-Variable -Name DebugLogger -Value ([LogManager]::GetLogger($RepositoryName,'DebugLogger')) -Scope $Scope
     Set-Variable -Name InfoLogger -Value ([LogManager]::GetLogger($RepositoryName,'InfoLogger')) -Scope $Scope
 
