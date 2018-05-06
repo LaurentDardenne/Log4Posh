@@ -120,7 +120,7 @@ Task Analyze -depends StageFiles `
 
     "ScriptAnalysisFailBuildOnSeverityLevel set to: $ScriptAnalysisFailBuildOnSeverityLevel"
 
-    #TODO https://github.com/PowerShell/PSScriptAnalyzer/issues/607 and  675
+    #TODO https://github.com/PowerShell/PSScriptAnalyzer/issues/607 and 675
     $analysisResult = Invoke-ScriptAnalyzer -Path $ModuleOutDir -Settings $ScriptAnalyzerSettingsPath -CustomRulePath $PSSACustomRules -IncludeDefaultRules -Recurse  -Verbose:($VerbosePreference -eq 'Continue')
     $analysisResult | Format-Table
     switch ($ScriptAnalysisFailBuildOnSeverityLevel) {
