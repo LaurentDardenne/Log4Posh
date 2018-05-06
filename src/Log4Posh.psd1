@@ -4,13 +4,13 @@
 # Généré le : 10/02/2010
 @{
   Author="Laurent Dardenne"
-  CompanyName="http://laurent-dardenne.developpez.com/"
+  CompanyName=""
   Copyright="2016, Laurent Dardenne, released under Copyleft"
   Description="A log4net wrapper for PowerShell"
   CLRVersion="2.0"
   GUID = 'f796dd07-541c-4ad8-bfac-a6f15c4b06a0'
   ModuleToProcess="Log4Posh.psm1"
-  ModuleVersion="2.2.0"
+  ModuleVersion="3.0.0"
   PowerShellVersion="2.0"
   TypesToProcess = @(
       'TypeData\log4net.Core.LogImpl.Types.ps1xml'
@@ -39,7 +39,8 @@
                      'Test-Repository',
                      'Set-LogDebugging',
                      'Get-LogDebugging',
-                     'New-Log4NetCoreLevel'
+                     'New-Log4NetCoreLevel',
+                     'Get-DefaultRepository'
 
   VariablesToExport ='LogDefaultColors','LogJobName'
 
