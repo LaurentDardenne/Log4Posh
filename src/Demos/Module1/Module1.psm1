@@ -10,6 +10,7 @@ $Params=@{
   RepositoryName = $Script:lg4n_ModuleName
   XmlConfigPath = "$psScriptRoot\Log4Net.Config.xml"
   DefaultLogFilePath = "$psScriptRoot\Logs\${Script:lg4n_ModuleName}.log"
+  Scope='Script'
 }
 &$InitializeLogging @Params
 

@@ -157,7 +157,7 @@ $Repo.Name|Get-Log4NetAppenderFileName -External
 Write-host "`r`nChanging the location of the main script log file :" -foreground yellow
 $Repo.Name|
  Switch-AppenderFileName FileExternal 'C:\temp\MyLog.txt'
-$InfoLogger.PSInfo("Appender FileExternal redirigé")
+$InfoLogger.PSInfo("FileExternal appender  redirected")
 #1233853 INFO  - [Console] Appender FileExternal redirigé
 
 Get-Content 'C:\temp\MyLog.txt'
@@ -165,7 +165,7 @@ Get-Content 'C:\temp\MyLog.txt'
 
  [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $lg4n_ScriptName="DemoScript"
-$InfoLogger.PSInfo("Modification du nom du producteur de log")
+$InfoLogger.PSInfo("Changing the name of the log producer")
 Get-Content 'C:\temp\MyLog.txt'
 #[PID:5932] [ConsoleHost] INFO  2014-04-07 05:16:48 - [Console] Appender FileExternal redirigé
 #[PID:5932] [ConsoleHost] INFO  2014-04-07 05:20:14 - [DemoScript] Modification du nom du producteur de log

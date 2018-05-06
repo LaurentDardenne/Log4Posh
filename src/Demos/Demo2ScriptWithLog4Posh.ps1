@@ -25,18 +25,18 @@ if ($null -eq $M)
 { Import-Module Log4Posh }
 
 Write-host "`r`nConfigures the default repository" -foreground yellow
-
- #Get the code of a public function of the module Log4Posh (Prerequisite)
- # and executes it within the scope of the module
-$InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
 $RepositoryName = $MyInvocation.ScriptName
-$Params=@{
-  RepositoryName = $RepositoryName
-  XmlConfigPath = "$PSScriptRoot\Demo2Script.Log4Net.Config.xml"
-}
-Write-host "`r`nDefault configuration file" -foreground green
-Write-host "$($params.XmlConfigPath)`r`n"
-&$InitializeLogging @Params
+#  #Get the code of a public function of the module Log4Posh (Prerequisite)
+#  # and executes it within the scope of the module
+# $InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
+# $Params=@{
+#   RepositoryName = $RepositoryName
+#   XmlConfigPath = "$PSScriptRoot\Demo2Script.Log4Net.Config.xml"
+# }
+# Write-host "`r`nDefault configuration file" -foreground green
+# Write-host "$($params.XmlConfigPath)`r`n"
+# &$InitializeLogging @Params
+Initialize-Log4Net -RepositoryName $RepositoryName -XmlConfigPath "$PSScriptRoot\Demo2Script.Log4Net.Config.xml" -scope 'Script'
 
  [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $lg4n_ScriptName="Demo2ScriptWithLog4Posh"
@@ -49,20 +49,20 @@ Write-host "`r`nShow all created Log4net repositories :"
  
 Trois
 
-$sbView={Write-Host "`r`nFor each logger displays the FileAppender file name" -foreground green
+$sbView={
+  Write-Host "`r`nFor each logger displays the FileAppender file name" -foreground green
  
-$params.RepositoryName |
-    #Récupère tous les Appenders nommé 'FileExternal' 
-  Get-Log4NetAppenderFileName |
-   #Affiche le fichier de logs de chaque module 
-  ForEach-Object {Write-Host "`tlog file : $_" -foreground yellow}
+   #Récupère tous les Appenders nommé 'FileExternal' 
+ Get-Log4NetAppenderFileName -RepositoryName $RepositoryName |
+  #Affiche le fichier de logs de chaque module 
+ ForEach-Object {Write-Host "`tlog file : $_" -foreground yellow}
 }
 .$sbView
 Write-host "`r`nChanging the location of the main script log file :" -foreground yellow
 $FileName=([System.IO.FileInfo]$RepositoryName).BaseName 
 Switch-AppenderFileName -RepositoryName $RepositoryName FileExternal "C:\temp\$FileName.log"
 Switch-AppenderFileName -RepositoryName $RepositoryName FileInternal "C:\temp\$FileName.log"
-$InfoLogger.PSInfo("Appender FileExternal redirigé")
+$InfoLogger.PSInfo("Appender FileExternal redirected")
 
 .$sbView
 
