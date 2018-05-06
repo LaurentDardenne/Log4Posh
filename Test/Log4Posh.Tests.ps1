@@ -1,5 +1,5 @@
 ﻿Import-Module  "..\Release\Log4Posh\Log4Posh.psd1" -Force -Global
-Import-Module  "..\Release\Log4Posh\Demos\Module1\Module1.psd1" -Global
+Import-Module  "..\Release\Log4Posh\Demos\Module partitioning\Module1\Module1.psd1" -Global
 
 Describe "Log4Posh standalone - basic" {
 
@@ -220,6 +220,45 @@ InModuleScope Module1 {
  }
 }
 
+# Describe "Log4Posh used by a script  - basic" {
+
+#   Context "When there is no error- Default configuration" {
+  
+#     It "Must exist the repository 'Module1'"{   
+#      [LogManager]::GetRepository('Module1') | Should Not BeNullOrEmpty
+#     }
+
+#     It "Verify if the repository 'Module1' is configured" {  
+#       Test-Repository 'Module1' -Configured | Should Be $true
+#     }
+ 
+#     It "Must exist four appenders"{   
+#       $Repository=[LogManager]::GetRepository('Module1')   
+#       $Repository.GetAppenders().Count| Should be 4
+#     }
+    
+#     It "Must exist two logger" -skip:$(Test-Repository 'Pester') {     
+#       $Repository=[LogManager]::GetRepository('Module1')   
+#       $Repository.GetCurrentLoggers().Count| Should be 2
+#     }
+  
+#     It "Must loggers are not null"{  
+#       [LogManager]::GetLogger('Module1','DebugLogger')|Should Not BeNullOrEmpty
+#       [LogManager]::GetLogger('Module1','InfoLogger')|Should Not BeNullOrEmpty
+#     }
+
+#     It "Loggers should be 3 (via Get-Log4NetLogger)"{  
+#       $Repository=Get-Log4NetRepository 'Module1'
+#       $Loggers=Get-Log4NetLogger -Repository $Repository -Name 'DebugLogger','InfoLogger','Root'
+#       $Loggers.Count|Should be 3
+#     }
+    
+#     It "Loggers should be 3 (via GetCurrentLoggers)"{  
+#       $Loggers=[log4net.LogManager]::GetCurrentLoggers('Module1').Logger
+#       $Loggers.Count|Should be 3
+#     }
+#   }
+# }
 <#
 
 Set-Log4NetAppenderFileName
