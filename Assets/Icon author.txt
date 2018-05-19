@@ -4,3 +4,11 @@ Author : http://www.doublejdesign.co.uk
 From : http://www.iconarchive.com/show/super-mono-3d-icons-by-double-j-design/write-feather-icon.html
 
 License URL: https://creativecommons.org/licenses/by/4.0/
+
+
+log4net_objects_relationship
+Author : Joseph Guadagno
+
+From  : https://www.codeproject.com/Articles/19207/log-net-XmlConfigurator-Simplified
+
+License URL:  The Code Project Open License (CPOL)
