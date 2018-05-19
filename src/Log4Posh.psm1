@@ -140,8 +140,8 @@ Function Start-Log4Net {
 
  if (Test-Path $Path)
  {
-    #Need  a full path. Use internally [environment]::currentdirectory
-   $Path=$ExecutionContext.SessionState.Path.GetResolvedPSPathFromPSPath($Path)
+    #Need a full path. Use internally [environment]::currentdirectory
+   $Path=$ExecutionContext.SessionState.Path.GetResolvedPSPathFromPSPath($Path).ProviderPath
    $ConfigFile=New-Object System.IO.fileInfo $Path
 
    Write-debug "Configure the repository '$($Repository.Name)' with  '$Path'"

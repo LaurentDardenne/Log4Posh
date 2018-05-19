@@ -1,4 +1,42 @@
-﻿2017-08-11  Version 2.2.0
+﻿2018-05-18  Version 3.0.1
+ Fix
+     function Start-Log4Net
+      When the module was loaded from an UNC path, the constructor of the class System.IO.fileInfo 
+      raised a NotSupportedException exception.
+
+2018-05-06  Version 3.0.0
+  Breaking change
+    The function Initialize-Log4Net dot not use script scope by default with a xml configuration ($XmlConfigPath)
+    The caller, in the case of a module using its own loggers, must specify the scope 'Script'
+    
+    The following code :
+      $InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
+      $Params=@{
+        RepositoryName = $Script:lg4n_ModuleName
+        XmlConfigPath = "$psScriptRoot\Log4Net.Config.xml"
+        DefaultLogFilePath = "$psScriptRoot\Logs\${Script:lg4n_ModuleName}.log"
+      }
+      &$InitializeLogging @Params 
+   becomes
+      $InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
+      $Params=@{
+        RepositoryName = $Script:lg4n_ModuleName
+        XmlConfigPath = "$psScriptRoot\Log4Net.Config.xml"
+        DefaultLogFilePath = "$psScriptRoot\Logs\${Script:lg4n_ModuleName}.log"
+        Scope='Script'
+      }
+      &$InitializeLogging @Params
+  
+  Add
+     Function Get-DefaultRepository : return the défault repository. See Get-DefaultRepositoryName
+     Get-Log4NetLogger : add -All parameter. Return all loggers of a repository
+     
+  Change 
+    Get-Log4NetAppenderFileName : rename the parameter 'ModuleName' to 'RepositoryName'
+                                  rename the alias 'RepositoryName' to 'ModuleName'
+
+
+2017-08-11  Version 2.2.0
   Change 
      The functions Initialize-Log4NetModule and Initialize-Log4NetScript are obsolete.
        Use instead the function Initialize-Log4Net.
