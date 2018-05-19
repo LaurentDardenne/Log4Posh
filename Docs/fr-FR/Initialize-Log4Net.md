@@ -25,7 +25,7 @@ Initialize-Log4Net [[-FileExternalPath] <String>] [[-FileInternalPath] <String>]
 ### XmlConfiguration
 ```
 Initialize-Log4Net [-RepositoryName] <String> [-XmlConfigPath] <String> [[-DefaultLogFilePath] <String>]
- [<CommonParameters>]
+ [-Scope <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -151,7 +151,7 @@ The default valus is 2
 
 ```yaml
 Type: String
-Parameter Sets: DefaultConfiguration
+Parameter Sets: (All)
 Aliases: 
 
 Required: False

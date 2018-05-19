@@ -12,6 +12,12 @@ The name 'Root' is valid.
 
 ## SYNTAX
 
+### All (Default)
+```
+Get-Log4NetLogger [-Repository] <ILoggerRepository> [-All] [<CommonParameters>]
+```
+
+### Name
 ```
 Get-Log4NetLogger [-Repository] <ILoggerRepository> [-Name] <String[]> [<CommonParameters>]
 ```
@@ -50,12 +56,27 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: Name
 Aliases: 
 
 Required: True
 Position: 2
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -All
+{{Fill All Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: All
+Aliases: 
+
+Required: True
+Position: 2
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

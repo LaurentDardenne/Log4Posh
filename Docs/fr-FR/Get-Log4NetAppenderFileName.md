@@ -13,17 +13,17 @@ Returns the current path of the internal (debug) or external (functional) log fi
 
 ### External (Default)
 ```
-Get-Log4NetAppenderFileName [-ModuleName] <String> [-External] [<CommonParameters>]
+Get-Log4NetAppenderFileName [-RepositoryName] <String> [-External] [<CommonParameters>]
 ```
 
 ### Internal
 ```
-Get-Log4NetAppenderFileName [-ModuleName] <String> [-Internal] [<CommonParameters>]
+Get-Log4NetAppenderFileName [-RepositoryName] <String> [-Internal] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-Log4NetAppenderFileName [-ModuleName] <String> [-All] [<CommonParameters>]
+Get-Log4NetAppenderFileName [-RepositoryName] <String> [-All] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -40,13 +40,13 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -ModuleName
-{{Fill ModuleName Description}}
+### -RepositoryName
+{{Fill RepositoryName Description}}
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: RepositoryName
+Aliases: ModuleName
 
 Required: True
 Position: 1

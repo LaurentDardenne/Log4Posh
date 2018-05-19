@@ -12,7 +12,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Get-ParentProcess [[-ID] <Object>] [<CommonParameters>]
+Get-ParentProcess [[-Id] <Object>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -29,7 +29,7 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -ID
+### -Id
 {{Fill ID Description}}
 
 ```yaml
@@ -38,7 +38,7 @@ Parameter Sets: (All)
 Aliases: 
 
 Required: False
-Position: 0
+Position: 1
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
