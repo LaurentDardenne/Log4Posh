@@ -1,33 +1,32 @@
-﻿Log4Posh est un module basé sur la librairie [Log4Net](http://laurent-dardenne.developpez.com/articles/Windows/PowerShell/UtiliserLog4NetAvecPowerShell) et propose un mécanisme de log pouvant être réutilisé par vos propres scripts ou modules.
-Il permet d'implémenter aisément dans le code de modules ou de script des traces de debug techniques et/ou des traces fonctionnelles.
- 
+﻿Log4Posh est un module basé sur la librairie [Log4Net](https://github.com/LaurentDardenne/Tutorial/tree/master/Utiliser%20Log4net%20avec%20Powershell) et propose un mécanisme de log pouvant être réutilisé par vos propres scripts ou modules.
+
+Voici un court rappel des relations des objets log4net utilisés :
+
+  Chaque référentiel (repository) possède un LogManager.
+
+    Chaque LogManager possède un ou plusieurs Loggers.
+
+     Chaque logger a un ou plusieurs appenders.
+
+      Chaque appender a un ou plusieurs filtres (filer) et une mise en page (layout).
+
+<p align="center"> 
+<img src="https://www.codeproject.com/KB/cs/log4net_XmlConfigurator/log4net_objects.gif">
+</p>
+
+
+Log4Posh permet d'implémenter aisément dans le code de modules ou de script des traces de debug techniques et/ou des traces fonctionnelles.
+
 Ces dernières, similaire à un *Write-Verbose*, contiennent des informations de progression d'un traitement et pourront être utilisées par le script principal.
 Afin de valider la présence du module [Log4Posh](https://github.com/LaurentDardenne/Log4Posh/blob/master/Log4Posh.psm1), il est préférable de créer [un manifeste de module](http://ottomatt.pagesperso-orange.fr/Data/Tutoriaux/Powershell/Les-modules-PowerShell/Les-modules-PowerShell.pdf) et d'y renseigner la ligne suivante :
  ```powershell
      #Module de log
-    RequiredModules=@{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="3.0.0"}     
+    RequiredModules=@{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="3.0.1"}     
 ```
-
-### Modification du fichier de configuration
-Vous pouvez configurer Log4Posh en recopiant le fichier _DefaultLog4Posh.Config.xml_ dans le répertoire de votre script ou de votre module.
-Le nom d'un fichier de log se déclare dans les élements de type FileAppender  :
-```xml
- <appender name="FileInternal" type="log4net.Appender.RollingFileAppender">
-```
-Plus précisément dans l'élément _file_ :
-```xml
-  <file type="log4net.Util.PatternString" value="%env{TEMP}\\DefaultLog4Posh-%property{Owner}-%property{LogJobName}-%date{ddMMyyyy}.log"/>
-``` 
-Vous pouvez utilisez une variable d'environnement ou un nom de chemin complet.
-
-La fonction _**Get-Log4NetAppenderFileName**_  renvoit les emplacements par défaut des fichiers de log.
-La fonction _**Get-Log4NetAppender**_  renvoit le détail de tous les fichiers de log d'un repository.
-
-Une fois la configuration chargée, la fonction _**Switch-AppenderFileName**_  permet de modifier les emplacements du fichier  associé à un FileAppender.
 
 ### Initialisation des logs dans le code d'un script
 
-Log4Posh ajoute des membres personnalisés (ETS) à la classe loggers, on permet ainsi d'ajouter automatiquement le nom du producteur de log chaque appel d'une de ces méthodes ( préfixé par PS, exemple PSDebug() ).
+Log4Posh ajoute des membres personnalisés (ETS) à la classe logger, on permet ainsi l'ajout automatique du nom du producteur de log lors de chaque appel d'une de ces méthodes ( préfixée par PS, exemple PSDebug() ).
 ```Powershell
 #Requires -Modules Log4Posh
 
@@ -35,15 +34,18 @@ Log4Posh ajoute des membres personnalisés (ETS) à la classe loggers, on permet
 $ScriptName=([System.IO.FileInfo]$PSCommandPath).BaseName
 
 #La clause requiert chargeant la dll du framework Log4Net, on peut accèder à ses API.
-#La déclaration de la propriété de contexte 'LogJobName' permet d'indiquer le nom du script dans un fichier de configuration XML.
+#La déclaration de la propriété de contexte 'LogJobName' permet d'indiquer le nom du script
+# dans un fichier de configuration XML.
+
 #Cette propriété est utilisée dans une déclaration de nom de fichier d'un appenderfile.
 $script:lg4n_ScriptName=[log4net.GlobalContext]::Properties["LogJobName"]=$ScriptName
 
 #Cette propriété est utilisée dans une déclaration de nom de chemin d'un appenderfile.
 [log4net.GlobalContext]::Properties["ApplicationLogPath"]="$PSScriptRoot\Logs"
 ```
-Une fois ces affections faites, on configure log4net pour le script :
+Une fois ces affections faites, on configure log4net dans le script :
 ```Powershell
+ #par convention le fichier de configuration porte le même nom que le script
 Initialize-Log4Net -RepositoryName $ScriptName -XmlConfigPath "$PSScriptRoot\$ScriptName.Config.xml"
 ```
 Ici la notion de repository permet de cloisonner les loggers (objet en charge des log), on peut donc soit déclarer un repository global soit plusieurs repository, un pour le script principal et un pour chaque module appelés.
@@ -51,11 +53,10 @@ Ici la notion de repository permet de cloisonner les loggers (objet en charge de
 
 On peut également choisir d'utiliser la configuration par défaut de Log4Posh :
 ```Powershell
-Initialize-Log4Net 
+ Initialize-Log4Net
 ```
-Dans ce cas les fichiers de logs seront uniques.
 
-Il reste possible de modifier la configuration par défaut à l'aide de cmdlet déclarés :
+Il reste possible de modifier la configuration par défaut à l'aide de cmdlets :
 ```Powershell   
    $Repository=Get-DefaultRepository
    Switch-AppenderFileName -RepositoryName $Repository.Name -AppenderName 'FileExternal' -NewFileName (Join-Path -Path $Path -ChildPath $Name)
@@ -63,14 +64,19 @@ Il reste possible de modifier la configuration par défaut à l'aide de cmdlet d
 ```   
 
 ### Initialisation des logs dans le code d'un module
+Deux cas se présentent, le premier utilise un repository global, celui déclaré dans le script appelant les modules.
+Ici seul la déclaration de la variable utilisée par ETS est nécessaire, pour un module le nom de cette variable est $lg4n_ModuleName :
+```Powershell   
+    $Script:lg4n_ModuleName=$MyInvocation.MyCommand.ScriptBlock.Module.Name
+```
+Ensuite le code des fonctions du module utilise implicitement les variables loggers déclarés dans le portée du script.
 
-Un module dépend du module log4Posh via un manifeste. Les premières lignes de code du module doivent initialiser le repository Log4Net :
+Le second cas utilise un repository dédié au modules.Les premières lignes de code du module doivent initialiser le repository. Le manifeste de ce module charge donc le module Log4Posh :
 ```powershell
-      #Récupère le code d'une fonction publique du module Log4Posh (Prérequis)
-      #et l'exécute dans la portée du module.
-      #Ce code créé les variables $DebugLogger et $InfoLogger dans la portée du module
     $Script:lg4n_ModuleName=$MyInvocation.MyCommand.ScriptBlock.Module.Name
     
+     #Récupère le code d'une fonction publique du module Log4Posh (Prérequis)
+     #et l'exécute dans la portée du module.
     $InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
     $Params=@{
       RepositoryName = $Script:lg4n_ModuleName
@@ -78,15 +84,26 @@ Un module dépend du module log4Posh via un manifeste. Les premières lignes de 
       DefaultLogFilePath = "$psScriptRoot\Logs\${Script:lg4n_ModuleName}.log"
       Scope='Script'
     }
+     #Ce code créé les variables $DebugLogger et $InfoLogger dans la portée du module
     &$InitializeLogging @Params
 
 ```
 La variable privée _$lg4n\_ModuleName_ est référencée dans le fichier de type '[log4net.Core.LogImpl.Types.ps1xml](https://github.com/LaurentDardenne/Log4Posh/blob/master/src/TypeData/log4net.Core.LogImpl.Types.ps1xml)' et permet d'ajouter le nom du producteur du log.
 Chaque module peut utiliser son propre fichier de configuration ([Log4Net.Config.xml](https://github.com/LaurentDardenne/Log4Posh/blob/master/DefaultLog4Posh.Config.xml)) et son propre repository. Le nom du repository Log4Net est identique au nom du module, **attention les API Log4Net de gestion des repository sont sensibles à la casse**.
 
-### Finalisation du module
+###  Arrêt de Log4Net
 
-Le scriptBlock _OnRemove_ doit contenir l'arrêt du repository lié au module:
+Dans un script on place l'appel à Stop-Log4Net dans une instruction try/finally
+```powershell
+   try {
+    #traitement
+   }
+   finally {
+    Stop-Log4Net -RepositoryName $Script:lg4n_ModuleName
+   }
+```
+
+Dans un module le scriptBlock _OnRemove_ doit contenir l'arrêt du repository lié au module:
 ```powershell
     $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove= {Stop-Log4Net $Script:lg4n_ModuleName }
 ```
@@ -166,6 +183,22 @@ A partir de la version 3 de Powershell, vous pouvez également utilisez l'instru
  #ou
 #Requires -Modules @{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="2.2.0"}   
 ```
+### Modification du fichier de configuration
+Vous pouvez configurer Log4Posh en recopiant le fichier _DefaultLog4Posh.Config.xml_ dans le répertoire de votre script ou de votre module.
+Le nom d'un fichier de log se déclare dans les élements de type FileAppender  :
+```xml
+ <appender name="FileInternal" type="log4net.Appender.RollingFileAppender">
+```
+Plus précisément dans l'élément _file_ :
+```xml
+  <file type="log4net.Util.PatternString" value="%env{TEMP}\\DefaultLog4Posh-%property{Owner}-%property{LogJobName}-%date{ddMMyyyy}.log"/>
+``` 
+Vous pouvez utilisez une variable d'environnement, un nom de chemin complet ou une propriété Log4net ( cf. [log4net.GlobalContext]::Propertie)
+
+La fonction _**Get-Log4NetAppenderFileName**_  renvoit les emplacements par défaut des fichiers de log.
+La fonction _**Get-Log4NetAppender**_  renvoit le détail de tous les fichiers de log d'un repository.
+
+Une fois la configuration chargée, la fonction _**Switch-AppenderFileName**_  permet de modifier les emplacements du fichier  associé à un FileAppender.
 
 ### Le principe
 
@@ -200,9 +233,11 @@ Enfin l'initialisation du script principal :
 ```
 *'Owner'* est le PID de la session Powershell. Si le module est exécuté dans un job, on recherche l'ID du process parent ce qui facilitera le filtrage des lignes de log.
 *'LogJobName'* est le nom du job, paramétrable via la propriété $JobName publiée par le module Log4Posh.
- Ainsi on sait d'où proviennent les logs, mais pour retrouver le nom du producteur on utilisera la méthode synthétique, d'un Logger, nommée PSDebug.
- Celle-ci préfixe le message de log du nom du module où a été appelée la méthode.
- Le code d'usage suivant :
+
+Ainsi on sait d'où proviennent les logs, mais pour retrouver le nom du producteur on utilisera la méthode synthétique, d'un Logger, nommée PSDebug.
+Celle-ci préfixe le message de log du nom du module où a été appelée la méthode.
+
+Le code d'usage suivant :
 ```powershell
     Import-Module log4posh, PsIonic
     Get-ZipFile c:\temp\test.zip -List   
