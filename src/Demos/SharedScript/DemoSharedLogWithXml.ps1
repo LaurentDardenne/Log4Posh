@@ -10,27 +10,30 @@ $script:lg4n_ScriptName=[log4net.GlobalContext]::Properties["LogJobName"]=$Scrip
 [log4net.GlobalContext]::Properties["ApplicationLogPath"]="$PSScriptRoot\Logs"
 
 try {
-#The script declares the loggers
-Initialize-Log4Net -RepositoryName $ScriptName -XmlConfigPath "$PSScriptRoot\$ScriptName.Config.xml"
+    #The script declares the loggers
+    Initialize-Log4Net -RepositoryName $ScriptName -XmlConfigPath "$PSScriptRoot\$ScriptName.Config.xml"
 
-#Each logger use a dedicated file
-$DebugLogger.PSDebug("Debug message [Technical]")
-$InfoLogger.PSInfo("Information message [Functional]")
+    #Each logger use a dedicated file
+    $DebugLogger.PSDebug("Debug message [Technical]")
+    $InfoLogger.PSInfo("Information message [Functional]")
 
-#We use the native method, the $lg4n_ScriptName variable is not inserted into a log line
-$DebugLogger.Debug("No 'header'. Debug message [Technical]")
-$InfoLogger.Info("No 'header'. Information message [Functional]")
+    #We use the native method, the $lg4n_ScriptName variable is not inserted into a log line
+    $DebugLogger.Debug("No 'header'. Debug message [Technical]")
+    $InfoLogger.Info("No 'header'. Information message [Functional]")
 
-#The modules use script loggers
-Import-Module .\Moduleprocessing\Moduleprocessing.psd1
-Import-Module .\ModuleShared\ModuleShared.psd1
-BTrois
-#Ce script, le module partagé et le module de traitement écrivent dans le même fichier de log
+    #The modules use script loggers
+    Import-Module .\Moduleprocessing\ModuleProcessing.psd1
+    Import-Module .\ModuleShared\ModuleShared.psd1
+    BTrois
+    #Ce script, le module partagé et le module de traitement écrivent dans le même fichier de log
 } 
 catch{
- if ($true)
- {'test si lg4n est activé et utilisable-> log "Fatal"'>$null}
+  $Repository=Get-Log4NetRepository -RepositoryName $ScriptName
+  if(!$Repository.Configured)
+  { Write-Error "Error $_" }
+  else
+  { $InfoLogger.PSFatal('Error',$_.exception) }
 }
 Finally {
-    Stop-Log4Net
+    Stop-Log4Net -RepositoryName $ScriptName 
 }
