@@ -1,10 +1,4 @@
 ﻿#Requires -Modules Log4Posh
-
-#gg : using log4net with multi-project solutions
-#https://blog.skouf.com/log4net-rolling-file-appender-with-multiple-projects-93a74496485a
-# voir un seul nonm de ficheir dynamqiue
-# https://stackoverflow.com/questions/571876/best-way-to-dynamically-set-an-appender-file-path 
-
 Function Initialize-Logging {
   param(
       [string] $Path,
