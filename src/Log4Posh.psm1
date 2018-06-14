@@ -49,9 +49,9 @@ Function Get-ParentProcess {
       .SYNOPSIS
         Retrieves the parent process that ran the Powershell session running this script / module
   #>
- param( 
+ param(
      # process ID from which the parent is searched.
-    $Id 
+    $Id
   )
  $ParentID=$Id
  $Result=@(
@@ -79,7 +79,7 @@ Function Get-ParentProcess {
  else
  {$ParentPID= $pid}
 
- # Static property, indicates the current PowerShell process. 
+ # Static property, indicates the current PowerShell process.
  # Inside a local job it is not the current process, but the parent.
 [log4net.GlobalContext]::Properties.Item("Owner")=$ParentPID
 [log4net.GlobalContext]::Properties.Item("RunspaceId")=[System.Management.Automation.Runspaces.Runspace]::DefaultRunspace.InstanceId
@@ -205,7 +205,7 @@ Function Stop-Log4Net {
    Write-Debug "Flush appender $($_.Name)"
     $_.Flush()
   }
-   # Shutdown() method is called internally, all appenders are closed properly, 
+   # Shutdown() method is called internally, all appenders are closed properly,
    # the default repository is no longer configured.
  [LogManager]::ResetConfiguration($RepositoryName)
 }#Stop-Log4Net
@@ -434,14 +434,14 @@ $AcceleratorsType = [PSObject].Assembly.GetType("System.Management.Automation.Ty
  }
 
 function Get-Log4NetLogger {
-  
+
 <#
     .SYNOPSIS
       Returns one or more loggers from the repository $Repository.
       If the named logger already exists, then the existing instance will be returned. Otherwise, a new instance is created.
       The name 'Root' is valid.
-      
-      By default, loggers do not have a set level but inherit it from the hierarchy. This is one of the central features of log4net. 
+
+      By default, loggers do not have a set level but inherit it from the hierarchy. This is one of the central features of log4net.
 #>
   [CmdletBinding(DefaultParameterSetName="All")]
   [outputType([Log4net.ILog])]
@@ -454,7 +454,7 @@ function Get-Log4NetLogger {
       [ValidateNotNullOrEmpty()]
       [Parameter(Position=1,Mandatory=$True,ParameterSetName='Name')]
     [String[]] $Name,
-    
+
     [Parameter(Position=1,Mandatory=$True,ParameterSetName='All')]
     [Switch]$All
   )
@@ -466,7 +466,7 @@ function Get-Log4NetLogger {
     { [LogManager]::GetLogger($Repository.Name,$Current) }
   }
   else
-  { 
+  {
     #Note: GetCurrentLoggers return all loggers but in a different type as Getlogger
     foreach ($Current in [LogManager]::GetRepository($Repository.Name).GetCurrentLoggers().Name)
     { [LogManager]::GetLogger($Repository.Name,$Current) }
@@ -719,9 +719,9 @@ function Initialize-Log4Net {
      $Repository.ResetConfiguration()
     }
     else
-    { 
+    {
       Write-debug "Create repository: '$RepositoryName'"
-      $Repository=[LogManager]::CreateRepository($RepositoryName) 
+      $Repository=[LogManager]::CreateRepository($RepositoryName)
     }
 
     Start-Log4Net $Repository $XmlConfigPath
@@ -737,9 +737,9 @@ function Initialize-Log4Net {
       $ParentPath=Split-Path $DefaultLogFilePath -parent
       Write-debug "with DefaultLogFilePath : '$DefaultLogFilePath'"
       if (-not (Test-Path $ParentPath))
-      { 
+      {
         Write-debug "with create parentpath :'$ParentPath'"
-        New-Item -Path $ParentPath -ItemType Directory 
+        New-Item -Path $ParentPath -ItemType Directory
       }
 
        #Initialise le nom de fichier des FileAppenders dédiés au module
@@ -750,23 +750,23 @@ function Initialize-Log4Net {
 
  if ($PsCmdlet.ParameterSetName -eq 'DefaultConfiguration')
  {
-    
+
     $RepositoryName=$script:DefaultRepositoryName
-    Write-debug "with DefaultConfiguration : '$RepositoryName'"  
+    Write-debug "with DefaultConfiguration : '$RepositoryName'"
     Start-Log4Net -DefaultConfiguration
 
     if ($PSBoundParameters.ContainsKey('FileExternalPath'))
-    { 
+    {
        Write-debug "FileExternal: '$FileExternalPath'"
-       Switch-AppenderFileName -RepositoryName $RepositoryName FileExternal $FileExternalPath 
+       Switch-AppenderFileName -RepositoryName $RepositoryName FileExternal $FileExternalPath
     }
 
     if ($PSBoundParameters.ContainsKey('FileInternalPath'))
-    { 
+    {
       Write-Debug "FileInternal : '$FileInternalPath'"
       Switch-AppenderFileName -RepositoryName $RepositoryName FileInternal $FileInternalPath
     }
-    
+
     Write-debug "Set loggers variable in scope : $scope"
     Set-Variable -Name DebugLogger -Value ([LogManager]::GetLogger($RepositoryName,'DebugLogger')) -Scope $Scope
     Set-Variable -Name InfoLogger -Value ([LogManager]::GetLogger($RepositoryName,'InfoLogger')) -Scope $Scope
