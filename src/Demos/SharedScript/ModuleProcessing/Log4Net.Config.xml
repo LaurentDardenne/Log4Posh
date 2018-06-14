@@ -46,6 +46,7 @@
 
   <appender name="FileInternal" type="log4net.Appender.RollingFileAppender">
     <file type="log4net.Util.PatternString" value="%env{TEMP}\\ModuleProcessing.log"/>
+    <encoding value="utf-8"/>    
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>
@@ -59,6 +60,7 @@
   
   <appender name="FileExternal" type="log4net.Appender.RollingFileAppender">
     <file type="log4net.Util.PatternString" value="%env{TEMP}\\ModuleProcessing.log"/>
+    <encoding value="utf-8"/>
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>

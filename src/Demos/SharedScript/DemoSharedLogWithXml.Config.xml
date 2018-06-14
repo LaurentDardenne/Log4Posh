@@ -92,6 +92,7 @@ fr ******************************************
 
   <appender name="FileInternal" type="log4net.Appender.RollingFileAppender">
     <file type="log4net.Util.PatternString" value="%property{ApplicationLogPath}\\%property{LogJobName}-%property{Owner}-DEBUG-%date{ddMMyyyy}.log"/>
+    <encoding value="utf-8"/>    
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>
@@ -110,7 +111,8 @@ fr ******************************************
   </appender>
   
   <appender name="FileExternal" type="log4net.Appender.RollingFileAppender">
-     <file type="log4net.Util.PatternString" value="%property{ApplicationLogPath}\\%property{LogJobName}-%property{Owner}-%date{ddMMyyyy}.log"/>
+    <file type="log4net.Util.PatternString" value="%property{ApplicationLogPath}\\%property{LogJobName}-%property{Owner}-%date{ddMMyyyy}.log"/>
+    <encoding value="utf-8"/>
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>
