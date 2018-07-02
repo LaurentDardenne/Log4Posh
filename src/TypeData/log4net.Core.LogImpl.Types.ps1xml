@@ -60,6 +60,25 @@
          </Script> 
        </ScriptMethod> 
        <ScriptMethod> 
+         <Name>PSWarn</Name> 
+         <Script>
+            if ($this.IsWarnEnabled)
+            {  
+              if (Test-Path Variable:lg4n_ModuleName)
+              { $Name=$lg4n_ModuleName }
+              elseif (Test-Path Variable:lg4n_ScriptName)
+              { $Name=$lg4n_ScriptName }
+              else
+              { $Name="Console" }
+              switch ($args.Count) {
+             		 1 { $this.Psbase.Warn("[$Name] $($args[0])") }
+                 2 { $this.Psbase.Warn("[$Name] $($args[0])",$args[1]) }
+  	             default { throw "The method Warn do not contains override with $($args.Count) parameters." }
+              }
+             }
+         </Script> 
+       </ScriptMethod>        
+       <ScriptMethod> 
          <Name>PSError</Name> 
          <Script>
             if ($this.IsErrorEnabled)
