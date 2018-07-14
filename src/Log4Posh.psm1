@@ -1006,6 +1006,17 @@ Function New-Log4NetCoreLevel {
     $Repository.LevelMap.Add($ScriptLevel)
 }
 
+function Get-Log4NetGlobalContextProperty {
+ #Return all properties declared into the GlobalContext
+ #Return a hastable of the type log4net.Util.ReadOnlyPropertiesDictionary 
+        
+ param()
+  $BindingFlags=[System.Reflection.BindingFlags]"NonPublic,Instance,IgnoreCase,Static"
+  $Type =  [log4net.GlobalContext]::Properties.GetType()
+  $GetReadOnlyPropertiesMethod=$Type.GetMethod("GetReadOnlyProperties",$BindingFlags)
+  return $GetReadOnlyPropertiesMethod.Invoke([log4net.GlobalContext]::Properties,$null)
+}
+
 # ----------- Suppression des objets du Wrapper -------------------------------------------------------------------------
 function OnRemoveLog4Posh {
    #Remove shortcuts
