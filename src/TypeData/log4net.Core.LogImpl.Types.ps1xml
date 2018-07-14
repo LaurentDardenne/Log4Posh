@@ -40,6 +40,33 @@
              }
          </Script> 
        </ScriptMethod> 
+       <ScriptMethod>
+         <Name>PSDebugFormat</Name>
+         <Script>
+            if ($this.IsDebugEnabled)
+            {  
+              if (Test-Path Variable:lg4n_ModuleName)
+              { $Name=$lg4n_ModuleName }
+              elseif (Test-Path Variable:lg4n_ScriptName)
+              { $Name=$lg4n_ScriptName }
+              else
+              { $Name="Console" }
+              switch ($args.Count) {
+                 1 { $this.Psbase.DebugFormat("[$Name] $($args[0])") }
+                 2 { $this.Psbase.DebugFormat("[$Name] $($args[0])",$args[1]) }
+                 3 {
+                     if ( $args[0] -is [System.IFormatProvider])
+                     { $this.Psbase.DebugFormat($args[0],"[$Name] $($args[1])",$args[2]) }
+                     else
+                     { $this.Psbase.DebugFormat("[$Name] $($args[0])",$args[1],$args[2]) } 
+                    }
+                 4 { $this.Psbase.DebugFormat("[$Name] $($args[0])",$args[1],$args[2],$args[3]) }
+                 default { throw "The method DebugFormat do not contains override with $($args.Count) parameters." }
+              }
+             }
+         </Script>
+       </ScriptMethod>       
+       
        <ScriptMethod> 
          <Name>PSInfo</Name> 
          <Script>
@@ -59,6 +86,33 @@
              }
          </Script> 
        </ScriptMethod> 
+       <ScriptMethod>
+         <Name>PSInfoFormat</Name>
+         <Script>
+            if ($this.IsInfoEnabled)
+            {  
+              if (Test-Path Variable:lg4n_ModuleName)
+              { $Name=$lg4n_ModuleName }
+              elseif (Test-Path Variable:lg4n_ScriptName)
+              { $Name=$lg4n_ScriptName }
+              else
+              { $Name="Console" }
+              switch ($args.Count) {
+                 1 { $this.Psbase.InfoFormat("[$Name] $($args[0])") }
+                 2 { $this.Psbase.InfoFormat("[$Name] $($args[0])",$args[1]) }
+                 3 {
+                     if ( $args[0] -is [System.IFormatProvider])
+                     { $this.Psbase.InfoFormat($args[0],"[$Name] $($args[1])",$args[2]) }
+                     else
+                     { $this.Psbase.InfoFormat("[$Name] $($args[0])",$args[1],$args[2]) } 
+                    }
+                 4 { $this.Psbase.InfoFormat("[$Name] $($args[0])",$args[1],$args[2],$args[3]) }
+                 default { throw "The method InfoFormat do not contains override with $($args.Count) parameters." }
+              }
+            }
+         </Script>
+       </ScriptMethod>
+              
        <ScriptMethod> 
          <Name>PSWarn</Name> 
          <Script>
@@ -77,7 +131,34 @@
               }
              }
          </Script> 
-       </ScriptMethod>        
+       </ScriptMethod>  
+       <ScriptMethod>
+         <Name>PSWarnFormat</Name>
+         <Script>
+            if ($this.IsWarnEnabled)
+            {  
+              if (Test-Path Variable:lg4n_ModuleName)
+              { $Name=$lg4n_ModuleName }
+              elseif (Test-Path Variable:lg4n_ScriptName)
+              { $Name=$lg4n_ScriptName }
+              else
+              { $Name="Console" }
+              switch ($args.Count) {
+                 1 { $this.Psbase.WarnFormat("[$Name] $($args[0])") }
+                 2 { $this.Psbase.WarnFormat("[$Name] $($args[0])",$args[1]) }
+                 3 {
+                     if ( $args[0] -is [System.IFormatProvider])
+                     { $this.Psbase.WarnFormat($args[0],"[$Name] $($args[1])",$args[2]) }
+                     else
+                     { $this.Psbase.WarnFormat("[$Name] $($args[0])",$args[1],$args[2]) } 
+                    }
+                 4 { $this.Psbase.WarnFormat("[$Name] $($args[0])",$args[1],$args[2],$args[3]) }
+                 default { throw "The method WarnFormat do not contains override with $($args.Count) parameters." }
+              }
+            }
+         </Script>
+       </ScriptMethod>
+                    
        <ScriptMethod> 
          <Name>PSError</Name> 
          <Script>
@@ -98,6 +179,33 @@
              }
          </Script> 
        </ScriptMethod> 
+       <ScriptMethod>
+         <Name>PSErrorFormat</Name>
+         <Script>
+            if ($this.IsErrorEnabled)
+            {  
+              if (Test-Path Variable:lg4n_ModuleName)
+              { $Name=$lg4n_ModuleName }
+              elseif (Test-Path Variable:lg4n_ScriptName)
+              { $Name=$lg4n_ScriptName }
+              else
+              { $Name="Console" }
+              switch ($args.Count) {
+                 1 { $this.Psbase.ErrorFormat("[$Name] $($args[0])") }
+                 2 { $this.Psbase.ErrorFormat("[$Name] $($args[0])",$args[1]) }
+                 3 {
+                     if ( $args[0] -is [System.IFormatProvider])
+                     { $this.Psbase.ErrorFormat($args[0],"[$Name] $($args[1])",$args[2]) }
+                     else
+                     { $this.Psbase.ErrorFormat("[$Name] $($args[0])",$args[1],$args[2]) } 
+                    }
+                 4 { $this.Psbase.ErrorFormat("[$Name] $($args[0])",$args[1],$args[2],$args[3]) }
+                 default { throw "The method ErrorFormat do not contains override with $($args.Count) parameters." }
+              }
+            }
+         </Script>
+       </ScriptMethod>
+              
        <ScriptMethod> 
          <Name>PSFatal</Name> 
          <Script>
@@ -116,7 +224,33 @@
               }
              }
          </Script> 
-       </ScriptMethod>        
+       </ScriptMethod>  
+       <ScriptMethod>
+         <Name>PSFatalFormat</Name>
+         <Script>
+            if ($this.IsFatalEnabled)
+            {  
+              if (Test-Path Variable:lg4n_ModuleName)
+              { $Name=$lg4n_ModuleName }
+              elseif (Test-Path Variable:lg4n_ScriptName)
+              { $Name=$lg4n_ScriptName }
+              else
+              { $Name="Console" }
+              switch ($args.Count) {
+                 1 { $this.Psbase.FatalFormat("[$Name] $($args[0])") }
+                 2 { $this.Psbase.FatalFormat("[$Name] $($args[0])",$args[1]) }
+                 3 {
+                     if ( $args[0] -is [System.IFormatProvider])
+                     { $this.Psbase.FatalFormat($args[0],"[$Name] $($args[1])",$args[2]) }
+                     else
+                     { $this.Psbase.FatalFormat("[$Name] $($args[0])",$args[1],$args[2]) } 
+                    }
+                 4 { $this.Psbase.FatalFormat("[$Name] $($args[0])",$args[1],$args[2],$args[3]) }
+                 default { throw "The method FatalFormat do not contains override with $($args.Count) parameters." }
+              }
+            }
+         </Script>
+       </ScriptMethod>             
      </Members>        
   </Type>
 </Types> 
