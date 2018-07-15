@@ -1007,15 +1007,55 @@ Function New-Log4NetCoreLevel {
 }
 
 function Get-Log4NetGlobalContextProperty {
- #Return all properties declared into the GlobalContext
- #Return a hastable of the type log4net.Util.ReadOnlyPropertiesDictionary
-
+<#
+ .SYNOPSIS
+  Return all properties declared into the GlobalContext
+  Return a hastable of the type log4net.Util.ReadOnlyPropertiesDictionary
+#>
  param()
   $BindingFlags=[System.Reflection.BindingFlags]"NonPublic,Instance,IgnoreCase,Static"
   $Type =  [log4net.GlobalContext]::Properties.GetType()
   $GetReadOnlyPropertiesMethod=$Type.GetMethod("GetReadOnlyProperties",$BindingFlags)
   return $GetReadOnlyPropertiesMethod.Invoke([log4net.GlobalContext]::Properties,$null)
 }
+Function Get-Log4NetConfiguration{
+<#
+ .SYNOPSIS
+  Return a hastable that contains :
+  All repositories
+     the current loggers and their level
+       the appenders of each logger, with the following properties :
+         Name,
+         Threshold,
+         LayoutPattern that contains the property Layout.ConversionPattern of a logger,
+         The type of the appender,
+         The file name if used.
+#>
+  param()
+   $Configuration=@{}
+   foreach ( $Repository in [LogManager]::GetAllRepositories() )
+   {
+    $RepositoryHashtable=@{}
+    $Configuration.Add($Repository.Name,$RepositoryHashtable)
+    foreach ( $Logger in $Repository.GetCurrentLoggers())
+    {
+      $LoggerHashtable=@{}
+      $RepositoryHashtable.Add($Logger.Name,$LoggerHashtable)
+
+      $LoggerHashtable.Add('EffectiveLevel',$Logger.EffectiveLevel)
+      $Appenders=foreach ( $Appender in $Logger.Appenders)
+      {
+          Select-Object -InputObject $Appender  -Property Name,
+                                                          Threshold,
+                                                          @{Name='LayoutPattern';e={$_.Layout.ConversionPattern}},
+                                                          @{Name='Type';e={$_.GetType()}},
+                                                          File
+      }
+      $LoggerHashtable.Add('Appenders',$Appenders)
+    }
+   }
+   return $Configuration
+ }
 
 # ----------- Suppression des objets du Wrapper -------------------------------------------------------------------------
 function OnRemoveLog4Posh {
