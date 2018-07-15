@@ -6,7 +6,7 @@ $script:lg4n_ScriptName=$ScriptName
 #module log4posh is loaded
 [log4net.GlobalContext]::Properties["LogJobName"]=$ScriptName
 
-#The module ModuleProcessing configure the Log4posh repository 
+#The module ModuleProcessing configure the Log4posh repository
 Import-Module .\Modules\ModuleProcessing\ModuleProcessing.psd1
 # dans ce cas le module doit exporter les loggers
 # Export-ModuleMember -Variable DebugLogger,InfoLogger -function BTrois,BDeux,Bun

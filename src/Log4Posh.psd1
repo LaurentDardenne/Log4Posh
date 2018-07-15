@@ -40,7 +40,8 @@
                      'Set-LogDebugging',
                      'Get-LogDebugging',
                      'New-Log4NetCoreLevel',
-                     'Get-DefaultRepository'
+                     'Get-DefaultRepository',
+                     'Get-Log4NetGlobalContextProperty'
 
   VariablesToExport ='LogDefaultColors','LogJobName'
 

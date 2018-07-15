@@ -1,5 +1,5 @@
 ﻿function Get-ScriptDirectory
-{  
+{
   $Invocation = (Get-Variable MyInvocation -Scope 1).Value
   Split-Path $Invocation.MyCommand.Path
 }
@@ -33,11 +33,11 @@ Write-host "`r`nDisplays the appenders of each logger declared in the specified 
    $ofs=','
    Write-Host "`tAppenders : " -foreground green -noNewLine
    Write-Host "$T" -foreground yellow
- } 
+ }
 
- Write-Host "Removes the log files associated with the modules" 
-'Module1','Module2','Module3'| 
-  Get-Log4NetAppenderFileName -Internal | 
+ Write-Host "Removes the log files associated with the modules"
+'Module1','Module2','Module3'|
+  Get-Log4NetAppenderFileName -Internal |
   Remove-Item -path {$_} -EA SilentlyContinue
 
 
@@ -52,14 +52,14 @@ Write-Host $Code -foreground yellow
  #déclaré dans les modules précisés.
    #Noms des modules à interroger
 'Module1','Module2','Module3'|
-    #Récupère tous les Appenders nommé 'FileExternal' 
+    #Récupère tous les Appenders nommé 'FileExternal'
   Get-Log4NetAppenderFileName -External|
-   #Affiche le fichier de logs de chaque module 
+   #Affiche le fichier de logs de chaque module
   Get-Content -path {Write-Host "`tContent of module log file : $_" -foreground yellow;$_}
- #Par défault, les loggers émettent dans un fichier situé 
+ #Par défault, les loggers émettent dans un fichier situé
  #dans le répertoire 'logs' de chaque module utilisant log4Posh
 
- 
+
  Write-Host "`r`nEnable traces on the console. Only the loggers with the level 'info' are assigned" -foreground green
 'Module1','Module2','Module3'|
    #Récupère le repository Log4Net associé

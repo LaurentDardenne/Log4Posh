@@ -4,13 +4,13 @@ Function Initialize-Logging {
       [string] $Path,
       [string] $Name
   )
-  
+
    [log4net.GlobalContext]::Properties["LogJobName"]='DemoSharedLog'
    #change le nom via PatternString unicité du nom pour chaque exécution
    $p=[log4net.Util.PatternString]::new('%env{TEMP}\\DefaultLog4Posh-%property{Owner}-%property{LogJobName}-%date{ddMMyyyy}.log')
    $p.Format()>$null
    #todo $ConversionPattern='[PID:%property{Owner}] [%property{LogJobName}] %-5level %d{yyyy-MM-dd HH:mm:ss} – %message%newline'
-  
+
    Initialize-Log4Net #Qu'on écrive ou non dans un logger le fichier déclaré dans le config.xml est tout de même crée
                       #Ce qui implique qu'un module ne peut écrire dans son fichier de log par défaut
                       # avant que l'appelant n'ai modifié le nom de fichier
@@ -35,10 +35,10 @@ $Params=@{
 
    $Repository=Get-DefaultRepository
    Switch-AppenderFileName -RepositoryName $Repository.Name -AppenderName 'FileExternal' -NewFileName (Join-Path -Path $Path -ChildPath $Name)
-   
+
    $PathLg4n=New-object System.IO.FileInfo (Get-Log4NetAppenderFileName -RepositoryName $Repository.Name -Internal)
    write-warning  $PathLg4n
-   Switch-AppenderFileName -RepositoryName $Repository.Name -AppenderName 'FileInternal' -NewFileName (Join-Path -Path $Path -ChildPath $PathLg4n.Name) 
+   Switch-AppenderFileName -RepositoryName $Repository.Name -AppenderName 'FileInternal' -NewFileName (Join-Path -Path $Path -ChildPath $PathLg4n.Name)
    $DebugLogger.Debug("Modify the location of the main script log file :'$path'")
 }
 

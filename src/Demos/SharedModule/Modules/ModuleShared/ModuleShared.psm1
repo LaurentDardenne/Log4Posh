@@ -7,7 +7,7 @@ function AUn {
   $InfoLogger.PSInfo("message fromfunction AUn")
 }
 
-function ADeux { 
+function ADeux {
   $DebugLogger.PSDebug("message from function ADeux")
   $InfoLogger.PSInfo("message from function ADeux")
   BUn

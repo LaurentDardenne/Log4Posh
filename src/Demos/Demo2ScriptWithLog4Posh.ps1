@@ -3,7 +3,7 @@
   $InfoLogger.PSInfo("message from function Un")
 }
 
-function Deux { 
+function Deux {
   Un
   $DebugLogger.PSDebug("message from function Deux")
   $InfoLogger.PSInfo("message from function Deux")
@@ -13,7 +13,7 @@ function Trois {
   Deux
   $DebugLogger.PSDebug("message from function Trois")
   $InfoLogger.PSInfo("message from function Trois")
-  
+
 }
 
 Function Demo {
@@ -46,20 +46,20 @@ Write-host "`r`nShow all created Log4net repositories :"
 [LogManager]::GetAllRepositories()|
  Select-Object Name,Configured|
  Format-Table
- 
+
 Trois
 
 $sbView={
   Write-Host "`r`nFor each logger displays the FileAppender file name" -foreground green
- 
-   #Récupère tous les Appenders nommé 'FileExternal' 
+
+   #Récupère tous les Appenders nommé 'FileExternal'
  Get-Log4NetAppenderFileName -RepositoryName $RepositoryName |
-  #Affiche le fichier de logs de chaque module 
+  #Affiche le fichier de logs de chaque module
  ForEach-Object {Write-Host "`tlog file : $_" -foreground yellow}
 }
 .$sbView
 Write-host "`r`nChanging the location of the main script log file :" -foreground yellow
-$FileName=([System.IO.FileInfo]$RepositoryName).BaseName 
+$FileName=([System.IO.FileInfo]$RepositoryName).BaseName
 Switch-AppenderFileName -RepositoryName $RepositoryName FileExternal "C:\temp\$FileName.log"
 Switch-AppenderFileName -RepositoryName $RepositoryName FileInternal "C:\temp\$FileName.log"
 $InfoLogger.PSInfo("Appender FileExternal redirected")

@@ -18,10 +18,10 @@ Write-host "`r`nDisplays the appenders of each logger declared in the specified 
  ForEach-Object  {
    Write-Warning "Current repository '$($_.name)'"
    $_.GetAppenders()
- } 
+ }
 
 Write-host "`r`nDeletes the log files associated with the specified modules" -foreground yellow
-'Module1','Module2','Module3'| 
+'Module1','Module2','Module3'|
  Get-Log4NetAppenderFileName -Internal|
  Remove-Item -path {$_} -EA SilentlyContinue
 
@@ -35,15 +35,15 @@ Write-host "`r`nDeletes the log files associated with the specified modules" -fo
    #Noms des modules à interroger
 'Module1','Module2','Module3'|
    #Récupère tous les Appenders nommé 'FileExternal'
-   #Pour cette démo 'FileExternal' et 'FileInternal' sont identiques 
+   #Pour cette démo 'FileExternal' et 'FileInternal' sont identiques
  Get-Log4NetAppenderFileName -External|
-   #Affiche le fichier de logs de chaque module 
+   #Affiche le fichier de logs de chaque module
  Get-Content -path {Write-warning "File log : $_";$_}
 Write-host "By default, loggers emit in a file located in the 'logs' directory of each module using log4Posh" -fore yellow
- 
+
  #Active les traces sur la console
  #Seul les loggers de niveau INFO sont concernés
-Write-host "`r`nActivates the traces on the console, only the loggers with 'INFO' level  are concerned." -foreground yellow 
+Write-host "`r`nActivates the traces on the console, only the loggers with 'INFO' level  are concerned." -foreground yellow
 'Module1','Module2','Module3'|
    #Récupère le repository Log4Net associé
   Get-Log4NetRepository|
@@ -56,13 +56,13 @@ ATrois
 # 2629853 INFO  - [Module1] message from function AUn
 # 2629853 INFO  - [Module2] message from function BUn
 # 2629869 INFO  - [Module3] message from function CUn
- 
-Write-host "`r`nActivates the traces on the console, only the loggers with 'DEBUG' level  are concerned." -foreground yellow  
+
+Write-host "`r`nActivates the traces on the console, only the loggers with 'DEBUG' level  are concerned." -foreground yellow
 'Module1','Module2','Module3'|
   Get-Log4NetRepository|
   Get-Log4NetLogger -Name 'InfoLogger','DebugLogger'|
   Set-Log4NetAppenderThreshold 'Console' -DebugLevel
-ATrois  
+ATrois
 # 3020119 DEBUG - [Module1] message from function ATrois
 # 3020119 INFO  - [Module1] message from function ATrois
 # 3020135 DEBUG - [Module1] message from function AUn
@@ -70,12 +70,12 @@ ATrois
 # 3020135 DEBUG - [Module2] message from function BUn
 # 3020150 INFO  - [Module2] message from function BUn
 # 3020150 DEBUG - [Module3] message du module CUn
-# 3020150 INFO  - [Module3] message from function CUn  
+# 3020150 INFO  - [Module3] message from function CUn
 
-Write-host "`r`nDisplay of module names according to the functions called." -foreground yellow  
+Write-host "`r`nDisplay of module names according to the functions called." -foreground yellow
 AUn
 # 3176650 DEBUG - [Module1] message from function AUn
-# 3176650 INFO  - [Module1] message from function AUn  
+# 3176650 INFO  - [Module1] message from function AUn
 
 Bdeux
 # 062364 DEBUG - [Module2] message from function BDeux
@@ -98,7 +98,7 @@ Write-host "`r`nDisables the loggers of the module named 'Module2'" -foreground 
   Get-Log4NetLogger -Name 'InfoLogger','DebugLogger'|
   Set-Log4NetAppenderThreshold 'Console' -Off
 
-ATrois  
+ATrois
 # 4794127 DEBUG - [Module1] message from function ATrois
 # 4794127 INFO  - [Module1] message from function ATrois
 # 4794127 DEBUG - [Module1] message from function AUn
@@ -122,16 +122,16 @@ $Repo.Configured
 #false
 
 Write-host "`r`nConfigures the default repository" -foreground yellow
-Initialize-Log4Net 
+Initialize-Log4Net
 
 Write-host "`r`nDisplays configured appenders :" -foreground yellow
 $Repo.GetAppenders()
 
-Write-host "`r`nDisplays declared loggers :" -foreground yellow 
+Write-host "`r`nDisplays declared loggers :" -foreground yellow
 $Repo.GetCurrentLoggers()|Select-Object Name
 
-Write-host "`r`nDisplays variables associated with loggers declared (Logger name = Variable name):" -foreground yellow 
-$Repo.GetCurrentLoggers()|Select-Object Name|Get-Variable 
+Write-host "`r`nDisplays variables associated with loggers declared (Logger name = Variable name):" -foreground yellow
+$Repo.GetCurrentLoggers()|Select-Object Name|Get-Variable
 
 Write-host "`r`nLog information using the loggers variables declared by the 'Initialize-Log4Net' function :" -foreground yellow
 $InfoLogger.PSInfo("Logger info ready.")
@@ -146,9 +146,9 @@ $Repo|
 
 $InfoLogger.PSInfo("Logger info ready.")
 $DebugLogger.PSDebug("Logger debug ready.")
- 
-$pid 
-#5932 
+
+$pid
+#5932
 
 Write-host "`r`nDefault log file location :" -foreground yellow
 $Repo.Name|Get-Log4NetAppenderFileName -External

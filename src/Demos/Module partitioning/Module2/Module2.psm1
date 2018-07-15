@@ -1,7 +1,7 @@
 ﻿$Script:lg4n_ModuleName=$MyInvocation.MyCommand.ScriptBlock.Module.Name
  #see \TypeData\log4net.Core.LogImpl.Types.ps1xml
 
- 
+
    #Récupère le code d'une fonction publique du module Log4Posh (Prérequis)
    #et l'exécute dans la portée du module
 $InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
@@ -15,24 +15,24 @@ $Params=@{
 
 function BUn {
   $DebugLogger.PSDebug("message from function BUn")
-  $InfoLogger.PSInfo("message from function BUn") 
+  $InfoLogger.PSInfo("message from function BUn")
 }
 
-function BDeux { 
+function BDeux {
   $DebugLogger.PSDebug("message from function BDeux")
-  $InfoLogger.PSInfo("message from function BDeux") 
-  CUn 
+  $InfoLogger.PSInfo("message from function BDeux")
+  CUn
 }
 
 function BTrois {
   $DebugLogger.PSDebug("message from function BTrois")
-  $InfoLogger.PSInfo("message from function BTrois") 
+  $InfoLogger.PSInfo("message from function BTrois")
   AUn;BUN;CUN
 }
 
 Function OnRemove {
   Stop-Log4Net $Script:lg4n_ModuleName
 }#OnRemovePsIonicZip
- 
+
 # Section  Initialization
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { OnRemove }

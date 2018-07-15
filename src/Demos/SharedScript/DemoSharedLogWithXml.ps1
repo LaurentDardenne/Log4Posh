@@ -26,7 +26,7 @@ try {
     Import-Module .\ModuleShared\ModuleShared.psd1
     BTrois
     #Ce script, le module partagé et le module de traitement écrivent dans le même fichier de log
-} 
+}
 catch{
   $Repository=Get-Log4NetRepository -RepositoryName $ScriptName
   if(!$Repository.Configured)
@@ -35,5 +35,5 @@ catch{
   { $InfoLogger.PSFatal('Error',$_.exception) }
 }
 Finally {
-    Stop-Log4Net -RepositoryName $ScriptName 
+    Stop-Log4Net -RepositoryName $ScriptName
 }

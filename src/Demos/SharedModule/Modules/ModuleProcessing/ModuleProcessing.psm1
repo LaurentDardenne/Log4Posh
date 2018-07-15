@@ -16,26 +16,38 @@ $Params=@{
 &$InitializeLogging @Params
 
 function BUn {
+<#
+.SYNOPSIS
+  log message
+#>
   $DebugLogger.PSDebug("message from function BUn")
-  $InfoLogger.PSInfo("message from function BUn") 
+  $InfoLogger.PSInfo("message from function BUn")
 }
 
-function BDeux { 
+function BDeux {
+<#
+.SYNOPSIS
+  log message
+#>
   $DebugLogger.PSDebug("message from function BDeux")
-  $InfoLogger.PSInfo("message from function BDeux") 
+  $InfoLogger.PSInfo("message from function BDeux")
   ATrois
 }
 
 function BTrois {
+<#
+.SYNOPSIS
+  log message
+#>
   $DebugLogger.PSDebug("message from function BTrois")
-  $InfoLogger.PSInfo("message from function BTrois") 
+  $InfoLogger.PSInfo("message from function BTrois")
   BDeux
 }
 
 Function OnRemove {
   Stop-Log4Net $Script:lg4n_ModuleName
 }#OnRemovePsIonicZip
- 
+
 # Section initialization
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { OnRemove }
 
