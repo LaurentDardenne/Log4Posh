@@ -5,7 +5,7 @@ Describe "Log4Posh standalone - basic" {
 
  Context "When there is no error" {
 
-  It "Log4Net assemblie loaded, [LogManager] must existed"{
+  It "Log4Net assemblie loaded, [LogManager] must existed" {
     [log4net.LogManager] -eq [LogManager] | Should Be $true
   }
 
@@ -31,31 +31,31 @@ Describe "Log4Posh standalone - basic" {
     Test-Repository 'Test' -Configured | Should Be $true
   }
 
-  It "Must exist one appender"{
+  It "Must exist one appender" {
     $Repository=[LogManager]::GetRepository('Test')
     $Repository.GetAppenders().Count| Should be 1
   }
 
-  It "Must exist two logger"{
+  It "Must exist two logger" {
     $Repository=[LogManager]::GetRepository('Test')
     $Repository.GetCurrentLoggers().Count| Should be 2
   }
 
-  It "Must loggers are not null"
+  It "Must loggers are not null" {
     [LogManager]::GetLogger('Test','DebugLogger')|Should Not BeNullOrEmpty
     [LogManager]::GetLogger('Test','InfoLogger')|Should Not BeNullOrEmpty
   }
 
-  It "Must TypeData loaded"{
+  It "Must TypeData loaded" {
     Get-TypeData log4net.Core.LogImpl|Should Not BeNullOrEmpty
   }
 
-  It "Must logger works"{
+  It "Must logger works" {
     $DebugLogger=[LogManager]::GetLogger('Test','DebugLogger')
     {$DebugLogger.PSDebug('Message - Console - Main context')}| Should Not Throw
   }
 
-  It "Must enable the console appender, then disabled it"{
+  It "Must enable the console appender, then disabled it" {
     $DebugLogger=[LogManager]::GetLogger('Test','DebugLogger')
     $Appender=$DebugLogger.Logger.Appenders | Where-Object { $_.Name -eq 'Console'}
      $Appender.Threshold|Should Be 'Debug'
@@ -76,10 +76,10 @@ Describe "Log4Posh standalone - basic" {
     $Result.Equals($ScriptLevel)
   }
 
-  It "Must 'Test' repository exist"{
+  It "Must 'Test' repository exist" {
     $Repository=Get-Log4NetRepository -RepositoryName 'Test'
     $Repository.Count| Should be 1
-  }
+   }
 
   It "Must reset the configuration of the 'Test' repository" {
     Test-Repository 'Test' -Configured | Should Be $true
@@ -107,7 +107,7 @@ Describe "Log4Posh standalone - basic" {
     $Repository.GetCurrentLoggers().Count| Should be 2
   }
 
-  It "Must loggers are not null"{
+  It "Must loggers are not null" {
     [LogManager]::GetLogger('Test','DebugLogger')|Should Not BeNullOrEmpty
     [LogManager]::GetLogger('Test','InfoLogger')|Should Not BeNullOrEmpty
   }
@@ -122,7 +122,7 @@ Describe "Log4Posh standalone - basic" {
  }
 
  Context "When there error" {
-   It "Must 'NotExist' repository throw an error"{
+   It "Must 'NotExist' repository throw an error" {
     {Get-Log4NetRepository -RepositoryName 'NotExist' -ErrorAction Stop}| Should Throw
   }
 
@@ -131,7 +131,7 @@ Describe "Log4Posh standalone - basic" {
     Test-Repository 'Pester' | Should Be $false
   }
 
-  It "Verify if a new repository 'Pester' is not configured" -skip:$(Test-Repository 'Pester'){
+  It "Verify if a new repository 'Pester' is not configured" -skip:$(Test-Repository 'Pester') {
    try {
      $Repository=[LogManager]::CreateRepository('Pester')
      Test-Repository $Repository.Name -Configured | Should Be $false
@@ -141,7 +141,7 @@ Describe "Log4Posh standalone - basic" {
    }
   }
 
-  It "Start-Log4Net throw a FileNotFoundException" -skip:$(Test-Repository 'Test2'){
+  It "Start-Log4Net throw a FileNotFoundException" -skip:$(Test-Repository 'Test2') {
    $Repository=[LogManager]::CreateRepository('Test2')
    try {
      Start-Log4Net -Repository $Repository -Path "$PSScriptRoot\NotExistLog4Posh.Config.xml"
@@ -151,7 +151,7 @@ Describe "Log4Posh standalone - basic" {
    }
   }
 
-  It "Start-Log4Net throw a XML configuration error. Set 'threshold' property to 'ON' is invalid" -skip:$(Test-Repository 'Test3'){
+  It "Start-Log4Net throw a XML configuration error. Set 'threshold' property to 'ON' is invalid" -skip:$(Test-Repository 'Test3') {
    $Repository=[LogManager]::CreateRepository('Test3')
    try {
      Start-Log4Net -Repository $Repository -Path "$PSScriptRoot\ErrorLog4Posh.Config.xml"
@@ -167,7 +167,7 @@ Describe "Log4Posh used by module - basic" {
 
   Context "When there is no error" {
 
-    It "Must exist the repository 'Module1'"{
+    It "Must exist the repository 'Module1'" {
      [LogManager]::GetRepository('Module1') | Should Not BeNullOrEmpty
     }
 
@@ -175,7 +175,7 @@ Describe "Log4Posh used by module - basic" {
       Test-Repository 'Module1' -Configured | Should Be $true
     }
 
-    It "Must exist four appenders"{
+    It "Must exist four appenders" {
       $Repository=[LogManager]::GetRepository('Module1')
       $Repository.GetAppenders().Count| Should be 4
     }
@@ -185,18 +185,18 @@ Describe "Log4Posh used by module - basic" {
       $Repository.GetCurrentLoggers().Count| Should be 2
     }
 
-    It "Must loggers are not null"{
+    It "Must loggers are not null" {
       [LogManager]::GetLogger('Module1','DebugLogger')|Should Not BeNullOrEmpty
       [LogManager]::GetLogger('Module1','InfoLogger')|Should Not BeNullOrEmpty
     }
 
-    It "Loggers should be 3 (via Get-Log4NetLogger)"{
+    It "Loggers should be 3 (via Get-Log4NetLogger)" {
       $Repository=Get-Log4NetRepository 'Module1'
       $Loggers=Get-Log4NetLogger -Repository $Repository -Name 'DebugLogger','InfoLogger','Root'
       $Loggers.Count|Should be 3
     }
 
-    It "Loggers should be 3 (via GetCurrentLoggers)"{
+    It "Loggers should be 3 (via GetCurrentLoggers)" {
       $Loggers=[log4net.LogManager]::GetCurrentLoggers('Module1').Logger
       $Loggers.Count|Should be 3
     }
