@@ -1,4 +1,11 @@
-﻿2018-05-18  Version 3.0.1
+﻿2018-07-15  Version 3.0.2
+  Add
+    Log files are now created with the UTF-8 encoding by default.
+    PSWarn method in TypeData (ETS).
+    PSDebugFormat, PSInfoFormat, PSWarnFormat, PSErrorFormat, PSFatalFormat methods in TypeData (ETS).
+    Add 'Get-Log4NetConfiguration' function.
+
+2018-05-18  Version 3.0.1
  Fix
      function Start-Log4Net
       When the module was loaded from an UNC path, the constructor of the class System.IO.fileInfo 
