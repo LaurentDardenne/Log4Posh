@@ -16,7 +16,7 @@ function Format-Log4PoshConfiguration{
      {
       $_.Value.GetEnumerator() |Foreach-object {
         "`t$($_.Key) : $($_.Value.EffectiveLevel)`r`n "
-        ($_.Value.Appenders|out-string) -split "`r`n"|% {$_ -replace '^',"`t`t"}
+        ($_.Value.Appenders|out-string) -split "`r`n"|Foreach-Object {$_ -replace '^',"`t`t"}
       }
      }
      "`r`n"
