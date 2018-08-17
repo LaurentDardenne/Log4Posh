@@ -25,14 +25,25 @@ try {
     Import-Module .\Moduleprocessing\ModuleProcessing.psd1
     Import-Module .\ModuleShared\ModuleShared.psd1
     BTrois
-    #Ce script, le module partagé et le module de traitement écrivent dans le même fichier de log
+    #This script, the shared module, and the processing module write to the same log file
+    AError
+    #This fonction throw an exception :
+    # at BError, ..\Log4Posh\Demos\SharedScript\Moduleprocessing\ModuleProcessing.psm1: line 24
+    # at AError, ..\Log4Posh\Demos\SharedScript\ModuleShared\ModuleShared.psm1: line 24
+    # at <ScriptBlock>,..\Log4Posh\Demos\SharedScript\DemoSharedLogWithXml.ps1: line 30
 }
 catch{
   $Repository=Get-Log4NetRepository -RepositoryName $ScriptName
   if(!$Repository.Configured)
   { Write-Error "Error $_" }
   else
-  { $InfoLogger.PSFatal('Error',$_.exception) }
+  { 
+     #Log the error (ErrorRecord) with the 'ScriptStackTrace' property after the message string.
+    $InfoLogger.PSFatal('Error',$_) 
+
+    #Log the error (exception) without the 'ScriptStackTrace' property.
+    $InfoLogger.PSFatal('Error',$_.exception) 
+  }
 }
 Finally {
     Stop-Log4Net -RepositoryName $ScriptName

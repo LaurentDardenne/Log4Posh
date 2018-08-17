@@ -19,3 +19,7 @@ function BTrois {
   $InfoLogger.PSInfo("message from function BTrois")
   BDeux
 }
+
+function BError {
+  Throw "Test ScriptStackTrace"
+}

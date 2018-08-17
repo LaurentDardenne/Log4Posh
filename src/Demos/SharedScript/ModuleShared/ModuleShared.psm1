@@ -19,3 +19,7 @@ function ATrois {
   Write-Verbose "Call $Script:ModuleName.AUn , ModuleProcess.BUn"
   AUn;BUN;ADeux
 }
+
+function AError {
+  BError
+}
