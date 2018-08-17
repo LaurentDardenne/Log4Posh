@@ -1,31 +1,48 @@
-﻿2018-07-15  Version 3.0.2
+﻿2018-07-15  Version 3.0.3
+  Add
+    log4net.Core.LogImpl.Types.ps1xml :
+
+     We can use a ErrorRecord instance instead a Exception when we call PSFatal('Message',$Exception).
+
+     It write the 'ScriptStackTrace' property after the message string.
+
+2018-07-15  Version 3.0.2
   Add
     Log files are now created with the UTF-8 encoding by default.
+
     PSWarn method in TypeData (ETS).
+
     PSDebugFormat, PSInfoFormat, PSWarnFormat, PSErrorFormat, PSFatalFormat methods in TypeData (ETS).
+
     Add 'Get-Log4NetGlobalContextProperty' function.
+
     Add 'Get-Log4NetConfiguration' function.
 
 2018-05-18  Version 3.0.1
  Fix
      function Start-Log4Net
-      When the module was loaded from an UNC path, the constructor of the class System.IO.fileInfo 
+      When the module was loaded from an UNC path, the constructor of the class System.IO.fileInfo
+
       raised a NotSupportedException exception.
 
 2018-05-06  Version 3.0.0
   Breaking change
     The function Initialize-Log4Net dot not use script scope by default with a xml configuration ($XmlConfigPath)
+
     The caller, in the case of a module using its own loggers, must specify the scope 'Script'
     
     The following code :
+    ```powershell
       $InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
       $Params=@{
         RepositoryName = $Script:lg4n_ModuleName
         XmlConfigPath = "$psScriptRoot\Log4Net.Config.xml"
         DefaultLogFilePath = "$psScriptRoot\Logs\${Script:lg4n_ModuleName}.log"
       }
-      &$InitializeLogging @Params 
+      &$InitializeLogging @Params
+    ```
    becomes
+   ```powershell
       $InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4Net}")
       $Params=@{
         RepositoryName = $Script:lg4n_ModuleName
@@ -34,7 +51,7 @@
         Scope='Script'
       }
       &$InitializeLogging @Params
-  
+  ```
   Add
      Function Get-DefaultRepository : return the défault repository. See Get-DefaultRepositoryName
      Get-Log4NetLogger : add -All parameter. Return all loggers of a repository
