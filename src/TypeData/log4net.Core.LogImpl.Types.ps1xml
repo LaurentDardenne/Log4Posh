@@ -20,12 +20,18 @@
              
               Overload :
                PSDebug(Object) : Converts the message object (passed as parameter) to a string by invoking the appropriate IObjectRenderer.
-               PSDebug(Object,Exception) :Logs a message object with the DEBUG level including the stack trace of the Exceptionexception passed as a parameter. 
+                PSDebug(Object,ErrorRecord) :Logs a message object with the DEBUG level including the contains of the following properties : 
+                                              - 'StackTraceScript' ,
+                                              - 'InvocationInfo',
+                                              - 'Exception'. 
+               PSDebug(Object,Exception) :Logs a message object with the DEBUG level including the stack trace of the exception passed as a parameter. 
           -->
          <Name>PSDebug</Name> 
          <Script>
             if ($this.IsDebugEnabled)
             {  
+              $Message=$Args[0]
+              $Error=$Args[1]
               if (Test-Path Variable:lg4n_ModuleName)
               { $Name=$lg4n_ModuleName }
               elseif (Test-Path Variable:lg4n_ScriptName)
@@ -34,7 +40,10 @@
               { $Name="Console" }
               switch ($args.Count) {
              		 1 { $this.Psbase.Debug("[$Name] $($args[0])") }
-                 2 { $this.Psbase.Debug("[$Name] $($args[0])",$args[1]) }
+                 2 { 
+                      $NewValue=$this.FormatMessageAndConvertToException($Message,$Error)
+                      $this.Psbase.Debug("[$Name] $($NewValue.Message)",$NewValue.Error)                    
+                   }
   	             default { throw "The method Debug do not contains override with $($args.Count) parameters." }
               }
              }
@@ -72,6 +81,8 @@
          <Script>
             if ($this.IsInfoEnabled)
             {  
+              $Message=$Args[0]
+              $Error=$Args[1]
               if (Test-Path Variable:lg4n_ModuleName)
               { $Name=$lg4n_ModuleName }
               elseif (Test-Path Variable:lg4n_ScriptName)
@@ -80,7 +91,10 @@
               { $Name="Console" }
               switch ($args.Count) {
              		 1 { $this.Psbase.Info("[$Name] $($args[0])") }
-                 2 { $this.Psbase.Info("[$Name] $($args[0])",$args[1]) }
+                 2 { 
+                      $NewValue=$this.FormatMessageAndConvertToException($Message,$Error)
+                      $this.Psbase.Info("[$Name] $($NewValue.Message)",$NewValue.Error)                    
+                   }
   	             default { throw "The method Info do not contains override with $($args.Count) parameters." }
               }
              }
@@ -118,6 +132,8 @@
          <Script>
             if ($this.IsWarnEnabled)
             {  
+              $Message=$Args[0]
+              $Error=$Args[1]
               if (Test-Path Variable:lg4n_ModuleName)
               { $Name=$lg4n_ModuleName }
               elseif (Test-Path Variable:lg4n_ScriptName)
@@ -126,7 +142,10 @@
               { $Name="Console" }
               switch ($args.Count) {
              		 1 { $this.Psbase.Warn("[$Name] $($args[0])") }
-                 2 { $this.Psbase.Warn("[$Name] $($args[0])",$args[1]) }
+                 2 { 
+                      $NewValue=$this.FormatMessageAndConvertToException($Message,$Error)
+                      $this.Psbase.Warn("[$Name] $($NewValue.Message)",$NewValue.Error)                    
+                   }
   	             default { throw "The method Warn do not contains override with $($args.Count) parameters." }
               }
              }
@@ -164,6 +183,8 @@
          <Script>
             if ($this.IsErrorEnabled)
             {  
+              $Message=$Args[0]
+              $Error=$Args[1]
               if (Test-Path Variable:lg4n_ModuleName)
               { $Name=$lg4n_ModuleName }
               elseif (Test-Path Variable:lg4n_ScriptName)
@@ -172,7 +193,10 @@
               { $Name="Console" }
               switch ($args.Count) {
              		 1 { $this.Psbase.Error("[$Name] $($args[0])") }
-                 2 { $this.Psbase.Error("[$Name] $($args[0])",$args[1]) }
+                 2 { 
+                      $NewValue=$this.FormatMessageAndConvertToException($Message,$Error)
+                      $this.Psbase.Error("[$Name] $($NewValue.Message)",$NewValue.Error)                    
+                    }
                  3 { $this.Psbase.Error("[$Name] $($args[0])",$args[1],$args[2]) }
   	             default { throw "The method Error do not contains override with $($args.Count) parameters." }
               }
@@ -211,6 +235,8 @@
          <Script>
             if ($this.IsFatalEnabled)
             {  
+              $Message=$Args[0]
+              $Error=$Args[1]
               if (Test-Path Variable:lg4n_ModuleName)
               { $Name=$lg4n_ModuleName }
               elseif (Test-Path Variable:lg4n_ScriptName)
@@ -218,8 +244,11 @@
               else
               { $Name="Console" }
               switch ($args.Count) {
-             		 1 { $this.Psbase.Fatal("[$Name] $($args[0])") }
-                 2 { $this.Psbase.Fatal("[$Name] $($args[0])",$args[1]) }
+             		 1 { $this.Psbase.Fatal("[$Name] $Message") }
+                 2 { 
+                     $NewValue=$this.FormatMessageAndConvertToException($Message,$Error)
+                     $this.Psbase.Fatal("[$Name] $($NewValue.Message)",$NewValue.Error) 
+                   }
   	             default { throw "The method Fatal do not contains override with $($args.Count) parameters." }
               }
              }
@@ -228,6 +257,8 @@
        <ScriptMethod>
          <Name>PSFatalFormat</Name>
          <Script>
+            #This method does not take an Exception object to include in the log event. 
+            #To pass an Exception use one of the PSFatal(object)] methods instead. 
             if ($this.IsFatalEnabled)
             {  
               if (Test-Path Variable:lg4n_ModuleName)
@@ -250,7 +281,27 @@
               }
             }
          </Script>
-       </ScriptMethod>             
+       </ScriptMethod>
+
+       <ScriptMethod> 
+         <Name>FormatMessageAndConvertToException</Name> 
+         <Script>
+            $Result=[pscustomobject]@{
+               PSTypeName='AdaptedLog4NetInfo';
+               Message=$Args[0]
+               Error=$Args[1]
+            } 
+            if ($Result.Error -is [System.Management.Automation.ErrorRecord])
+            { 
+                #ScriptStackTrace need Powershell v3
+               if ($PSVersionTable.PSVersion -ge [version]"3.0")
+               { $Result.Message +="`r`n$($Result.Error.ScriptStackTrace)" }
+               $Result.Message +="`r`n$($Result.Error.InvocationInfo|Out-String)"
+               $Result.Error=$Result.Error.Exception
+            }
+            Return $Result
+         </Script> 
+       </ScriptMethod>  
      </Members>        
   </Type>
 </Types> 
