@@ -180,3 +180,4 @@ Write-host "`r`nReset the default location of the log file of module 'module3' :
 'Module3'|Get-Log4NetAppenderFileName -External
 }
 . Demo2
+.\DemoFormatLog4PoshConfiguration.ps1

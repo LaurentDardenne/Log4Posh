@@ -77,3 +77,4 @@ if(!$PSScriptRoot)
 {  $PSScriptRoot = Get-ScriptDirectory }
 
 . Demo
+.\DemoFormatLog4PoshConfiguration.ps1
