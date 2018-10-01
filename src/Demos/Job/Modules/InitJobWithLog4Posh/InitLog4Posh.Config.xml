@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<log4net>
+ <logger name="DebugLogger">
+    <level value="Debug" />
+    <appender-ref ref="FileExternal"/>
+    <appender-ref ref="Debugger"/>
+  </logger>
+
+   <logger name="InfoLogger">
+    <level value="Info" />
+    <appender-ref ref="FileExternal"/>
+    <appender-ref ref="Debugger"/>
+  </logger>
+
+
+  <!-- Global Context properties : Owner, RunspaceId, LogJobName -->
+
+  <appender name="FileExternal" type="log4net.Appender.RollingFileAppender">
+    <!-- Example of default name :
+      C:\Users\User\AppData\Local\Temp\DefaultLog4Posh-2224-ConsoleHost-17032014093932
+    -->
+    <file type="log4net.Util.PatternString" value="%property{ApplicationLogPath}\\%property{LogJobName}-%property{Owner}-%date{ddMMyyyy}.log"/>
+    <encoding value="utf-8"/>
+    <param name="AppendToFile" value="true"/>
+    <rollingStyle value="Size"/>
+    <maxSizeRollBackups value="5"/>
+    <maximumFileSize value="2MB"/>
+    <staticLogFileName value="true"/>
+    <layout type="log4net.Layout.PatternLayout">
+      <param name="ConversionPattern" value="[%property{LogJobName}] %-5level %d{yyyy-MM-dd HH:mm:ss} – %message%newline"/>
+    </layout>
+    <lockingModel type="log4net.Appender.FileAppender+MinimalLock"/>
+  </appender>
+
+  <!-- This appender can be associated with 'DebugView.exe' from Windows Sysinternals. -->
+  <appender name="Debugger" type="log4net.Appender.OutputDebugStringAppender">
+    <layout type="log4net.Layout.PatternLayout">
+      <conversionPattern value="%property{LogJobName} %-5level %d{yyyy-MM-dd HH:mm:ss} - %message%newline"/>
+    </layout>
+    <threshold value="DEBUG"/>
+  </appender>
+</log4net>
