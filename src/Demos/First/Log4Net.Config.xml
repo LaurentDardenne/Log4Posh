@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<log4net>
+ <logger name="DebugLogger">
+    <level value="Debug" />
+    <appender-ref ref="Console" />
+  </logger>
+   
+   <logger name="InfoLogger">
+    <level value="Debug" />
+    <appender-ref ref="LogFile"/>
+  </logger>
+    
+  <appender name="Console" type="log4net.Appender.ManagedColoredConsoleAppender">
+    <layout type="log4net.Layout.PatternLayout">
+      <conversionPattern value="%-4timestamp %-5level - %message%newline" />
+    </layout>
+    <mapping>
+        <level value="INFO" />
+        <foreColor value="Cyan" />
+    </mapping>
+    <mapping>
+        <level value="DEBUG" />
+        <foreColor value="Green" />
+    </mapping>
+    <mapping>
+        <level value="WARN" />
+        <foreColor value="Yellow" />
+    </mapping>
+    <mapping>
+        <level value="ERROR" />
+        <foreColor value="Red" />
+    </mapping>
+    <mapping>
+        <level value="FATAL" />
+        <foreColor value="Black" />
+        <backColor value="Red" />
+    </mapping>  
+    <threshold value="DEBUG"/>    
+  </appender>
+
+  <!-- Global Context properties : Owner, RunspaceId, LogJobName -->
+  <appender name="LogFile" type="log4net.Appender.RollingFileAppender">
+    <file type="log4net.Util.PatternString" value="%env{TEMP}\\First.log"/>
+    <!-- <file type="log4net.Util.PatternString" value="%property{ApplicationLogPath}\\%property{LogJobName}-%date{yyyy-MM-dd_HH-mm-ss}.log"/> -->
+    <encoding value="utf-8"/>
+    <param name="AppendToFile" value="true"/>
+    <rollingStyle value="Size"/>
+    <maxSizeRollBackups value="5"/>
+    <maximumFileSize value="2MB"/>
+    <staticLogFileName value="true"/>
+    <layout type="log4net.Layout.PatternLayout">
+      <param name="ConversionPattern" value="%-5level %d{HH:mm:ss} – %message%newline"/>
+    </layout>
+    <lockingModel type="log4net.Appender.FileAppender+MinimalLock"/>
+  </appender>
+</log4net>
