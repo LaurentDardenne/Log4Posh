@@ -6,7 +6,7 @@
 
 	# ID utilisé pour identifier de manière unique ce module
 	GUID = '7ec0e1d0-d443-456f-8d18-dad1e093a67c'
- 
+
 	# Auteur de ce module
 	Author = 'Laurent Dardenne'
 

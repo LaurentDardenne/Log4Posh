@@ -37,12 +37,12 @@ catch{
   if(!$Repository.Configured)
   { Write-Error "Error $_" }
   else
-  { 
+  {
      #Log the error (ErrorRecord) with the 'ScriptStackTrace' property after the message string.
-    $InfoLogger.PSFatal('Error',$_) 
+    $InfoLogger.PSFatal('Error',$_)
 
     #Log the error (exception) without the 'ScriptStackTrace' property.
-    $InfoLogger.PSFatal('Error',$_.exception) 
+    $InfoLogger.PSFatal('Error',$_.exception)
   }
 }
 Finally {

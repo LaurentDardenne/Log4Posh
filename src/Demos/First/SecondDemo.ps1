@@ -1,6 +1,5 @@
 ﻿#Requires -Modules Log4Posh
 
-  $StartDate=[DateTime]::Now
   $ScriptName=([System.IO.FileInfo]$PSCommandPath).BaseName
 
    #$lg4n_ScriptName is added in beginning of a log line (ETS manage this variable)
