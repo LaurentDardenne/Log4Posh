@@ -1,4 +1,7 @@
-﻿2018-07-15  Version 3.0.3
+﻿2019-01-12  Version 3.0.4
+  Add simple demos.
+
+2018-07-15  Version 3.0.3
   Add
     log4net.Core.LogImpl.Types.ps1xml :
 
