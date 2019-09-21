@@ -1,4 +1,4 @@
-function New-LogHeader {
+﻿function New-LogHeader {
 <#
   .SYNOPSIS
   Returns the informations to insert into a log header.
