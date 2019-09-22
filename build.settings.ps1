@@ -101,7 +101,7 @@ function Test-BOMFile{
         ForEach-Object  {
         Write-Verbose "Test BOM for '$($_.FullName)'"
         # create storage object
-        $EncodingInfo = 1 | Select FileName,Encoding,BomFound,Endian
+        $EncodingInfo = 1 | Select-Object FileName,Encoding,BomFound,Endian
         # store file base name (remove extension so easier to read)
         $EncodingInfo.FileName = $_.FullName
         # get full encoding object
@@ -333,6 +333,9 @@ Properties {
     # Execute or nor 'TestBOM' task
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
     $isTestBom=$true
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+    $ModuleOutDir = "$OutDir\$ModuleName"    
 }
 
 ###############################################################################

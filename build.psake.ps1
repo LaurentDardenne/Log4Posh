@@ -62,8 +62,8 @@
 # Private properties.
 ###############################################################################
 Properties {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-    $ModuleOutDir = "$OutDir\$ModuleName"
+    #  [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+    #  $script:ModuleOutDir = "$OutDir\$ModuleName"
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
     $UpdatableHelpOutDir = "$OutDir\UpdatableHelp"
@@ -123,13 +123,14 @@ Task Analyze -depends StageFiles `
     #TODO https://github.com/PowerShell/PSScriptAnalyzer/issues/607 and 675
     $analysisResult = Invoke-ScriptAnalyzer -Path $ModuleOutDir -Settings $ScriptAnalyzerSettingsPath -CustomRulePath $PSSACustomRules -IncludeDefaultRules -Recurse  -Verbose:($VerbosePreference -eq 'Continue')
     $analysisResult | Format-Table
+
     switch ($ScriptAnalysisFailBuildOnSeverityLevel) {
         'None' {
             return
         }
-        'Error' {
+        {$_ -in 'Error','ParseError'}  {
             Assert -conditionToCheck (
-                ($analysisResult | Where-Object Severity -eq 'Error').Count -eq 0
+                ($analysisResult | Where-Object {($_.Severity -eq 'Error') -or ($_.Severity -eq 'ParseError')}).Count -eq 0
                 ) -failureMessage 'One or more ScriptAnalyzer errors were found. Build cannot continue!'
         }
         'Warning' {
