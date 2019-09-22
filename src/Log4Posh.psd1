@@ -10,7 +10,7 @@
   CLRVersion="2.0"
   GUID = 'f796dd07-541c-4ad8-bfac-a6f15c4b06a0'
   ModuleToProcess="Log4Posh.psm1"
-  ModuleVersion="3.0.4"
+  ModuleVersion="3.0.5"
   PowerShellVersion="2.0"
   TypesToProcess = @(
       'TypeData\log4net.Core.LogImpl.Types.ps1xml'
