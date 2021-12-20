@@ -29,6 +29,7 @@ nuget:
 build_script:
    - ps: |
          Write-Host "Import profile"
+         Add-AppveyorMessage "This is a test message"
          $Profile=Import-Clixml $env:temp\PSProfile.xml
          Install-Module Psake  -force
          Import-Module Psake
