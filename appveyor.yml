@@ -12,14 +12,14 @@
 install:
 - ps: >-
           Set-ItemProperty -Name DisablePromptToUpdateHelp -Value 1 -path 'HKLM:\SOFTWARE\Microsoft\PowerShell'
-
           PowerShell.exe -Command {
             Install-PackageProvider Nuget -ForceBootstrap -Force > $null
             Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
              #The version delivered with PS does not come from a repository,
              #We force the installation from PS Gallery
             Install-module PowershellGet -MinimumVersion 1.1.0.0 -Force -Scope AllUsers
-            Export-Clixml -InputObject $Profile -Path  $env:temp\PSProfile.xml      }
+            Export-Clixml -InputObject $Profile -Path  $env:temp\PSProfile.xml
+          }
 
 nuget:
   account_feed: true
