@@ -3,6 +3,7 @@
     secure: irzUE0TW1t0PaM/FtieoJK1Uq/7ZXUw4qEUea1wX7LpwXRx1xeUTXEo4spxBVN6c
   MY_APPVEYOR_MyGetApiKey:
     secure: irzUE0TW1t0PaM/FtieoJK1Uq/7ZXUw4qEUea1wX7LpwXRx1xeUTXEo4spxBVN6c
+  APPVEYOR_CONSOLE_ENABLE_PTY: true
 
 # Set-ItemProperty is a workaround :
 # A command that prompts the user failed because the host program or the command type does not support user interaction.
