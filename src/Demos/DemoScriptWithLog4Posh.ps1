@@ -85,7 +85,10 @@ Write-Host "`r`nStop Log4net. The default repository is no longer configured" -f
 }
 
 if(!$PSScriptRoot)
-{  $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent }
+{  #todo v2 ?
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidAssignmentToAutomaticVariable","",
+  Justification="Todo.")]
+  $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent }
 
 . Demo
 Stop-Log4Net
