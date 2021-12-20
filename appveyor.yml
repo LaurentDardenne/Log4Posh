@@ -25,9 +25,10 @@ nuget:
   account_feed: true
   project_feed: true
 
+
 build_script:
    - ps: |
-
+         Write-Host "Import profile"
          $Profile=Import-Clixml $env:temp\PSProfile.xml
          Install-Module Psake  -force
          Import-Module Psake
