@@ -10,7 +10,7 @@
 #
 # The tasks Install et Build uses the same PS session
 install:
-  - ps: |
+- ps: >-
           Set-ItemProperty -Name DisablePromptToUpdateHelp -Value 1 -path 'HKLM:\SOFTWARE\Microsoft\PowerShell'
 
           PowerShell.exe -Command {
@@ -27,7 +27,7 @@ nuget:
 
 
 build_script:
-   - ps: |
+- ps: >-
          Write-Host "Import profile"
          Add-AppveyorMessage "This is a test message"
          $Profile=Import-Clixml $env:temp\PSProfile.xml
