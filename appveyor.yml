@@ -29,11 +29,9 @@ nuget:
 build_script:
 - ps: >-
          Write-Host "Import profile"
-         Add-AppveyorMessage "This is a test message"
          $Profile=Import-Clixml $env:temp\PSProfile.xml
          Install-Module Psake  -force
          Import-Module Psake
-
          Write-Host "Install dependencies"
          Invoke-Psake .\Install.psake.ps1 -parameters @{"Mode"="Install"} -nologo
          if (-not $psake.build_success)
@@ -42,15 +40,12 @@ build_script:
             $Error | Format-List * -Force
             exit 1
          }
-
          Write-Host "Call Publish task. Target '$Env:MY_APPVEYOR_GalleryName'"
          #$testResultsFile = Join-Path $pwd -ChildPath "TestResults.xml"
-
          If ($Env:MY_APPVEYOR_GalleryName -eq 'DevMyget')
          { $RepositoryName='DevOttoMatt' }
          elseIf ($Env:MY_APPVEYOR_GalleryName -eq 'MyGet')
          { $RepositoryName='OttoMatt' }
-
          #Invoke-PSake .\build.psake.ps1 -taskList Publish -parameters @{"TestOutputFile"=$testResultsFile;"RepositoryName"=$RepositoryName}
          Invoke-PSake .\build.psake.ps1 -taskList Publish -parameters @{"RepositoryName"=$RepositoryName}
          if (-not $psake.build_success)
@@ -67,7 +62,3 @@ build_script:
         #     $Error | Format-List * -Force
         #     exit 1;
         #  }
-
-
-
-
