@@ -7,9 +7,9 @@
   "targets": {
     ".NETStandard,Version=v2.0": {},
     ".NETStandard,Version=v2.0/": {
-      "log4net/2.0.13": {
+      "log4net/2.0.14": {
         "dependencies": {
-          "Microsoft.Net.Compilers": "3.7.0",
+          "Microsoft.Net.Compilers.Toolset": "4.0.1",
           "NETStandard.Library": "2.0.3",
           "System.Configuration.ConfigurationManager": "4.5.0"
         },
@@ -17,7 +17,7 @@
           "log4net.dll": {}
         }
       },
-      "Microsoft.Net.Compilers/3.7.0": {},
+      "Microsoft.Net.Compilers.Toolset/4.0.1": {},
       "Microsoft.NETCore.Platforms/1.1.0": {},
       "NETStandard.Library/2.0.3": {
         "dependencies": {
@@ -117,29 +117,29 @@
     }
   },
   "libraries": {
-    "log4net/2.0.13": {
+    "log4net/2.0.14": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.Net.Compilers/3.7.0": {
+    "Microsoft.Net.Compilers.Toolset/4.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-UoMUd1HX72f6AEnLNsslPjj7BsNOlxeuvWxJ+BqrnVeXxcZYw/zwXJUhZm+6ynNBpOkicXQTrfRKWV5cUsM0PQ==",
-      "path": "microsoft.net.compilers/3.7.0",
-      "hashPath": "microsoft.net.compilers.3.7.0.nupkg.sha512"
+      "sha512": "sha512-DVIW1CUIPq5V4tFvqbjKvf0d9djECceVCNDspGx/kPjKyJRXJ6mjYMcel9fxaECybbjYwn8Q1/tIwjZvhZo0NQ==",
+      "path": "microsoft.net.compilers.toolset/4.0.1",
+      "hashPath": "microsoft.net.compilers.toolset.4.0.1.nupkg.sha512"
     },
     "Microsoft.NETCore.Platforms/1.1.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-95b1cvVR59LIbnZCpi1jBflJPdGjMcC3OJSSCtV0dWx/9E5vSFsk1GC2kuWaMQScC5mg8d8f6BtQaMpThfnW9w==",
+      "sha512": "sha512-kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
       "path": "microsoft.netcore.platforms/1.1.0",
       "hashPath": "microsoft.netcore.platforms.1.1.0.nupkg.sha512"
     },
     "NETStandard.Library/2.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-e9ogTWxhmdNGVOQbeTPUv1EfDKZTuPbpkJQBuWbWpS4CH/U834gM8F99LEN7BvoxxXeV4XMGziQ4WL9vb35Qdw==",
+      "sha512": "sha512-st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
       "path": "netstandard.library/2.0.3",
       "hashPath": "netstandard.library.2.0.3.nupkg.sha512"
     },
