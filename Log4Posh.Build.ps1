@@ -46,23 +46,15 @@ task StageFiles Init, Clean, BeforeStageFiles, CoreStageFiles, AfterStageFiles, 
 
 task CoreStageFiles {
     Copy-Item -Path $SrcRootDir\* -Destination $ModuleOutDir -Recurse -Exclude $Exclude -Verbose:($VerbosePreference -eq 'Continue')
-    # TODO Copy-Item -Path $SrcRootDir\* -Destination "$OutDir\$ProjectName" -Recurse -Exclude $Exclude -Verbose:($VerbosePreference -eq 'Continue')
-
-    # New-Item -Path "$OutDir\$ProjectName\Docs\" -ItemType Directory -Verbose:($VerbosePreference -eq 'Continue') > $null
-    # Copy-Item -Path $DocsRootDir\*.CHM -Destination "$OutDir\$ProjectName\Docs\" -Exclude $Exclude -Verbose:($VerbosePreference -eq 'Continue')
-
     Write-Host "The files have been copied to '$ModuleOutDir'"
 }
 
 task Build Init, Clean, BeforeBuild, StageFiles, Analyze, BuildHelp, AfterBuild, {
 }
 
-task Actionlint {
+task Actionlint -If (Get-Command gh.exe -EA SilentlyContinue) {
 # Linting all workflow files only in  .\.github\workflows directory
-#todo 
-return
- if (Get-Command gh.exe)
- {
+
     $isActionLintExist=(gh extension list|Where-Object {$_ -match 'actionlint'}|Select-Object -first 1) -ne $null
     if (-not $isActionLintExist)
     { Throw "Github Cli: 'actionlint' extension not found. Use : gh extension install cschleiden/gh-actionlint"}
@@ -71,14 +63,11 @@ return
     $ExitCode=$LastExitCode
     if ($ExitCode -ne 0)
     {
-      $ErrorFiles=$ActionLintErrors|Group-Object filepath
-      $ofs=' , '
-      gh actionlint
-      Throw "One or more Github Action lint errors were found : $($ErrorFiles.Name). Build cannot continue."
+        $ErrorFiles=$ActionLintErrors|Group-Object filepath
+        $ofs=' , '
+        gh actionlint
+        Throw "One or more Github Action lint errors were found : $($ErrorFiles.Name). Build cannot continue."
     }
- }
- else
- { Throw 'gh.exe (Github Cli) not found. See https://cli.github.com/'}
 }
 
 task Analyze StageFiles, ActionLint, {
