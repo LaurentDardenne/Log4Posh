@@ -126,6 +126,7 @@ Describe "Log4Posh standalone - basic" {
     {Get-Log4NetRepository -RepositoryName 'NotExist' -ErrorAction Stop}| Should -Throw
   }
 
+   #Only one execution in the same Appdomain
    #Log4Net repository can not be removed While the dll is loaded, but they can be reconfigured.
   It "Verify if a unknown repository not exist" -skip:$(Test-Repository 'Pester') {
     Test-Repository 'Pester' | Should -Be $false
