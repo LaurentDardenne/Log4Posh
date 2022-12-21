@@ -1,5 +1,9 @@
 ﻿#Requires -Modules Log4Posh
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSAvoidAssignmentToAutomaticVariable','',Justification='PowerShell 2.0')]
+[Diagnostics.CodeAnalysis.SuppressMessage('AssignmentStatementToAutomaticNotSupported','',Justification='Ok for PowerShell 2.0')]
+param()
+
 #Powershell v2
 if (!$PSCommandPath)
 {

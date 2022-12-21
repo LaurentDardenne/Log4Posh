@@ -1,4 +1,8 @@
-﻿function Get-ScriptDirectory
+﻿[System.Diagnostics.CodeAnalysis.SuppressMessage('PSAvoidAssignmentToAutomaticVariable','',Justification='PowerShell 2.0')]
+[Diagnostics.CodeAnalysis.SuppressMessage('AssignmentStatementToAutomaticNotSupported','',Justification='Ok for PowerShell 2.0')]
+param()
+
+function Get-ScriptDirectory
 {
   $Invocation = (Get-Variable MyInvocation -Scope 1).Value
   Split-Path $Invocation.MyCommand.Path
@@ -74,7 +78,7 @@ ATrois
 }
 
 if(!$PSScriptRoot)
-{  $PSScriptRoot = Get-ScriptDirectory }
+{ $PSScriptRoot = Get-ScriptDirectory }
 
 . Demo
 .\DemoFormatLog4PoshConfiguration.ps1

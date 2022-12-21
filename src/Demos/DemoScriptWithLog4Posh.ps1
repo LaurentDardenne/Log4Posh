@@ -1,4 +1,8 @@
-﻿function Un {
+﻿[System.Diagnostics.CodeAnalysis.SuppressMessage('PSAvoidAssignmentToAutomaticVariable','',Justification='PowerShell 2.0')]
+[Diagnostics.CodeAnalysis.SuppressMessage('AssignmentStatementToAutomaticNotSupported','',Justification='Ok for PowerShell 2.0')]
+param()
+
+function Un {
   $DebugLogger.PSDebug("message from function Un")
   $InfoLogger.PSInfo("message from function Un")
 }
@@ -85,10 +89,7 @@ Write-Host "`r`nStop Log4net. The default repository is no longer configured" -f
 }
 
 if(!$PSScriptRoot)
-{  #todo v2 ?
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidAssignmentToAutomaticVariable","",
-  Justification="Todo.")]
-  $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent }
+{ $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent }
 
 . Demo
 Stop-Log4Net

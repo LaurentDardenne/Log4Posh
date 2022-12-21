@@ -24,6 +24,7 @@
   General notes
 #>
   [CmdletBinding()]
+  [Outputtype([SyStem.String])]
   param (
       #Path of the script writing the log
     [string] $Path,
