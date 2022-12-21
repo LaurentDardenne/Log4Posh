@@ -39,7 +39,7 @@ function Clear-LogFile{
     {
          #todo quoi faire si exception ? write-error
         $exportDate=ConvertTo-TimeStamped -Filename $File
-        $InfoLogger.PSDebug("`t$File ‘texportDate=$exportDate")
+        $InfoLogger.PSDebug("`t$File `texportDate=$exportDate")
         if ($null -ne $exportDate)
         {
             if ($ExportDate -le $DateObsolescenceFiles)
