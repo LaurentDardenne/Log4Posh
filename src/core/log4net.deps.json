@@ -7,8 +7,9 @@
   "targets": {
     ".NETStandard,Version=v2.0": {},
     ".NETStandard,Version=v2.0/": {
-      "log4net/2.0.14": {
+      "log4net/2.0.15": {
         "dependencies": {
+          "Microsoft.NETFramework.ReferenceAssemblies.net35": "1.0.2",
           "Microsoft.Net.Compilers.Toolset": "4.0.1",
           "NETStandard.Library": "2.0.3",
           "System.Configuration.ConfigurationManager": "4.5.0"
@@ -19,6 +20,7 @@
       },
       "Microsoft.Net.Compilers.Toolset/4.0.1": {},
       "Microsoft.NETCore.Platforms/1.1.0": {},
+      "Microsoft.NETFramework.ReferenceAssemblies.net35/1.0.2": {},
       "NETStandard.Library/2.0.3": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0"
@@ -117,7 +119,7 @@
     }
   },
   "libraries": {
-    "log4net/2.0.14": {
+    "log4net/2.0.15": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -135,6 +137,13 @@
       "sha512": "sha512-kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
       "path": "microsoft.netcore.platforms/1.1.0",
       "hashPath": "microsoft.netcore.platforms.1.1.0.nupkg.sha512"
+    },
+    "Microsoft.NETFramework.ReferenceAssemblies.net35/1.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-NEybA7YjNdIdX1CPMkWjUQvQ46Ze9PJQsE1uLzwEQsZqR0qY7ZH1Wmn6FFiYPS9J3lOgQ1lQcGIt09u26u5fmQ==",
+      "path": "microsoft.netframework.referenceassemblies.net35/1.0.2",
+      "hashPath": "microsoft.netframework.referenceassemblies.net35.1.0.2.nupkg.sha512"
     },
     "NETStandard.Library/2.0.3": {
       "type": "package",
