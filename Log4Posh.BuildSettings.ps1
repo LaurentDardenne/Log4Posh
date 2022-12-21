@@ -7,20 +7,9 @@
 )
 
 Function Test-CIEnvironment {
-return (Test-Path env:APPVEYOR)
+return (Test-Path env:CI)
 }
-  
-Function Get-ApiKeyIntoCI {
-    #Read Appveyor environment variable (encrypted)
-    Write-host "ApiKey for the configuration : '$BuildConfiguration'"
-
-    if ($BuildConfiguration -eq 'Debug')
-    { return $Env:MY_APPVEYOR_DevMyGetApiKey }
-    else
-    { return $Env:MY_APPVEYOR_MyGetApiKey }
-}
-  
-  
+    
 function GetPowershellGetPath {
 #extracted from PowerShellGet/PSModule.psm1
 
@@ -481,7 +470,7 @@ $ReleaseNotesPath = "$PSScriptRoot\ChangeLog.md"
 
 # Specifies an output file path to send to Invoke-Pester's -OutputFile parameter.
 # This is typically used to write out test results so that they can be sent to a CI
-# system like AppVeyor.
+# system like AppVeyor or Github Action.
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $TestOutputFile = $null
 
