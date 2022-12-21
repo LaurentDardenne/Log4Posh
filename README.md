@@ -1,4 +1,4 @@
-﻿[![Build status](https://ci.appveyor.com/api/projects/status/8ak81iosntfsgqxc?svg=true)](https://ci.appveyor.com/project/LaurentDardenne/log4posh)
+﻿![Build status](https://github.com/LaurentDardenne/Log4Posh/actions/workflows/Build.yml/badge.svg)
 
 ![Logo](http://ottomatt.pagesperso-orange.fr/Data/Log4Posh.jpg)
 # Log4Posh
