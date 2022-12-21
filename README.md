@@ -1,4 +1,4 @@
-﻿![Build status](https://github.com/LaurentDardenne/Log4Posh/actions/workflows/Build.yml/badge.svg)
+﻿[![Build status](https://github.com/LaurentDardenne/Log4Posh/actions/workflows/Build.yml/badge.svg)](https://github.com/LaurentDardenne/Log4Posh/actions/workflows/Build.yml)
 
 ![Logo](http://ottomatt.pagesperso-orange.fr/Data/Log4Posh.jpg)
 # Log4Posh
