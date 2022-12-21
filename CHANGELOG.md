@@ -1,4 +1,25 @@
-﻿2019-01-12  Version 3.0.4
+﻿2023-12-21  Version 3.1.0
+  Update Log4Net library to 2.0.15
+  Migration :
+     Pester v5.3.3
+     InvokeBuild v5.10.1
+     PSScriptAnalyzer v1.21.0
+     GitHubAction
+
+2021-12-20  Version 3.0.6
+  Update Log4Net library to 2.0.14
+
+2019-09-22  Version 3.0.5
+  Add 
+    Documentation file
+    function to remove old timestamped log files
+    Function header log
+  
+  Fix 
+    Regression in PSake 4.8.0. 
+    Encoding file with UTF8-BOM
+
+2019-01-12  Version 3.0.4
   Add simple demos.
 
 2018-07-15  Version 3.0.3
