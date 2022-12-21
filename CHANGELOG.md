@@ -6,6 +6,11 @@
      PSScriptAnalyzer v1.21.0
      GitHubAction
 
+  Add function :
+   to open the SDK URL : 'Read-Log4NetSDKHelp'
+   to view all configured repositories: 'Get-AllRepository'
+
+
 2021-12-20  Version 3.0.6
   Update Log4Net library to 2.0.14
 
