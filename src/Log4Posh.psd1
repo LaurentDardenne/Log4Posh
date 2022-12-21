@@ -42,7 +42,9 @@
                      'New-Log4NetCoreLevel',
                      'Get-DefaultRepository',
                      'Get-Log4NetGlobalContextProperty',
-                     'Get-Log4NetConfiguration'
+                     'Get-Log4NetConfiguration',
+                     'Get-AllRepository',
+                     'Read-Log4NetSDKHelp'
 
   VariablesToExport ='LogDefaultColors','LogJobName'
 
@@ -70,7 +72,7 @@
         IconUri = 'https://github.com/LaurentDardenne/Log4Posh/blob/master/Icon/Log4Posh.png'
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Initial version.'
+        ReleaseNotes = 'Version 3.1.0.'
     } # End of PSData hashtable
   } # End of PrivateData hashtable
 }

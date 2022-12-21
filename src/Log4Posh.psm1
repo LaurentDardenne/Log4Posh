@@ -3,6 +3,15 @@
 
 Import-LocalizedData -BindingVariable Log4PoshMsgs -Filename Log4Posh.Resources.psd1 -EA Stop
 
+Function Read-Log4NetSDKHelp{
+<#
+.SYNOPSIS
+  This function open the SDK documentation of log4Net in default browser.
+#>
+Param()
+ Start-Process 'https://logging.apache.org/log4net/log4net-2.0.15/release/sdk/'
+}#Read-Log4NetSDKHelp
+
 function Get-DefaultRepositoryName {
 <#
     .SYNOPSIS
@@ -12,12 +21,21 @@ function Get-DefaultRepositoryName {
 }#Get-DefaultRepositoryName
 
 function Get-DefaultRepository {
-  <#
-      .SYNOPSIS
-        This function return the default repository.
-  #>
+<#
+  .SYNOPSIS
+    This function return the default repository.
+#>
   [LogManager]::GetRepository($script:DefaultRepositoryName)
 }#Get-DefaultRepository
+
+function Get-AllRepository {
+<#
+  .SYNOPSIS
+    This function return all currently defined repositories.
+#>
+  [log4net.Core.LoggerManager]::GetAllRepositories()
+}#Get-DefaultRepository
+  
 
 $script:DefaultRepositoryName=Get-DefaultRepositoryName
 
