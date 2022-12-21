@@ -99,7 +99,6 @@ Function Test-Requisite {
     }
 
 }
-#todo Test-Requisite -Environnement $Environnement
 
 Function Get-RepositoryName{
    param(
@@ -502,8 +501,6 @@ $isTestBom=$true
 task RemoveConditionnal -If { return $false } {
 #Traite les pseudo directives de parsing conditionnelle
 
-    #todO  The first call works, but not the followings
-    #-Force reload the ScriptToProcess
     Import-Module Template -Force 
 
     try {
