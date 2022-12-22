@@ -7,7 +7,7 @@
 )
 
 Function Test-CIEnvironment {
-return (Test-Path env:CI)
+  return (Test-Path env:CI)
 }
     
 function GetPowershellGetPath {
@@ -15,42 +15,26 @@ function GetPowershellGetPath {
 
 $IsInbox = $PSHOME.EndsWith('\WindowsPowerShell\v1.0', [System.StringComparison]::OrdinalIgnoreCase)
 if($IsInbox)
-{
-    $ProgramFilesPSPath = Microsoft.PowerShell.Management\Join-Path -Path $env:ProgramFiles -ChildPath "WindowsPowerShell"
-}
+{ $ProgramFilesPSPath = Microsoft.PowerShell.Management\Join-Path -Path $env:ProgramFiles -ChildPath "WindowsPowerShell" }
 else
-{
-    $ProgramFilesPSPath = $PSHome
-}
+{ $ProgramFilesPSPath = $PSHome }
 
 if($IsInbox)
 {
     try
-    {
-        $MyDocumentsFolderPath = [Environment]::GetFolderPath("MyDocuments")
-    }
+    { $MyDocumentsFolderPath = [Environment]::GetFolderPath("MyDocuments")  }
     catch
-    {
-        $MyDocumentsFolderPath = $null
-    }
+    { $MyDocumentsFolderPath = $null }
 
-    $MyDocumentsPSPath = if($MyDocumentsFolderPath)
-                                {
-                                    Microsoft.PowerShell.Management\Join-Path -Path $MyDocumentsFolderPath -ChildPath "WindowsPowerShell"
-                                }
-                                else
-                                {
-                                    Microsoft.PowerShell.Management\Join-Path -Path $env:USERPROFILE -ChildPath "Documents\WindowsPowerShell"
-                                }
+    if($MyDocumentsFolderPath)
+    { $MyDocumentsPSPath = Microsoft.PowerShell.Management\Join-Path -Path $MyDocumentsFolderPath -ChildPath "WindowsPowerShell" }
+    else
+    { $MyDocumentsPSPath = Microsoft.PowerShell.Management\Join-Path -Path $env:USERPROFILE -ChildPath "Documents\WindowsPowerShell" }
 }
 elseif($IsWindows)
-{
-    $MyDocumentsPSPath = Microsoft.PowerShell.Management\Join-Path -Path $HOME -ChildPath 'Documents\PowerShell'
-}
+{ $MyDocumentsPSPath = Microsoft.PowerShell.Management\Join-Path -Path $HOME -ChildPath 'Documents\PowerShell' }
 else
-{
-    $MyDocumentsPSPath = Microsoft.PowerShell.Management\Join-Path -Path $HOME -ChildPath ".local/share/powershell"
-}
+{ $MyDocumentsPSPath = Microsoft.PowerShell.Management\Join-Path -Path $HOME -ChildPath ".local/share/powershell" }
 
 $Result=[PSCustomObject]@{
 
@@ -79,8 +63,7 @@ Function Test-Requisite {
     }
     else
     {
-        #todo publish à part
-        throw "Environnement:'$Environnement' not implemented."
+        throw "Environnement:'$Environnement' not implemented. publier à part ?"
         if (Test-path Env:PSGALLERY)
         { $NuGetApiKey = $Env:PSGALLERY }
         else
@@ -122,15 +105,6 @@ function newDirectory {
  }
 }
 
-function GetModulePath {
-param($Name)
-  $List=@(Get-Module $Name -ListAvailable)
-  if ($List.Count -eq 0)
-  { Throw "Module '$Name' not found."}
-   #Last version
-  $List[0].Path
-}
-
 function New-TemporaryDirectory {
     $parent = [System.IO.Path]::GetTempPath()
     $name = [System.IO.Path]::GetRandomFileName()
@@ -144,7 +118,7 @@ function Test-BOMFile{
    )
 
     $Params=@{
-      Include=@('*.ps1','*.psm1','*.psd1','*.ps1xml','*.xml','*.txt');
+      Include=@('*.ps1','*.psm1','*.psd1','*.ps1xml','*.xml','*.txt','*.md');
       Exclude=@('*.bak','*.exe','*.dll')
     }
 
@@ -220,14 +194,14 @@ Function Read-ModuleDependency {
     Foreach ($ModuleInfo in $Manifest.RequiredModules)
     {
         #Microsoft.PowerShell.Commands.ModuleSpecification : 'RequiredVersion' need PS version 5.0
-        #Instead, one build splatting for Find-Module
+        #Instead, we are build splatting for Find-Module
         Write-Debug "$($ModuleInfo|Out-String)"
         if ($ModuleInfo -is [System.Collections.Hashtable])
         {
             $ModuleInfo.Add('Name',$ModuleInfo.ModuleName)
             $ModuleInfo.Remove('ModuleName')
             if ($ModuleInfo.Contains('ModuleVersion'))
-            {$ModuleInfo.Add('MinimumVersion',$ModuleInfo.ModuleVersion)}
+            { $ModuleInfo.Add('MinimumVersion',$ModuleInfo.ModuleVersion) }
             $ModuleInfo.Remove('ModuleVersion')
             $ModuleInfo.Remove('GUID')
         }
@@ -297,7 +271,7 @@ On ne sait donc pas différencier le cas où d'autres versions existent mais pas
 Update-ModuleManifest ne complète pas le contenu de la clé -ExternalModuleDependencies mais remplace le contenu existant.
 #>
 
-    $EMD=@(
+    $ExternalModuleDependencies=@(
         Foreach ($Module in $Modules) {
             try {
                 Write-Verbose  "Find-ExternalModuleDependencies : $($Module|Out-String)"
@@ -316,13 +290,13 @@ Update-ModuleManifest ne complète pas le contenu de la clé -ExternalModuleDepe
             }
          }
      )
-     if ($EMD.Count -ne 0)
+     if ($ExternalModuleDependencies.Count -ne 0)
      {
         #New-ModuleManifest -PrivateData @{ PSData = @{ ExternalModuleDependencies = @('ModuleName') } }
-       if ($EMD.Count -eq 1)
-       { $EMD +=$EMD[0] }
-       Write-Verbose "ExternalModuleDependencies : $EMD"
-       Return $EMD
+       if ($ExternalModuleDependencies.Count -eq 1)
+       { $ExternalModuleDependencies +=$ExternalModuleDependencies[0] }
+       Write-Verbose "ExternalModuleDependencies : $ExternalModuleDependencies"
+       Return $ExternalModuleDependencies
      }
 }
 
@@ -413,10 +387,6 @@ $ScriptAnalyzerSettingsPath = "$PSScriptRoot\ScriptAnalyzerSettings.psd1"
 # Module names for additionnale custom rule
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 [String[]]$PSSACustomRules=$null
-# @(
-#   (GetModulePath -Name OptimizationRules)
-#   (GetModulePath -Name ParameterSetRules)
-# )
 
 
 #MeasureLocalizedData
