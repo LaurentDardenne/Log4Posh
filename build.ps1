@@ -5,7 +5,7 @@ Param(
     [Parameter(ParameterSetName="Release")]
   [switch] $Release,
 
-  #'Dev','Prod'
+    [ValidateSet('Dev','Prod')]
   [string] $Environnement='Dev'
 )
 
