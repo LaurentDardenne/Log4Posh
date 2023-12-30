@@ -1,6 +1,6 @@
 ﻿[![Build status](https://github.com/LaurentDardenne/Log4Posh/actions/workflows/Build.yml/badge.svg)](https://github.com/LaurentDardenne/Log4Posh/actions/workflows/Build.yml)
 
-![Logo](http://ottomatt.pagesperso-orange.fr/Data/Log4Posh.jpg)
+![Logo](https://github.com/LaurentDardenne/Log4Posh/blob/master/Assets/Log4Posh.png)
 # Log4Posh
 A log4net wrapper for PowerShell. Support .NET Core 1.0 / .NET Standard 1.3
 
